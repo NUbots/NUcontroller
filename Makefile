@@ -1,6 +1,7 @@
 # Makefile for CM730 firmware
 # Modified by zerom for WinARM 08/2010
 # Modified by Philipp Allgeuer for the NimbRo-OP 08/2015
+# Modified by Alex Biddulph for the NUbots team 07/2017
 
 # The target device can be changed by calling 'make DEVICE=CM740' for example
 DEVICE = CM730
@@ -23,7 +24,7 @@ AS = $(TCHAIN_PREFIX)gcc
 ASFLAGS = $(COMPILE_OPTS) -c 
 
 LD = $(TCHAIN_PREFIX)gcc
-LDFLAGS = $(M3_OPTS) -Wl,--gc-sections,-Map=$@.map,-cref,-u,Reset_Handler $(INCLUDE_DIRS) $(LIBRARY_DIRS) -T stm32.ld 
+LDFLAGS = $(M3_OPTS) -nostdlib -Wl,--gc-sections,-Map=$@.map,-cref,-u,Reset_Handler $(INCLUDE_DIRS) $(LIBRARY_DIRS) -T stm32.ld 
 
 OBJCP = $(TCHAIN_PREFIX)objcopy
 OBJCPFLAGS_HEX = -O ihex
