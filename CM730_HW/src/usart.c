@@ -6,6 +6,9 @@
 * Description        : Functions and macros relating to USART
 * Comment            : This file has been completely rewritten by Philipp Allgeuer
 *                      <pallgeuer@ais.uni-bonn.de> for the NimbRo-OP (02/04/14).
+*                      Modified by Alex Biddulph <Alexander.Biddulph@uon.edu.au> to
+*                      bring inline function usage inline with C11 standards
+*                      (fixes linker errors in gcc7).
 *******************************************************************************/
 
 // Includes
@@ -100,7 +103,7 @@ struct TxInfo
 };
 
 // Interrupt functions
-inline void SetInterruptPending(u8 IRQChannel);
+static inline void SetInterruptPending(u8 IRQChannel);
 
 // Reset functions
 void ResetRxParseInfo(struct RxParseInfo *RPI);
@@ -108,31 +111,31 @@ void ResetRxInfo(struct RxInfo *RI, u8 PORT);
 void ResetTxInfo(struct TxInfo *TI, u8 PORT);
 
 // Protocol functions
-inline void RxProcessByte(struct RxInfo *RI, u8 data);
-inline void RxUpdateControlTable(void);
-inline void TxUpdateControlTable(void);
+static inline void RxProcessByte(struct RxInfo *RI, u8 data);
+static inline void RxUpdateControlTable(void);
+static inline void TxUpdateControlTable(void);
 
 // Zigbee circular buffer functions
-inline u8 ZIGRxBufReadByte(void);
+static inline u8 ZIGRxBufReadByte(void);
 
 // Rx circular buffer functions
-inline void RxBufLockMutex(struct RxInfo *RI);                 // Used to lock out the Rx handler from executing
-inline void RxBufUnlockMutex(struct RxInfo *RI);               // Used to lock out the Rx handler from executing
-inline u8 RxBufPacketAvailable(const struct RxInfo *RI);       // For use by all code
+static inline void RxBufLockMutex(struct RxInfo *RI);                 // Used to lock out the Rx handler from executing
+static inline void RxBufUnlockMutex(struct RxInfo *RI);               // Used to lock out the Rx handler from executing
+static inline u8 RxBufPacketAvailable(const struct RxInfo *RI);       // For use by all code
 void RxBufReadPacket(struct RxInfo *RI, struct DxlPacket *DP); // For use by non-interrupt code
 void RxBufAppendPacket(struct RxInfo *RI);                     // For use by the Rx handler interrupts
 
 // Tx circular buffer functions
-inline void TxBufLockMutex(struct TxInfo *TI);                         // Used to lock out the Tx handler from executing
-inline void TxBufUnlockMutex(struct TxInfo *TI);                       // Used to lock out the Tx handler from executing
-inline u8 TxBufPacketAvailable(const struct TxInfo *TI);               // For use by all code
+static inline void TxBufLockMutex(struct TxInfo *TI);                         // Used to lock out the Tx handler from executing
+static inline void TxBufUnlockMutex(struct TxInfo *TI);                       // Used to lock out the Tx handler from executing
+static inline u8 TxBufPacketAvailable(const struct TxInfo *TI);               // For use by all code
 void TxBufAppendPacket(struct TxInfo *TI, const struct DxlPacket *DP); // For use by non-interrupt code
 void TxBufInjectPacket(struct TxInfo *TI, const struct RxInfo *RI);    // For use by the Rx handler interrupts
 void TxBufFlushPackets(struct TxInfo *TI);                             // For use by the Tx handler interrupts
 
 // USART functions
-inline void PCTxSendByte(u8 data);  // Wraps the USART_SendData() function for PCTx
-inline void DXLTxSendByte(u8 data); // Wraps the USART_SendData() function for DXLTx
+static inline void PCTxSendByte(u8 data);  // Wraps the USART_SendData() function for PCTx
+static inline void DXLTxSendByte(u8 data); // Wraps the USART_SendData() function for DXLTx
 
 // Rx and Tx info structs
 struct RxInfo PCRx  = {{0}, 0, 0, {0}, 0, 0, 0, 0, 0, 0, 0, {SEEN_NOTHING, INVALID_ID, 0, INST_NONE, 0, 0, {0}, 0}, INIT_TIME_LAST_BYTE, MUTEX_NONE, USART_PC};
@@ -158,7 +161,7 @@ vu8 TmpVar = 0;
 //
 
 // Trigger a given interrupt
-inline void SetInterruptPending(u8 IRQChannel)
+static inline void SetInterruptPending(u8 IRQChannel)
 {
 	NVIC_SetIRQChannelPendingBit(IRQChannel);
 	__asm("DSB;ISB");
@@ -228,7 +231,7 @@ void ResetTxInfo(struct TxInfo *TI, u8 PORT)
 //
 
 // Process one received byte using a state machine to detect packets
-inline void RxProcessByte(struct RxInfo *RI, u8 data)
+static inline void RxProcessByte(struct RxInfo *RI, u8 data)
 {
 	// Note: The required packet format is [0xFF] [0xFF] [ID] [LENGTH] [INSTRUCTION/ERROR] [[PARAMETERS]] [CHECKSUM]
 	//       ID is the Dynamixel device ID that the packet is intended for
@@ -349,7 +352,7 @@ inline void RxProcessByte(struct RxInfo *RI, u8 data)
 }
 
 // Update the control table with the latest Rx counter values
-inline void RxUpdateControlTable(void)
+static inline void RxUpdateControlTable(void)
 {
 	// DXL Rx buffer counters
 	GW_DXLRX_PACKET_CNT   = DXLRx.BufPacketCount;
@@ -367,7 +370,7 @@ inline void RxUpdateControlTable(void)
 }
 
 // Update the control table with the latest Tx counter values
-inline void TxUpdateControlTable(void)
+static inline void TxUpdateControlTable(void)
 {
 	// DXL Tx buffer counters
 	GW_DXLTX_PACKET_CNT   = DXLTx.BufPacketCount;
@@ -385,7 +388,7 @@ inline void TxUpdateControlTable(void)
 //
 
 // Read a data byte from the ZIG Rx circular buffer
-inline u8 ZIGRxBufReadByte(void)
+static inline u8 ZIGRxBufReadByte(void)
 {
 #if ALLOW_ZIGBEE
 	// Declare variables
@@ -412,7 +415,7 @@ inline u8 ZIGRxBufReadByte(void)
 //
 
 // Lock the mutex of the Rx buffer
-inline void RxBufLockMutex(struct RxInfo *RI)
+static inline void RxBufLockMutex(struct RxInfo *RI)
 {
 	// Safely lock the mutex
 	DISABLE_HANDLER_INTERRUPTS();
@@ -421,7 +424,7 @@ inline void RxBufLockMutex(struct RxInfo *RI)
 }
 
 // Unlock the mutex of the Rx buffer
-inline void RxBufUnlockMutex(struct RxInfo *RI)
+static inline void RxBufUnlockMutex(struct RxInfo *RI)
 {
 	// Safely unlock the mutex
 	DISABLE_HANDLER_INTERRUPTS();
@@ -441,7 +444,7 @@ inline void RxBufUnlockMutex(struct RxInfo *RI)
 }
 
 // Check whether a packet is available in the given Rx packet circular buffer
-inline u8 RxBufPacketAvailable(const struct RxInfo *RI)
+static inline u8 RxBufPacketAvailable(const struct RxInfo *RI)
 {
 	// Return whether any data is available in the packet buffer
 	DISABLE_HANDLER_INTERRUPTS();
@@ -657,7 +660,7 @@ void RxBufAppendPacket(struct RxInfo *RI)
 //
 
 // Lock the mutex of the Tx buffer
-inline void TxBufLockMutex(struct TxInfo *TI)
+static inline void TxBufLockMutex(struct TxInfo *TI)
 {
 	// Safely lock the mutex
 	DISABLE_HANDLER_INTERRUPTS();
@@ -666,7 +669,7 @@ inline void TxBufLockMutex(struct TxInfo *TI)
 }
 
 // Unlock the mutex of the Tx buffer
-inline void TxBufUnlockMutex(struct TxInfo *TI)
+static inline void TxBufUnlockMutex(struct TxInfo *TI)
 {
 	// Safely unlock the mutex
 	DISABLE_HANDLER_INTERRUPTS();
@@ -686,7 +689,7 @@ inline void TxBufUnlockMutex(struct TxInfo *TI)
 }
 
 // Check whether a packet is available in the given Tx packet circular buffer
-inline u8 TxBufPacketAvailable(const struct TxInfo *TI)
+static inline u8 TxBufPacketAvailable(const struct TxInfo *TI)
 {
 	// Return whether any data is available in the packet buffer
 	DISABLE_HANDLER_INTERRUPTS();
@@ -1017,7 +1020,7 @@ void TxBufFlushPackets(struct TxInfo *TI)
 //
 
 // Send a data byte over USART3 to the PC
-inline void PCTxSendByte(u8 data)
+static inline void PCTxSendByte(u8 data)
 {
 	// Note: This function may contain STM32F103xx-specific code!
 
@@ -1038,7 +1041,7 @@ inline void PCTxSendByte(u8 data)
 }
 
 // Send a data byte over USART1 to the DXLs
-inline void DXLTxSendByte(u8 data)
+static inline void DXLTxSendByte(u8 data)
 {
 	// Note: This function may contain STM32F103xx-specific code!
 
