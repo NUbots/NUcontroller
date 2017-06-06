@@ -3,39 +3,46 @@
 * Author             : zerom
 * Version            : V0.1
 * Date               : 2010/08/24
-* Description        : This file contains the defines used for LED fuctions
+* Description        : Contains the functions and defines for the LEDs
+* Comment            : This file has been modified by Philipp Allgeuer
+*                      <pallgeuer@ais.uni-bonn.de> for the NimbRo-OP (02/04/14).
 *******************************************************************************/
 
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __LED_H
-#define __LED_H
+// Ensure header is only included once
+#ifndef LED_H
+#define LED_H
 
-/* Includes ------------------------------------------------------------------*/
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
+// Includes
+#include "common_type.h"
 
-#define LED_MANAGE			0x1
-#define LED_EDIT			0x2
-#define	LED_PLAY			0x4
-#define LED_TX				0x8
-#define LED_RX				0x10
-//#define LED_AUX				0x20
-#define LED_POWER			0x40
-#define LED_ALL				0x7F
+// LED port flags
+#define LED_PLAY    0x01
+#define LED_EDIT    0x02
+#define LED_MANAGE  0x04
+#define LED_RX      0x08
+#define LED_TX      0x10
+#define LED_ALL     0x5F
 
-#define LED_R		0x1
-#define LED_G		0x2
-#define LED_B		0x4
+// RGBLED port flags
+#define RGBLED5     5
+#define RGBLED6     6
 
+// RGBLED colour flags
+#define LED_R       0x01
+#define LED_G       0x02
+#define LED_B       0x04
 
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
+// Interrupt service routine to control the RGB LEDs
+void __ISR_LED_RGB_TIMER(void);
 
-void LED_SetState(u8 LED_PORT, PowerState NewState);
+// Functions
 PowerState LED_GetState(u8 LED_PORT);
-void LED_RGB_SetState(u8 RGB);
-u8 LED_RGB_GetState();
+void       LED_SetState(u8 LED_PORT, PowerState NewState);
+u8   LED5_GetState();       // Uses the flags LED_R, LED_G and LED_B
+void LED5_SetState(u8 RGB); // Uses the flags LED_R, LED_G and LED_B
+u8   LED6_GetState();       // Uses the flags LED_R, LED_G and LED_B
+void LED6_SetState(u8 RGB); // Uses the flags LED_R, LED_G and LED_B
+void RGBLED_SetColour(u8 RGBLED_PORT, u8 R, u8 G, u8 B, u8 blink);
 
-#endif /* __LED_H */
-
+#endif /* LED_H */
 /************************ (C) COPYRIGHT 2010 ROBOTIS ********END OF FILE*******/

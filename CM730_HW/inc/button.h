@@ -3,33 +3,24 @@
 * Author             : zerom
 * Version            : V0.1
 * Date               : 2010/08/25
-* Description        : This file contains the defines used for button fuctions
+* Description        : Contains the functions and defines for the buttons
+* Comment            : This file has been modified by Philipp Allgeuer
+*                      <pallgeuer@ais.uni-bonn.de> for the NimbRo-OP (02/04/14).
 *******************************************************************************/
 
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __BUTTON_H
-#define __BUTTON_H
+// Ensure header is only included once
+#ifndef BUTTON_H
+#define BUTTON_H
 
-/* Includes ------------------------------------------------------------------*/
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
+// Includes
+#include "stm32f10x_type.h"
 
-/*
-#define BUTTON_DXLPWR				0x1
-#define BUTTON_START				0x2
-*/
+// Button flags
+#define BUTTON_MODE   0x1
+#define BUTTON_START  0x2
 
-
-#define BUTTON_START				0x1
-#define BUTTON_MODE					0x2
-
-
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
-
+// Functions
 u8 ReadButton(void);
 
-
-#endif /* __BUTTON_H */
-
+#endif /* BUTTON_H */
 /************************ (C) COPYRIGHT 2010 ROBOTIS ********END OF FILE*******/

@@ -1,176 +1,111 @@
 /************************* (C) COPYRIGHT 2010 ROBOTIS **************************
 * File Name          : main.c
 * Author             : zerom
-* Version            : V0.0.1
-* Date               : 08/23/2010
+* Version            : V0.1
+* Date               : 2010/08/23
 * Description        : Main program body
+* Comment            : This file has been heavily modified by Philipp Allgeuer
+*                      <pallgeuer@ais.uni-bonn.de> for the NimbRo-OP (02/04/14).
 *******************************************************************************/
 
-/* Includes ------------------------------------------------------------------*/
-#include "stm32f10x_lib.h"
-#include "common_type.h"
-#include "led.h"
-//#include "eeprom.h"
-#include "button.h"
-#include "usart.h"
+// Notes:
+// Certain parameters and options in this firmware are intended to be configurable.
+// Search for '[CONFIG]' in the entire firmware folder in order to locate all such
+// parameters. Do not modify anything else unless you really know what you're doing!
+//
+// In summary:
+//
+//  - USING_4CELL_BATTERY (isr.h)
+//       Non-zero => Set battery warning levels for a 4 cell battery
+//       Zero     => Set battery warning levels for a 3 cell battery
+//    If you use a 4 cell battery, but set up 3 cell battery voltage level warnings,
+//    then you run the risk of over-discharging your LiPo battery, possibly ruining
+//    the battery, and in the worst case, possibly even causing an explosive event!
+//
+//  - DEBUG_USE_JTAG (system_init.h)
+//       Non-zero => Enable JTAG debugging
+//       Zero     => Disable JTAG debugging
+//    If JTAG debugging is enabled then the Zigbee enable pin is hijacked, and all
+//    buttons except for the reset button are disabled and *should not* be pressed!
+//
+//  - FWD_PC_BYTES_DIRECTLY (usart.h)
+//       Non-zero => Forward bytes received from the PC directly to the DXLs without
+//                   waiting for a complete packet to arrive.
+//       Zero     => Only forward complete and valid packets from the PC to the DXLs.
+//    Direct PC --> DXL byte forwarding makes the communications faster, but
+//    significantly LESS ROBUST! Use with caution, and only if timing is so critical
+//    that packet forwarding is experimentally found to be too slow. Also note that
+//    the DXLTx packet count ignores all packets that originate from the PC when this
+//    option is set, so the DXLTX_PACKET_CNT will be essentially constant/invalid.
+//
+//  - ALLOW_ZIGBEE (usart.h)
+//       Non-zero => Zigbee communications are permitted/enabled
+//       Zero     => Zigbee communications are not permitted/disabled
+//    Disabling the Zigbee communications is in the form of disallowing Rx/Tx bytes
+//    to be sent/received over the corresponding UART peripheral, and disabling the
+//    REMOCON functionality in the control register table.
+
+// Includes
+#include "stm32f10x_type.h"
 #include "system_init.h"
 #include "system_func.h"
-#include "dynamixel.h"
-#include "serial.h"
-#include "adc.h"
-#include "zigbee.h"
 #include "CM_DXL_COM.h"
-#include "sound.h"
+#include "led.h"
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-/* Private functions ---------------------------------------------------------*/
-
-
-extern u8 gbDxlPwr;
-/*******************************************************************************
-* Function Name  : main
-* Description    : Main program
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-
-
+// Main function
 int main(void)
 {
+	// Declare variables
+	u8 bCount;
 
-	byte bCount;
-	long lTemp;
-
+	// Configure and initialise the system
 	System_Configuration();
 
-	dxl_set_power(OFF);
-	//dxl_set_power(ON);
-	Zigbee_SetState(ON);
-	//gbDxlPwr = ON;
-
-	//LED_SetState(LED_POWER, ON);
-	//	LED_RGB_SetState(LED_R|LED_G|LED_B);
-	//LED_RGB_SetState(OFF);
-
-	BufferClear(USART_DXL);
-	BufferClear(USART_PC);
-	BufferClear(USART_ZIGBEE);
-
-	setBuzzerOff();
-
-/*
-	for(bCount =0; bCount < 50; bCount++ )
+	// Wait 200ms while flashing LEDs
+	for(bCount = 0; bCount < 2; bCount++)
 	{
-		setBuzzerData(bCount);
-		setBuzzerPlayLength(10);
-		PlayBuzzer();
-		//mDelay(3000);
-		while(getBuzzerState());
-		mDelay(500);
-	}
-*/
-
-
-/*
-	//BKP_WriteBackupRegister((P_OPERATING_MODE+1)<<2, 0xffff);
-
-	  if(BKP_ReadBackupRegister((P_OPERATING_MODE+1)<<2) == 0xffff) //Initialize to Factory Default or reset mode restart
-	  {
-	    for(bCount=0; bCount < ROM_CONTROL_TABLE_LEN; bCount++)
-	    {
-	        //ROM_CAST(bCount) = gbpControlTable[bCount] = ROM_INITIAL_DATA[bCount];
-	    	gbpControlTable[bCount] = ROM_INITIAL_DATA[bCount];
-	        BKP_WriteBackupRegister((bCount+1)<<2, WORD_CAST(gbpControlTable[bCount]));
-	    }
-	    gbLEDBlinkCounter = 32;
-	  }
-	  else
-	  {
-	    for(bCount=0; bCount < ROM_CONTROL_TABLE_LEN; bCount++)
-	    {
-	      //gbpControlTable[bCount] = (byte)(BKP_ReadBackupRegister((bCount+1)<<2)); !!!!!
-	      gbpControlTable[bCount] = ROM_INITIAL_DATA[bCount];
-	    }
-	    gbLEDBlinkCounter = 8;
-	  }
-
-	for (bCount = 0; bCount < 3; bCount++) {
 		LED_SetState(LED_MANAGE|LED_EDIT|LED_PLAY, ON);
 		mDelay(50);
 		LED_SetState(LED_MANAGE|LED_EDIT|LED_PLAY, OFF);
 		mDelay(50);
 	}
-*/
-	/*
-	if( (EEPROM_Read(P_OPERATING_MODE) == 0xffff) || (EEPROM_Read(P_OPERATING_MODE) == 0xff) ) //Initialize to Factory Default or reset mode restart
+
+	// Turn on the power to the arms (for the call to DXLServoTorqueOff() and DXLServoConfig())
+	GB_DYNAMIXEL_POWER = 1;
+	DXLSetPower(ON); // Note: This raw instruction is used instead of OnControlTableWrite(P_DYNAMIXEL_POWER) as we do not wish to enable DXL forwarding just yet...
+
+	// Wait 100ms while flashing LEDs
+	for(bCount = 0; bCount < 1; bCount++)
 	{
-		EEPROM_Write( P_BAUD_RATE, ROM_INITIAL_DATA[P_BAUD_RATE] );
-		EEPROM_Write( P_OPERATING_MODE, 0);
-	}
-	else if(EEPROM_Read(P_OPERATING_MODE) == 0x11) //Digital Reset
-	{
-		EEPROM_Write( P_BAUD_RATE, ROM_INITIAL_DATA[P_BAUD_RATE] );
-		EEPROM_Write( P_OPERATING_MODE, 0);
-	}
-	*/
-
-
-	for(bCount=0; bCount < ROM_CONTROL_TABLE_LEN; bCount++)
-	{
-		  gbpControlTable[bCount] = ROM_INITIAL_DATA[bCount];
-	}
-	//GB_BAUD_RATE = EEPROM_Read(P_BAUD_RATE);
-/*
-	lTemp = 2000000;
-	lTemp /= (GB_BAUD_RATE+1);
-	USART_Configuration(USART_DXL,lTemp);
-	USART_Configuration(USART_PC,lTemp);
-*/
-
-
-    gbLEDBlinkCounter = 8;
-
-
-
-
-
-	for (bCount = 0; bCount < 3; bCount++) {
 		LED_SetState(LED_MANAGE|LED_EDIT|LED_PLAY, ON);
 		mDelay(50);
 		LED_SetState(LED_MANAGE|LED_EDIT|LED_PLAY, OFF);
 		mDelay(50);
 	}
-/*
-	dxl_set_power(1);
-	gbDxlPwr = 1;
-	mDelay(100);
 
-	GPIO_ResetBits(PORT_ENABLE_RXD, PIN_ENABLE_RXD);	// RX Disable
-	GPIO_SetBits(PORT_ENABLE_TXD, PIN_ENABLE_TXD);	// TX Enable
-	  while(1)
-	  {
-		GPIO_ResetBits(PORT_ENABLE_RXD, PIN_ENABLE_RXD);	// RX Disable
-		GPIO_SetBits(PORT_ENABLE_TXD, PIN_ENABLE_TXD);	// TX Enable
+	// Command all servos on the dynamixel bus to disable their torque
+	DXLServoTorqueOff();
 
-		  USART_SendData(USART1, 'a');
-			while( USART_GetFlagStatus(USART1, USART_FLAG_TC)==RESET );
+	// Configure the less critical settings of the servo in peace
+	DXLServoConfig();
 
-			GPIO_ResetBits(PORT_ENABLE_TXD, PIN_ENABLE_TXD);	// TX Disable
-			GPIO_SetBits(PORT_ENABLE_RXD, PIN_ENABLE_RXD);	// RX Enable
-			mDelay(100);
+	// Wait 1000ms while flashing LEDs
+	for(bCount = 0; bCount < 10; bCount++)
+	{
+		LED_SetState(LED_MANAGE|LED_EDIT|LED_PLAY, ON);
+		mDelay(50);
+		LED_SetState(LED_MANAGE|LED_EDIT|LED_PLAY, OFF);
+		mDelay(50);
+	}
 
-	  }
+	// Turn off the power to the arms
+	GB_DYNAMIXEL_POWER = 0;
+	OnControlTableWrite(P_DYNAMIXEL_POWER);
 
-*/
-
+	// Main loop
 	Process();
 
+	// Enter an infinite loop
 	while(1);
-
 }
-
+// EOF

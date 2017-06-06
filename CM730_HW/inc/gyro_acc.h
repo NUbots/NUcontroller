@@ -1,53 +1,31 @@
 /************************* (C) COPYRIGHT 2010 ROBOTIS *************************
-* File Name          : spi.h
+* File Name          : gyro_acc.h
 * Author             : danceww
-* Version            : V0.1
+* Version            : V0.0.1
 * Date               : 2011/01/15
-* Description        : This file contains the defines used for sensor functions
+* Description        : Contains the functions and defines for the gyro/acc sensors
+* Comment            : This file has been heavily modified by Philipp Allgeuer
+*                      <pallgeuer@ais.uni-bonn.de> for the NimbRo-OP (02/04/14),
+*                      and is intended for use with CM730's that have the L3G4200D
+*                      gyroscope chip and the LIS331DLH accelerometer chip.
 *******************************************************************************/
 
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __GYRO_SPI_H
-#define __GYRO_SPI_H
+// Ensure header is only included once
+#ifndef GYRO_ACC_H
+#define GYRO_ACC_H
 
-/* Includes ------------------------------------------------------------------*/
+// Includes
 #include "stm32f10x_type.h"
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
 
-void Push_SPI_Data(u16 dat);
-void Clear_SPI_Data(void);
+// Configuration functions for the gyroscope and accelerometer
+void ConfigureGyro();
+void ConfigureAcc();
 
-void CovertData(void);
+// Interrupt service routine to read the gyroscope and accelerometer data
+void __ISR_GYRO_ACC_SPI();
 
-u16 getGyroX(void);
-u16 getGyroY(void);
-u16 getGyroZ(void);
+// Externed variables
+extern vu8 GyroAccAvgBufClear;
 
-u16 getACC_X(void);
-u16 getACC_Y(void);
-u16 getACC_Z(void);
-
-
-s16 getGyroX_raw(void);
-s16 getGyroY_raw(void);
-s16 getGyroZ_raw(void);
-
-s16 getACC_X_raw(void);
-s16 getACC_Y_raw(void);
-s16 getACC_Z_raw(void);
-
-
-void Gyro_Configuration(void);
-void ACC_Configuration(void);
-
-
-//void set_GYRO_ACC_Enable(FunctionalState NewState);
-void __GYRO_ACC_READ_ISR(void);
-
-
-#endif /* __GYRO_SPI_H */
-
+#endif /* GYRO_ACC_H */
 /************************ (C) COPYRIGHT 2010 ROBOTIS ********END OF FILE*******/

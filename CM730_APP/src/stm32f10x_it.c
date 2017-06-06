@@ -3,9 +3,11 @@
 * Author             : MCD Application Team
 * Version            : V2.0.3
 * Date               : 09/22/2008
-* Description        : Main Interrupt Service Routines.
-*                      This file provides template for all exceptions handler
-*                      and peripherals interrupt service routine.
+* Description        : Main Interrupt Service Routines
+*                      This file provides a template for all exception handlers
+*                      and peripheral interrupt service routines.
+* Comment            : This file has been modified by Philipp Allgeuer
+*                      <pallgeuer@ais.uni-bonn.de> for the NimbRo-OP (02/04/14).
 ********************************************************************************
 * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
 * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
@@ -15,37 +17,9 @@
 * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
 *******************************************************************************/
 
-/* Includes ------------------------------------------------------------------*/
+// Includes
 #include "stm32f10x_it.h"
-#include "usart.h"
 #include "isr.h"
-#include "system_func.h"
-#include "system_init.h"
-#include "led.h"
-#include "sound.h"
-#include "CM_DXL_COM.h"
-
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-
-/* Current mode */
-extern u16 gwCurrentMode;   // from mode.c
-extern vu16 CCR1_Val;       // from system_init.c
-extern vu16 CCR2_Val;       // from system_init.c
-extern vu16 CCR3_Val;       // from system_init.c
-extern vu16 CCR4_Val;       // from system_init.c
-
-
-vu32 capture = 0;
-vu8 Counter = 0;
-vu16 gwCounter1 = 0;
-
-
-/* Private function prototypes -----------------------------------------------*/
-/* Private functions ---------------------------------------------------------*/
-
 
 /*******************************************************************************
 * Function Name  : NMIException
@@ -67,10 +41,10 @@ void NMIException(void)
 *******************************************************************************/
 void HardFaultException(void)
 {
-  /* Go to infinite loop when Hard Fault exception occurs */
-  while (1)
-  {
-  }
+	// Go to infinite loop when Hard Fault exception occurs
+	while(1)
+	{
+	}
 }
 
 /*******************************************************************************
@@ -82,10 +56,10 @@ void HardFaultException(void)
 *******************************************************************************/
 void MemManageException(void)
 {
-  /* Go to infinite loop when Memory Manage exception occurs */
-  while (1)
-  {
-  }
+	// Go to infinite loop when Memory Manage exception occurs
+	while(1)
+	{
+	}
 }
 
 /*******************************************************************************
@@ -97,10 +71,10 @@ void MemManageException(void)
 *******************************************************************************/
 void BusFaultException(void)
 {
-  /* Go to infinite loop when Bus Fault exception occurs */
-  while (1)
-  {
-  }
+	// Go to infinite loop when Bus Fault exception occurs
+	while(1)
+	{
+	}
 }
 
 /*******************************************************************************
@@ -112,10 +86,10 @@ void BusFaultException(void)
 *******************************************************************************/
 void UsageFaultException(void)
 {
-  /* Go to infinite loop when Usage Fault exception occurs */
-  while (1)
-  {
-  }
+	// Go to infinite loop when Usage Fault exception occurs
+	while(1)
+	{
+	}
 }
 
 /*******************************************************************************
@@ -160,7 +134,7 @@ void PendSVC(void)
 *******************************************************************************/
 void SysTickHandler(void)
 {
-	__ISR_DELAY();
+	ISR_DELAY();
 }
 
 /*******************************************************************************
@@ -187,7 +161,7 @@ void PVD_IRQHandler(void)
 
 /*******************************************************************************
 * Function Name  : TAMPER_IRQHandler
-* Description    : This function handles Tamper interrupt request. 
+* Description    : This function handles Tamper interrupt request.
 * Input          : None
 * Output         : None
 * Return         : None
@@ -220,7 +194,7 @@ void FLASH_IRQHandler(void)
 
 /*******************************************************************************
 * Function Name  : RCC_IRQHandler
-* Description    : This function handles RCC interrupt request. 
+* Description    : This function handles RCC interrupt request.
 * Input          : None
 * Output         : None
 * Return         : None
@@ -249,6 +223,7 @@ void EXTI0_IRQHandler(void)
 *******************************************************************************/
 void EXTI1_IRQHandler(void)
 {
+	ISR_DXL_RXHANDLER(); // Note: We hijack this interrupt for a software-generated interrupt
 }
 
 /*******************************************************************************
@@ -260,6 +235,7 @@ void EXTI1_IRQHandler(void)
 *******************************************************************************/
 void EXTI2_IRQHandler(void)
 {
+	ISR_PC_RXHANDLER(); // Note: We hijack this interrupt for a software-generated interrupt
 }
 
 /*******************************************************************************
@@ -271,6 +247,7 @@ void EXTI2_IRQHandler(void)
 *******************************************************************************/
 void EXTI3_IRQHandler(void)
 {
+	ISR_DXL_TXHANDLER(); // Note: We hijack this interrupt for a software-generated interrupt
 }
 
 /*******************************************************************************
@@ -282,8 +259,7 @@ void EXTI3_IRQHandler(void)
 *******************************************************************************/
 void EXTI4_IRQHandler(void)
 {
-	//ISR_MIC_EXTI();
-	//EXTI_ClearITPendingBit(EXTI_Line4);
+	ISR_PC_TXHANDLER(); // Note: We hijack this interrupt for a software-generated interrupt
 }
 
 /*******************************************************************************
@@ -372,7 +348,6 @@ void DMA1_Channel7_IRQHandler(void)
 *******************************************************************************/
 void ADC1_2_IRQHandler(void)
 {
-	ISR_ADC();
 }
 
 /*******************************************************************************
@@ -487,58 +462,7 @@ void TIM1_CC_IRQHandler(void)
 *******************************************************************************/
 void TIM2_IRQHandler(void)
 {
-	static b1Sec=0;
-
-	if (TIM_GetITStatus(TIM2, TIM_IT_CC4) != RESET) // 120us, 8000Hz
-	{
-		TIM_ClearITPendingBit(TIM2, TIM_IT_CC4);
-		ISR_ADC();
-		capture = TIM_GetCapture4(TIM2);
-		TIM_SetCompare4(TIM2, capture + CCR4_Val);
-
-
-		if( !( gwCounter1 & 7 ) ) // 840us
-		{
-			ISR_1ms_TIMER();
-		}
-
-		if( !( gwCounter1 & 3 ) ) // 480us, 2000Hz
-		{
-			ISR_LED_RGB_TIMER();
-
-		}
-		if( !( gwCounter1 & 31 ) ) // 3840us, 250Hz
-		{
-			ISR_SPI_READ();
-			__ISR_Buzzer_Manage();
-			GB_BUTTON = ReadButton();
-		}
-
-		if( !( gwCounter1 & 0x3FF ) ) // 125ms
-		{
-			LED_SetState(LED_RX,OFF);
-			LED_SetState(LED_TX,OFF);
-
-			if( !(b1Sec&0x07) )
-			{
-				ISR_BATTERY_CHECK();
-			}
-
-			b1Sec++;
-
-
-		}
-
-
-
-		/*
-		if( !( Counter1 & 32 ) ) // 3960us, 250Hz
-		{
-
-		}
-		*/
-		gwCounter1++;
-	}
+	ISR_TIMER2();
 }
 
 /*******************************************************************************
@@ -627,20 +551,6 @@ void SPI1_IRQHandler(void)
 *******************************************************************************/
 void SPI2_IRQHandler(void)
 {
-
-	/*
-	if( SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) != RESET )
-	{
-		__ISR_SPI_TXE();
-	}
-
-	if( SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) != RESET )
-	{
-		Push_SPI_Data( SPI_I2S_ReceiveData(SPI2) );
-
-	}
-*/
-
 }
 
 /*******************************************************************************
@@ -652,7 +562,7 @@ void SPI2_IRQHandler(void)
 *******************************************************************************/
 void USART1_IRQHandler(void)
 {
-	ISR_USART_DXL();
+	ISR_DXL_USART();
 }
 
 /*******************************************************************************
@@ -675,7 +585,7 @@ void USART2_IRQHandler(void)
 *******************************************************************************/
 void USART3_IRQHandler(void)
 {
-	ISR_USART_PC();
+	ISR_PC_USART();
 }
 
 /*******************************************************************************
@@ -687,15 +597,6 @@ void USART3_IRQHandler(void)
 *******************************************************************************/
 void EXTI15_10_IRQHandler(void)
 {
-	/*
-	if(EXTI_GetITStatus(EXTI_Line13) != RESET)
-	{
-		if( GPIO_ReadInputDataBit(PORT_PA13, 	PIN_PA13) != SET ) 	gbUSB_Enable = 0;
-		else														gbUSB_Enable = 1;
-
-		EXTI_ClearITPendingBit(EXTI_Line13);
-	}
-	*/
 }
 
 /*******************************************************************************
@@ -841,7 +742,7 @@ void UART4_IRQHandler(void)
 *******************************************************************************/
 void UART5_IRQHandler(void)
 {
-	ISR_USART_ZIGBEE();
+	ISR_ZIG_USART();
 }
 
 /*******************************************************************************
@@ -910,5 +811,4 @@ void DMA2_Channel3_IRQHandler(void)
 void DMA2_Channel4_5_IRQHandler(void)
 {
 }
-
 /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/

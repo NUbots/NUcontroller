@@ -1,36 +1,34 @@
-/*
- * sound.h
- *
- *  Created on: 2011. 2. 17.
- *      Author: Administrator
- */
+/************************* (C) COPYRIGHT 2010 ROBOTIS *************************
+* File Name          : sound.h
+* Author             : Robotis
+* Version            : V0.1
+* Date               : 2011/02/17
+* Description        : Functions to control sound output and the buzzer
+* Comment            : This file has been modified by Philipp Allgeuer
+*                      <pallgeuer@ais.uni-bonn.de> for the NimbRo-OP (02/04/14).
+*******************************************************************************/
 
-#ifndef SOUND_H_
-#define SOUND_H_
+// Ensure header is only included once
+#ifndef SOUND_H
+#define SOUND_H
 
+// Includes
 #include "stm32f10x_type.h"
 
-#define SIZE_DOREMITABLE		52
-#define SIZE_SOUNDTABLE			29
+// Interrupt service routine for buzzer
+void __ISR_BUZZER_MANAGE(void);
 
-//void Buzzer_Configuration(void);
-void SetBuzzer(u16 periodUs);
-
-
-void __ISR_Buzzer_Manage(void);
-
-
-void PlayDoremi(u16 index, u16 playTime);
-void PlayMusic(u8 musicIndex);
-
-
-void setBuzzerPlayLength(u8 length);
-u8 getBuzzerPlayLength(void);
-void setBuzzerData(u8 data);
-u8 getBuzzerData(void);
-u8 getBuzzerState(void);
+// Play functions
 void PlayBuzzer(void);
+
+// Buzzer functions
+void setBuzzer(u16 periodUs);
+u8   getBuzzerState(void);
+void setBuzzerPlayLength(u8 length);
+u8   getBuzzerPlayLength(void);
+void setBuzzerData(u8 data);
+u8   getBuzzerData(void);
 void setBuzzerOff(void);
 
-
-#endif /* SOUND_H_ */
+#endif /* SOUND_H */
+/************************ (C) COPYRIGHT 2010 ROBOTIS *********END OF FILE******/

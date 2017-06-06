@@ -1,36 +1,42 @@
-// Zigbee SDK platform independent header
-#ifndef _ZIGBEE_HEADER
-#define _ZIGBEE_HEADER
+/************************* (C) COPYRIGHT 2010 ROBOTIS *************************
+* File Name          : zigbee.h
+* Author             : Robotis
+* Version            : -
+* Date               : -
+* Description        : Functions relating to Zigbee communications
+* Comment            : This file has been modified by Philipp Allgeuer
+*                      <pallgeuer@ais.uni-bonn.de> for the NimbRo-OP (02/04/14).
+*******************************************************************************/
 
+// Ensure header is only included once
+#ifndef ZIGBEE_H
+#define ZIGBEE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// Includes
+#include "common_type.h"
 
-///////////// device control methods ////////////////////////
-int zgb_initialize( int devIndex );
+// Device control functions
+u8   zgb_initialize(u8 devIndex);
 void zgb_terminate(void);
 
-////////// communication methods ///////////////////////
-int zgb_tx_data(int data);
-int zgb_rx_check(void);
-int zgb_rx_data(void);
-unsigned short ScanZigbee(void);
+// Communication functions
+u8   zgb_tx_data(u16 data);
+u8   zgb_rx_check(void);
+u16  zgb_rx_data(void);
+u16  zgb_scan_id(void);
+void Zigbee_SetState(PowerState state);
 
-///////// define RC-100 button key value ////////////////
-#define RC100_BTN_U		(1)
-#define RC100_BTN_D		(2)
-#define RC100_BTN_L		(4)
-#define RC100_BTN_R		(8)
-#define RC100_BTN_1		(16)
-#define RC100_BTN_2		(32)
-#define RC100_BTN_3		(64)
-#define RC100_BTN_4		(128)
-#define RC100_BTN_5		(256)
-#define RC100_BTN_6		(512)
+// RC-100 button key values
+#define RC100_BTN_U  0x0001
+#define RC100_BTN_D  0x0002
+#define RC100_BTN_L  0x0004
+#define RC100_BTN_R  0x0008
+#define RC100_BTN_1  0x0010
+#define RC100_BTN_2  0x0020
+#define RC100_BTN_3  0x0040
+#define RC100_BTN_4  0x0080
+#define RC100_BTN_5  0x0100
+#define RC100_BTN_6  0x0200
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif
+#endif /* ZIGBEE_H */
+/************************ (C) COPYRIGHT 2010 ROBOTIS ********END OF FILE*******/

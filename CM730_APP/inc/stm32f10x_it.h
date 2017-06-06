@@ -3,7 +3,9 @@
 * Author             : MCD Application Team
 * Version            : V2.0.3
 * Date               : 09/22/2008
-* Description        : This file contains the headers of the interrupt handlers.
+* Description        : Contains the headers of the interrupt handlers
+* Comment            : This file has been modified by Philipp Allgeuer
+*                      <pallgeuer@ais.uni-bonn.de> for the NimbRo-OP (02/04/14).
 ********************************************************************************
 * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
 * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
@@ -13,18 +15,11 @@
 * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
 *******************************************************************************/
 
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F10x_IT_H
-#define __STM32F10x_IT_H
+// Ensure header is only included once
+#ifndef STM32F10X_IT_H
+#define STM32F10X_IT_H
 
-/* Includes ------------------------------------------------------------------*/
-#include "stm32f10x_lib.h"
-
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
-
+// Functions
 void NMIException(void);
 void HardFaultException(void);
 void MemManageException(void);
@@ -94,7 +89,6 @@ void DMA2_Channel1_IRQHandler(void);
 void DMA2_Channel2_IRQHandler(void);
 void DMA2_Channel3_IRQHandler(void);
 void DMA2_Channel4_5_IRQHandler(void);
-					 
-#endif /* __STM32F10x_IT_H */
 
+#endif /* STM32F10X_IT_H */
 /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/

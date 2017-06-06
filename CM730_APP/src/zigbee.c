@@ -1,79 +1,102 @@
-// Zigbee SDK platform independent source
-#include "zgb_hal.h"
+/************************* (C) COPYRIGHT 2010 ROBOTIS *************************
+* File Name          : zigbee.c
+* Author             : Robotis
+* Version            : -
+* Date               : -
+* Description        : Functions relating to Zigbee communications
+* Comment            : This file has been modified by Philipp Allgeuer
+*                      <pallgeuer@ais.uni-bonn.de> for the NimbRo-OP (02/04/14).
+*******************************************************************************/
+
+// Includes
 #include "zigbee.h"
-#include "common_type.h"
 #include "stm32f10x_lib.h"
-#include "stm32f10x_type.h"
 #include "system_init.h"
+#include "system_func.h"
+#include "zgb_hal.h"
 #include "usart.h"
 
-unsigned char gbRcvPacket[6];
-unsigned char gbRcvPacketNum;
-unsigned short gwRcvData;
-unsigned char gbRcvFlag;
-unsigned short gwMyZigbeeID;
+// Global variables
+u8  gbRcvPacket[6] = {0};
+u16 gwRcvPacketNum = 0;
+u16 gwRcvData = 0;
+u8  gbRcvFlag = 0;
+u16 gwMyZigbeeID = 0;
 
-int zgb_initialize( int devIndex )
+// Initialise the Zigbee device
+u8 zgb_initialize(u8 devIndex)
 {
-	if( zgb_hal_open( devIndex, 57600 ) == 0) // Always fixed baudrate
-		return 0;
+	// Open the Zigbee device with a fixed baudrate
+	if(zgb_hal_open(devIndex, 57600) == 0) return 0;
 
+	// Initialise the global variables
 	gbRcvFlag = 0;
 	gwRcvData = 0;
-	gbRcvPacketNum = 0;
+	gwRcvPacketNum = 0;
+
+	// Return success
 	return 1;
 }
 
+// Terminate the Zigbee connection
 void zgb_terminate(void)
 {
+	// Close the Zigbee device
 	zgb_hal_close();
 }
 
-int zgb_tx_data(int data)
+// Transmit data over the Zigbee connection
+u8 zgb_tx_data(u16 data)
 {
-	unsigned char SndPacket[6];
-	unsigned short word = (unsigned short)data;
-	unsigned char lowbyte = (unsigned char)(word & 0xff);
-	unsigned char highbyte = (unsigned char)((word >> 8) & 0xff);
+	// Declare variables
+	u8 SendPacket[6];
+	u8 lowbyte, highbyte;
 
-	SndPacket[0] = 0xff;
-	SndPacket[1] = 0x55;
-	SndPacket[2] = lowbyte;
-	SndPacket[3] = ~lowbyte;
-	SndPacket[4] = highbyte;
-	SndPacket[5] = ~highbyte;
+	// Split the data word into its respective bytes
+	lowbyte = LOW_BYTE(data);
+	highbyte = HIGH_BYTE(data);
 
-	if( zgb_hal_tx( SndPacket, 6 ) != 6 )
-		return 0;
+	// Construct the required packet
+	SendPacket[0] = 0xFF;
+	SendPacket[1] = 0x55;
+	SendPacket[2] = lowbyte;
+	SendPacket[3] = ~lowbyte;
+	SendPacket[4] = highbyte;
+	SendPacket[5] = ~highbyte;
 
+	// Transmit the packet
+	if(zgb_hal_tx(SendPacket, 6) != 6) return 0;
+
+	// Return success
 	return 1;
 }
 
-int zgb_rx_check(void)
+// Check whether there is a Zigbee Rx packet available, and if so extract its data (Returns 0 => No data available, 1 => Data available, access with zgb_rx_data())
+u8 zgb_rx_check(void)
 {
-	int RcvNum;
-	unsigned char checksum;
-	int i, j;
+	// Declare variables
+	u16 RcvNum, i, j;
 
-	if(gbRcvFlag == 1)
-		return 1;
+	// If we already have extracted data available then the answer is clearly yes
+	if(gbRcvFlag == 1) return gbRcvFlag;
 
-	// Fill packet buffer
-	if(gbRcvPacketNum < 6)
+	// Fill the packet buffer with received Zigbee data
+	if(gwRcvPacketNum < 6)
 	{
-		RcvNum = zgb_hal_rx( &gbRcvPacket[gbRcvPacketNum], (6 - gbRcvPacketNum) );
-		if( RcvNum != -1 )
-			gbRcvPacketNum += RcvNum;
+		RcvNum = zgb_hal_rx(&gbRcvPacket[gwRcvPacketNum], 6 - gwRcvPacketNum);
+		if(RcvNum != ((u16) -1))
+			gwRcvPacketNum += RcvNum;
 	}
 
-	// Find header
-	if(gbRcvPacketNum >= 2)
+	// Find a packet header in the received data
+	if(gwRcvPacketNum >= 2)
 	{
-		for( i=0; i<gbRcvPacketNum; i++ )
+		// Find an 0xFF 0x55 packet header in the received data
+		for(i = 0; i < gwRcvPacketNum; i++)
 		{
-			if(gbRcvPacket[i] == 0xff)
+			if(gbRcvPacket[i] == 0xFF)
 			{
-				if(i <= (gbRcvPacketNum - 2))
+				if(i <= gwRcvPacketNum - 2)
 				{
 					if(gbRcvPacket[i+1] == 0x55)
 						break;
@@ -81,105 +104,100 @@ int zgb_rx_check(void)
 			}
 		}
 
+		// If the packet header doesn't already coincide with the start of our packet buffer, then ensure it does
 		if(i > 0)
 		{
-			if(i == gbRcvPacketNum)
-			{
-				// Can not find header
-				if(gbRcvPacket[i - 1] == 0xff)
-					i--;
-			}
+			// If no 0xFF 0x55 pair was found in the received data then see whether the last byte at least could be the start of such a pair
+			if((i == gwRcvPacketNum) && (gbRcvPacket[i-1] == 0xFF)) i--;
 
-			// Remove data before header
-			for( j=i; j<gbRcvPacketNum; j++)
-			{
-				gbRcvPacket[j - i] = gbRcvPacket[j];
-			}
-			gbRcvPacketNum -= i;
+			// Remove all the bytes preceding the packet header
+			for(j = i; j < gwRcvPacketNum; j++)
+				gbRcvPacket[j-i] = gbRcvPacket[j];
+			gwRcvPacketNum -= i;
 		}
 	}
 
-	// Verify packet
-	if(gbRcvPacketNum == 6)
+	// Verify the receipt of a packet if we have six bytes starting with a packet header
+	if(gwRcvPacketNum == 6)
 	{
-		if(gbRcvPacket[0] == 0xff && gbRcvPacket[1] == 0x55)
+		if((gbRcvPacket[0] == 0xFF) && (gbRcvPacket[1] == 0x55) && (gbRcvPacket[2] == ~gbRcvPacket[3]) && (gbRcvPacket[4] == ~gbRcvPacket[5]))
 		{
-			checksum = ~gbRcvPacket[3];
-			if(gbRcvPacket[2] == checksum)
-			{
-				checksum = ~gbRcvPacket[5];
-				if(gbRcvPacket[4] == checksum)
-				{
-					gwRcvData = (unsigned short)((gbRcvPacket[4] << 8) & 0xff00);
-					gwRcvData += gbRcvPacket[2];
-					gbRcvFlag = 1;
-				}
-			}
+			gwRcvData = (((u16) gbRcvPacket[4]) << 8) | ((u16) gbRcvPacket[2]);
+			gbRcvFlag = 1; // A packet has just been received and correctly parsed!
 		}
-
 		gbRcvPacket[0] = 0x00;
-		gbRcvPacketNum = 0;
+		gwRcvPacketNum = 0;
 	}
 
+	// Return whether a word of data is available in gwRcvData
 	return gbRcvFlag;
 }
 
-int zgb_rx_data(void)
+// Retrieve the current parsed Zigbee received data
+u16 zgb_rx_data(void)
 {
+	// Clear the data available flag
 	gbRcvFlag = 0;
-	return (int)gwRcvData;
+
+	// Return the required data
+	return gwRcvData;
 }
 
-void Zigbee_SetState(PowerState state)
+// Scan for the Zigbee ID
+u16 zgb_scan_id(void)
 {
+	// Declare variables
+	u8 checkcount = 2;
 
-	if(state == ON) 	GPIO_ResetBits(PORT_ENABLE_ZIGBEE,PIN_ENABLE_ZIGBEE);
-	else 				GPIO_SetBits(PORT_ENABLE_ZIGBEE,PIN_ENABLE_ZIGBEE);
-}
-
-
-u16 ScanZigbee(void)	// Zigbee모듈 찾아내는 함수
-{
-	u8 checkcount = 2;	// Zigbee를 한번에 발견하지 못할경우 재시도 횟수
-    //byte bZigbeeBaud[2];
-
+	// Reset the current Zigbee ID
 	gwMyZigbeeID = 0;
 
-    while( (checkcount > 0) && (gwMyZigbeeID==0) )
-    {
-    	Zigbee_SetState(OFF);
-        mDelay(2);
+	// Try to ascertain the required ID
+	while((checkcount > 0) && (gwMyZigbeeID == 0))
+	{
+		// Cycle the power on the Zigbee device and clear the local Rx buffer for the Zigbee
+		Zigbee_SetState(OFF);
+		mDelay(2);
+		USARTClearBuffers(USART_ZIG, USART_CLEAR_RX);
+		Zigbee_SetState(ON);
+		mDelay(10);
 
-        BufferClear(USART_ZIGBEE);
+		// Send a '!!' token
+		TxDData(USART_ZIG,'!');
+		TxDData(USART_ZIG,'!');
 
-        Zigbee_SetState(ON);
-        mDelay(10);
-        TxDData(USART_ZIGBEE,'!');
-        TxDData(USART_ZIGBEE,'!');
-        mDelay(305);
+		// Wait for a certain amount of time to see whether there is a response
+		mDelay(305);
 
-
-		while( IsRXD_Ready(USART_ZIGBEE) )
+		// Look for a response '!' token as a sign of life
+		while(RxDDataAvailable(USART_ZIG))
 		{
-
-			while( IsRXD_Ready(USART_ZIGBEE) == 0 );
-
-			if( RxDBuffer(USART_ZIGBEE)=='!' )
+			if(RxDData(USART_ZIG) == '!')
 			{
 				gwMyZigbeeID = 1;
 				break;
 			}
 		}
-        checkcount--;
-    }
 
-    mDelay(50);
+		// Decrement the number of times still to check
+		checkcount--;
+	}
 
-    //	TxDByte('E');	// Exit Zigbee Monitor... Reset과 동일하다.
+	// Cycle the power on the Zigbee device
+	mDelay(50);
+	Zigbee_SetState(OFF);
+	mDelay(2);
+	Zigbee_SetState(ON);
 
-    Zigbee_SetState(OFF);
-    mDelay(2);
-    Zigbee_SetState(ON);
-
-    return gwMyZigbeeID;
+	// Return the resulting ID
+	return gwMyZigbeeID;
 }
+
+// Set the power state of the Zigbee
+void Zigbee_SetState(PowerState state)
+{
+	// Enable/disable the Zigbee by setting/resetting the corresponding pin
+	if(state == ON) GPIO_ResetBits(PORT_ENABLE_ZIGBEE, PIN_ENABLE_ZIGBEE);
+	else            GPIO_SetBits  (PORT_ENABLE_ZIGBEE, PIN_ENABLE_ZIGBEE);
+}
+/************************ (C) COPYRIGHT 2010 ROBOTIS ********END OF FILE*******/

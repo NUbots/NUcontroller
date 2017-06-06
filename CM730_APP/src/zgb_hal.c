@@ -1,76 +1,69 @@
-// Zigbee SDK platform dependent source
-#include "stm32f10x_lib.h"
+/************************* (C) COPYRIGHT 2010 ROBOTIS *************************
+* File Name          : zgb_hal.c
+* Author             : Robotis
+* Version            : -
+* Date               : -
+* Description        : Functions relating to the Zigbee hardware abstraction layer
+* Comment            : This file has been modified by Philipp Allgeuer
+*                      <pallgeuer@ais.uni-bonn.de> for the NimbRo-OP (02/04/14).
+*******************************************************************************/
+
+// Includes
+#include "zgb_hal.h"
 #include "system_init.h"
 #include "usart.h"
-#include "zgb_hal.h"
-//#include <math.h>
 
-int zgb_hal_open( int devIndex, int baudrate )
+// Open the Zigbee device
+u8 zgb_hal_open(u8 devIndex, u32 baudrate)
 {
+	// Configure the baudrate of the Zigbee USART port
+	USART_Configuration(USART_ZIG, 57600); // Note: We actually fix the baudrate instead of looking at what was passed!
 
-
-	//unsigned long int baud = 0;//(unsigned long int)baudrate;
-	//int baud = (int)baudrate;
-	//TxDHex32(baudrate);
-	USART_Configuration(USART_ZIGBEE,57600);
-
+	// Return success
 	return 1;
-
-	// Opening device
-	// devIndex: Device index
-	// baudrate: Real baudrate (ex> 115200, 57600, 38400...)
-	// Return: 0(Failed), 1(Succeed)
-
 }
 
-void zgb_hal_close()
+// Close the Zigbee device
+void zgb_hal_close(void)
 {
-	// Closing device
-
+	// Note: No actions required to close the Zigbee device
 }
 
-int zgb_hal_tx( unsigned char *pPacket, int numPacket )
+// Transmit a packet to the Zigbee device
+u16 zgb_hal_tx(u8 *pPacket, u16 numPacket)
 {
-	int i;
+	// Declare variables
+	u16 i;
 
-	for( i=0 ; i < numPacket ; i++ )
-		TxDData(USART_ZIGBEE,pPacket[i]);
+	// Transmit the packet byte for byte
+	for(i = 0; i < numPacket; i++)
+		TxDData(USART_ZIG, pPacket[i]);
 
-	return 0;
-
-	// Transmiting date
-	// *pPacket: data array pointer
-	// numPacket: number of data array
-	// Return: number of data transmitted. -1 is error.
-
+	// Return success
+	return numPacket;
 }
 
-int zgb_hal_rx( unsigned char *pPacket, int numPacket )
+// Wait to receive a given number of bytes from the Zigbee device (there must be at least one byte of data already available)
+u16 zgb_hal_rx(u8 *pPacket, u16 numPacket)
 {
+	// Declare variables
+	u16 cnt = 0;
 
-	int cnt=0;
+	// If no data is available yet then return immediately
+	if(!RxDDataAvailable(USART_ZIG)) return ((u16) -1);
 
-	//TxDData(USART_PC,'a');
-	if( IsRXD_Ready(USART_ZIGBEE) == 0 ) return -1;
-
-
+	// Receive the required number of bytes one by one
 	while(1)
 	{
-
-		if( IsRXD_Ready(USART_ZIGBEE) )
+		if(RxDDataAvailable(USART_ZIG))
 		{
-			pPacket[cnt++] = RxDBuffer(USART_ZIGBEE);
+			pPacket[cnt++] = RxDData(USART_ZIG);
 			if(cnt >= numPacket) break;
 		}
-
+		else break;
 	}
 
-
+	// Return the number of bytes that were read
 	return cnt;
-
-	// Recieving date
-	// *pPacket: data array pointer
-	// numPacket: number of data array
-	// Return: number of data recieved. -1 is error.
-
 }
+/************************ (C) COPYRIGHT 2010 ROBOTIS ********END OF FILE*******/

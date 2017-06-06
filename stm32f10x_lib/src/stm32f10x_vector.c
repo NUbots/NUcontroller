@@ -34,7 +34,7 @@ extern unsigned long _sbss;			/* start address for the .bss section. defined
 extern unsigned long _ebss;			/* end address for the .bss section. defined in
                                    linker script */
 
-extern void _estack;		/* init value for the stack pointer. defined in linker script */
+extern unsigned char _estack;		/* init value for the stack pointer. defined in linker script */
 
 
 
@@ -56,7 +56,7 @@ extern int main(void);
 __attribute__ ((section(".isr_vector")))
 void (* const g_pfnVectors[])(void) =
 {
-  &_estack,            // The initial stack pointer
+  (void *) &_estack,            // The initial stack pointer
   Reset_Handler,             // The reset handler
   NMIException,
   HardFaultException,
@@ -129,7 +129,7 @@ void (* const g_pfnVectors[])(void) =
   DMA2_Channel2_IRQHandler,
   DMA2_Channel3_IRQHandler,
   DMA2_Channel4_5_IRQHandler,
-  (unsigned short)0xF108F85F //this is a workaround for boot in RAM mode.
+  (void *)((unsigned short)0xF108F85F) //this is a workaround for boot in RAM mode.
 };
 
 /*******************************************************************************
