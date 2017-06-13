@@ -15,7 +15,7 @@
 //
 // In summary:
 //
-//  - USING_4CELL_BATTERY (isr.h)
+//  - BATTERY_4CELL (isr.h)
 //       Non-zero => Set battery warning levels for a 4 cell battery
 //       Zero     => Set battery warning levels for a 3 cell battery
 //    If you use a 4 cell battery, but set up 3 cell battery voltage level warnings,
