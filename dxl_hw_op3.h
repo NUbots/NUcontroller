@@ -15,7 +15,7 @@
 
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 
@@ -24,21 +24,18 @@
 #endif
 
 
-#define PIN_LED_R         50
-#define PIN_LED_G         51
-#define PIN_LED_B         52
+#define PIN_LED_R 50
+#define PIN_LED_G 51
+#define PIN_LED_B 52
 
-#define PIN_LED_1         53
-#define PIN_LED_2         54
-#define PIN_LED_3         55
+#define PIN_LED_1 53
+#define PIN_LED_2 54
+#define PIN_LED_3 55
 
-#define PIN_BUTTON_S1     56
-#define PIN_BUTTON_S2     57
-#define PIN_BUTTON_S3     58
-#define PIN_BUTTON_S4     59
-
-
-
+#define PIN_BUTTON_S1 56
+#define PIN_BUTTON_S2 57
+#define PIN_BUTTON_S3 58
+#define PIN_BUTTON_S4 59
 
 
 void dxl_hw_op3_init(void);
@@ -64,12 +61,12 @@ int16_t dxl_hw_op3_acc_get_y(void);
 int16_t dxl_hw_op3_acc_get_z(void);
 
 int16_t dxl_hw_op3_get_rpy(uint8_t rpy);
-void    dxl_hw_op3_start_cali(uint8_t index);
+void dxl_hw_op3_start_cali(uint8_t index);
 int16_t dxl_hw_op3_get_cali(uint8_t index);
-void    dxl_hw_op3_clear_cali(uint8_t index);
+void dxl_hw_op3_clear_cali(uint8_t index);
 
 
-void  dxl_hw_op3_set_offset(uint8_t index, float offset_data);
+void dxl_hw_op3_set_offset(uint8_t index, float offset_data);
 float dxl_hw_op3_get_offset(uint8_t index);
 
 void dxl_hw_op3_start_gyro_cali(void);

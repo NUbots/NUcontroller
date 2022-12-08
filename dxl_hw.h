@@ -15,7 +15,7 @@
 
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 
@@ -24,8 +24,8 @@
 #endif
 
 
-#define DXL_LED_RX            BDPIN_LED_USER_1
-#define DXL_LED_TX            BDPIN_LED_USER_2
+#define DXL_LED_RX BDPIN_LED_USER_1
+#define DXL_LED_TX BDPIN_LED_USER_2
 
 
 uint32_t dxl_hw_begin(uint8_t baud);
@@ -37,8 +37,8 @@ void dxl_hw_power_enable(void);
 void dxl_hw_power_disable(void);
 
 uint8_t dxl_hw_read(void);
-void    dxl_hw_write(uint8_t value);
-void    dxl_hw_write(uint8_t *p_data, uint32_t length);
+void dxl_hw_write(uint8_t value);
+void dxl_hw_write(uint8_t* p_data, uint32_t length);
 
 uint32_t dxl_hw_available(void);
 

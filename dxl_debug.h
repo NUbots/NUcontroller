@@ -15,20 +15,14 @@
 #include "dxl_def.h"
 
 
-
-
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 
 #ifdef __cplusplus
 }
 #endif
-
-
-
-
 
 
 void dxl_debug_init(void);
