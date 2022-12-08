@@ -351,6 +351,33 @@ dxl_error_t dxlRxPacketVer2_0(dxl_t* p_packet, uint8_t data_in) {
     return ret;
 }
 
+/**
+ * @brief Searches for occurences of the header and removes the stuffing byte by
+ *  overwriting it with the next byte of input data.
+ *
+ * @warning The stuffing byte isn't removed in place and only overwrited, so the
+ *  data will have a duplicate byte following the header sequence. This is fine
+ *  for the actual header since the byte after is reserved, but if the header
+ *  sequence happens to occur within the data stream then stuffing process will
+ *  corrupt the data.
+ *
+ *  Consider a message containing the following byte sequence:
+ *   0xFF 0xFF 0xFD 0x00 ... 0xFF 0xFF 0xFD 0xFF 0xFD 0x23 0x45 ...
+ *   ^^^^^^^^^^^^^^          ^^^^^^^^^^^^^^
+ *   intended header         coincidental header sequence in
+ *                           data, followed by 0xFF 0xFD
+ *  Which would be stuffed as follows:
+ *    0xFF 0xFF 0xFD 0xFD 0x00 ... 0xFF 0xFF 0xFD 0xFD 0xFF 0xFD 0x23 0x45 ...
+ *  But after removing the stuffing, the result is:
+ *    0xFF 0xFF 0xFD 0x00 0x00 ... 0xFF 0xFF 0xFD 0xFF 0xFF 0xFD 0x45 0x45 ...
+ *                        ^^^^                         ^^^^      ^^^^
+ *                        |                            |         byte overwrite
+ *                         \_______byte insertion______/
+ *
+ * @todo Implement a buffer similar to the dxlAddStuffing() function to allow
+ *  the stuffing bytes after the header to be properly removed in place (would
+ *  require assuming that the first bytes encountered are definitely the header)
+ */
 uint16_t dxlRemoveStuffing(uint8_t* p_data, uint16_t length) {
     uint16_t i;
     uint16_t stuff_length;
@@ -370,6 +397,16 @@ uint16_t dxlRemoveStuffing(uint8_t* p_data, uint16_t length) {
     return stuff_length;
 }
 
+/**
+ * @brief Searches for occurences of the header (0xFF 0xFF 0xFD) while copying
+ *  data into a temp buffer, and, if found, inserts a byte stuffing character
+ *  (0xFD). It then copies the stuffed data back to the original location.
+ * @warning There are no checks to ensure that only allocated memory is written
+ *  to when inserting stuffing bytes if the data contains many non-header
+ *  occurences of the header bytes. *p_data has and implied underlying size of
+ *  DXL_MAX_BUFFER defined by @see dxl_packet_t in dxl.h
+ * @todo Add some kind of checks to prevent a segfault here
+ */
 uint16_t dxlAddStuffing(uint8_t* p_data, uint16_t length) {
     uint8_t stuff_buf[DXL_MAX_BUFFER];
     uint16_t i;
