@@ -23,6 +23,34 @@ extern "C" {
 }
 #endif
 
+/* Voltage levels from CM730 repo
+// Set whether a 3 cell (11.1V) or 4 cell (14.8V) LiPo battery is being used
+// Should be specified (either BATTERY_4CELL or BATTERY_3CELL) on the command line.
+
+// Define the battery voltage levels
+#if BATTERY_4CELL
+#define VOLTAGE_LEVEL_6             172  // 17.2V Overcharged
+#define VOLTAGE_LEVEL_5             168  // 16.8V Fully charged
+#define VOLTAGE_LEVEL_4             159  // 15.9V      ...
+#define VOLTAGE_LEVEL_3             155  // 15.5V      ...
+#define VOLTAGE_LEVEL_2             151  // 15.1V      ...
+#define VOLTAGE_LEVEL_1             147  // 14.7V Warning level
+#define VOLTAGE_LEVEL_0             141  // 14.1V Empty
+#elif BATTERY_3CELL
+#define VOLTAGE_LEVEL_6             130  // 13.0V Overcharged
+#define VOLTAGE_LEVEL_5             126  // 12.6V Fully charged
+#define VOLTAGE_LEVEL_4             119  // 11.9V      ...
+#define VOLTAGE_LEVEL_3             116  // 11.6V      ...
+#define VOLTAGE_LEVEL_2             113  // 11.3V      ...
+#define VOLTAGE_LEVEL_1             110  // 11.0V Warning level
+#define VOLTAGE_LEVEL_0             106  // 10.6V Empty
+#else
+#error "Invalid battery specification => Must set either -DBATTERY_4CELL or -DBATTERY_3CELL"
+#endif
+
+#define LOW_BATTERY_LIMIT           VOLTAGE_LEVEL_1
+#define HIGH_BATTERY_LIMIT          VOLTAGE_LEVEL_6
+*/
 
 #define PIN_LED_R 50
 #define PIN_LED_G 51
