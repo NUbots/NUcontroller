@@ -36,20 +36,30 @@ extern "C" {
 
 #define DXL_MAX_BUFFER 2048
 
-
-#define PKT_HDR_1_IDX 0
+/**
+ * @brief Packet structure in byte order
+ * @see https://emanual.robotis.com/docs/en/dxl/protocol2/#packet-parameters
+ * 
+ * Instruction packets only go up to PKT_INST_IDX and then straight to CRC.
+ * Status packets have the PKT_ERROR_IDX param and then three additional bytes
+ *  starting from PKT_STATUS_PARAM_IDX
+ */
+#define PKT_HDR_1_IDX 0 // header bytes
 #define PKT_HDR_2_IDX 1
 #define PKT_HDR_3_IDX 2
-#define PKT_RSV_IDX   3
-#define PKT_ID_IDX    4
-#define PKT_LEN_L_IDX 5
-#define PKT_LEN_H_IDX 6
-#define PKT_INST_IDX  7
-#define PKT_ERROR_IDX 8
+#define PKT_RSV_IDX   3 // reserved
+#define PKT_ID_IDX    4 // packet ID
+#define PKT_LEN_L_IDX 5 // packet length (total incl CRC)
+#define PKT_LEN_H_IDX 6 
+#define PKT_INST_IDX  7 // instruction ID (defined below)
+#define PKT_ERROR_IDX 8 // error code - ONLY in status packet, not instruction
 
 #define PKT_STATUS_PARAM_IDX 9
 
-
+/**
+ * @brief instruction ID defines the type of command in a packet
+ * @see https://emanual.robotis.com/docs/en/dxl/protocol2/#instruction
+ */
 #define INST_PING       0x01
 #define INST_READ       0x02
 #define INST_WRITE      0x03
@@ -63,6 +73,15 @@ extern "C" {
 #define INST_BULK_READ  0x92
 #define INST_BULK_WRITE 0x93
 
+/**
+ * @brief Error field is included in Status packets to indicate the processing
+ *  result of a corresponding Instruction packet.
+ * @details The defines outline the error number, given by bits 0~6 of the error
+ *  field. Additionally, bit 7 is the Alert field indicating a hardware error.
+ *  The error field becomes 0x40 | ERROR_CODE in this case.
+ *  Hardware error status value can we read from the Control Table with a read
+ *  instruction.
+ */
 #define DXL_ERR_NONE        0x00
 #define DXL_ERR_RESULT_FAIL 0x01
 #define DXL_ERR_INST_ERROR  0x02

@@ -80,6 +80,12 @@ uint8_t dxlGetId(dxl_t* p_packet) {
     return p_packet->id;
 }
 
+/**
+ * @brief Adds and instruction *function* to a corresponding instruction
+ * @param p_packet Note that this is *not* a packet as per the documentation,
+ *  but rather p_packet->tx.data[] (or rx) is the actual packet
+ * @param p_dxl Is a function pointer to the process for the corresponding instruction
+ */
 void dxlAddInstFunc(dxl_t* p_packet, uint8_t inst, dxl_error_t (*func)(dxl_t* p_dxl)) {
 
 
@@ -110,6 +116,12 @@ void dxlAddInstFunc(dxl_t* p_packet, uint8_t inst, dxl_error_t (*func)(dxl_t* p_
     }
 }
 
+/**
+ * @brief Calls the instruction function corresponding to the command value of
+ *  the passed packet
+ * @param p_packet Note that this is *not* a packet as per the documentation,
+ *  but rather p_packet->tx.data[] (or rx) is the actual packet
+*/
 dxl_error_t dxlProcessInst(dxl_t* p_packet) {
     dxl_error_t ret = DXL_RET_OK;
     uint8_t inst;
@@ -158,7 +170,10 @@ dxl_error_t dxlProcessInst(dxl_t* p_packet) {
     return ret;
 }
 
-
+/**
+ * @brief starts serial communication at a specified baud rate
+ * @param p_packet 
+*/
 bool dxlOpenPort(dxl_t* p_packet, uint8_t ch, uint32_t baud) {
     bool ret = true;
 
@@ -363,7 +378,7 @@ dxl_error_t dxlRxPacketVer2_0(dxl_t* p_packet, uint8_t data_in) {
  *
  *  Consider a message containing the following byte sequence:
  *   0xFF 0xFF 0xFD 0x00 ... 0xFF 0xFF 0xFD 0xFF 0xFD 0x23 0x45 ...
- *   ^^^^^^^^^^^^^^          ^^^^^^^^^^^^^^
+ *   ^^^^^^^^^^^^^^          ^^^^^^^^^^^^^^^^^^^^^^^^
  *   intended header         coincidental header sequence in
  *                           data, followed by 0xFF 0xFD
  *  Which would be stuffed as follows:
@@ -436,6 +451,10 @@ uint16_t dxlAddStuffing(uint8_t* p_data, uint16_t length) {
     return stuff_length;
 }
 
+/**
+ * @brief Makes a status packet according to the spec: https://emanual.robotis.com/docs/en/dxl/protocol2/#status-packet
+ *  
+*/
 dxl_error_t dxlMakePacketStatus(dxl_t* p_packet, uint8_t id, uint8_t error, uint8_t* p_data, uint16_t length) {
     dxl_error_t ret = DXL_RET_OK;
     uint16_t i      = 0;
