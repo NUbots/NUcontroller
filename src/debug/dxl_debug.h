@@ -11,8 +11,8 @@
 #define DXL_DEBUG_H
 
 
-#include "dxl.h"
-#include "dxl_def.h"
+#include "../protocol/dxl.h"
+#include "../dxl_def.h"
 
 
 #ifdef __cplusplus

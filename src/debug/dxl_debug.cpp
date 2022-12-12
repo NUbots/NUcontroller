@@ -11,9 +11,9 @@
 
 #include <EEPROM.h>
 
-#include "dxl_hw.h"
-#include "dxl_hw_op3.h"
-#include "dxl_node_op3.h"
+#include "../hardware/dxl_hw.h"
+#include "../hardware/dxl_hw_op3.h"
+#include "../protocol/dxl_node_op3.h"
 
 
 #define DEBUG_SERIAL Serial

@@ -11,7 +11,7 @@
 #define DXL_HW_OP3_H
 
 
-#include "dxl_def.h"
+#include "../dxl_def.h"
 
 
 #ifdef __cplusplus

@@ -12,7 +12,7 @@
 
 
 #include "dxl.h"
-#include "dxl_def.h"
+#include "../dxl_def.h"
 
 
 #define DXL_NODE_OP3_ID           200  // 0xC8

@@ -9,7 +9,7 @@
 #define DXL_H_
 
 
-#include "dxl_def.h"
+#include "../dxl_def.h"
 
 
 #ifdef __cplusplus

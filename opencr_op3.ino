@@ -5,7 +5,7 @@
  *  Created on: 2016. 10. 21.
  *      Author: Baram
  */
-#include "dxl_node_op3.h"
+#include "./src/hardware/dxl_node_op3.h"
 
 
 extern void dxl_hw_tx_enable(void);

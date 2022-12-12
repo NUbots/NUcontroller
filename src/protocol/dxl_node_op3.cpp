@@ -12,9 +12,9 @@
 #include <EEPROM.h>
 
 #include "dxl.h"
-#include "dxl_debug.h"
-#include "dxl_hw.h"
-#include "dxl_hw_op3.h"
+#include "../debug/dxl_debug.h"
+#include "../hardware/dxl_hw.h"
+#include "../hardware/dxl_hw_op3.h"
 
 
 #define RANGE_CHECK(addr, x) dxl_node_check_range(addr, (uint32_t) & (x), sizeof(x))

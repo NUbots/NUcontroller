@@ -8,8 +8,8 @@
 
 #include <stdlib.h>
 
-#include "dxl_def.h"
-#include "dxl_hw.h"
+#include "../dxl_def.h"
+#include "../hardware/dxl_hw.h"
 
 
 #define PACKET_STATE_IDLE     0
