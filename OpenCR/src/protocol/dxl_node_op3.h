@@ -11,10 +11,9 @@
 #define DXL_NODE_OP3_H
 
 
-#include "dxl.h"
 #include "../dxl_def.h"
 
-
+/// @brief The Dynamixel ID of the OpenCR for packet communication
 #define DXL_NODE_OP3_ID           200  // 0xC8
 #define DXL_NODE_OP3_MODLE_NUMBER 0x7400
 #define DXL_NODE_OP3_FW_VER       0x02
