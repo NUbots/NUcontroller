@@ -48,8 +48,8 @@ void dxl_debug_loop(void) {
     uint8_t ch;
 
 
-    if (Serial.available()) {
-        ch = Serial.read();
+    if (DEBUG_SERIAL.available()) {
+        ch = DEBUG_SERIAL.read();
 
 
         switch (debug_state) {
