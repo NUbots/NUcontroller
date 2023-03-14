@@ -34,24 +34,6 @@ static bool dxl_debug_menu_shwo_ctrltbl();
 
 static void dxl_debug_send_write_command(void);
 
-typedef struct {
-    uint8_t header1     = 0xFF;
-    uint8_t header2     = 0xFF;
-    uint8_t header3     = 0xFD;
-    uint8_t reserved    = 0x00;
-    uint8_t id          = 0;
-    uint8_t len_l       = 0x90;
-    uint8_t len_h       = 0x00;
-    uint8_t instruction = 0x03;
-    uint8_t addr_l      = 0;
-    uint8_t addr_h      = 0;
-    uint8_t data1       = 0;
-    uint8_t data2       = 0;
-    uint8_t data3       = 0;
-    uint8_t data4       = 0;
-    uint8_t crc_l       = 0;
-    uint8_t crc_h       = 0;
-} __attribute__((packed)) dxl_debug_write_packet_t;
 
 /*---------------------------------------------------------------------------
      TITLE   : dxl_debug_init
@@ -362,23 +344,18 @@ void dxl_debug_send_write_command(void) {
     char buf[32];
     buf[31] = '\0';  // just in case
 
-    DEBUG_SERIAL.println(
-        "Input format `<id> <addr> <data> ~` with sentinel. Command has 30 second timeout. Input wait is BLOCKING");
+    DEBUG_SERIAL.print("Input format `<id> <addr> <data> ~` with sentinel. ");
+    DEBUG_SERIAL.print("Command has 30 second timeout. Input wait is BLOCKING");
 
     // read into buffer (blocking, very bad)
     DEBUG_SERIAL.setTimeout(30 * 1000);  // set 30 second timeout
-    DEBUG_SERIAL.readBytesUntil('~', buf, 24);
+    DEBUG_SERIAL.readBytesUntil('~', buf, 31);
     /**/ DEBUG_SERIAL.println("[*] read bytes");
     DEBUG_SERIAL.setTimeout(1000);  // reset to default
     /**/ DEBUG_SERIAL.println("[*] reset timeout");
 
     // fill vars
-    if (buf[1] == 'x') {  // hex
-        sscanf(buf, "%x %x %x ~", &id, &addr, &data);
-    }
-    else {  // decimal
-        sscanf(buf, "%d %d %d ~", &id, &addr, &data);
-    }
+    sscanf(buf, "%d %d %d ~", &id, &addr, &data);
 
     /**/ DEBUG_SERIAL.println("[*] filled vars");
 
