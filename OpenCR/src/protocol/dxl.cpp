@@ -32,7 +32,6 @@
 //-- Internal Functions
 //
 static dxl_error_t dxlRxPacketVer2_0(dxl_t* p_packet, uint8_t data_in);
-static void dxlUpdateCrc(uint16_t* p_crc_cur, uint8_t data_in);
 static uint16_t dxlAddStuffing(uint8_t* p_data, uint16_t length);
 static uint16_t dxlRemoveStuffing(uint8_t* p_data, uint16_t length);
 
