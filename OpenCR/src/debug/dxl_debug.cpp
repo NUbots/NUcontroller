@@ -17,9 +17,15 @@
 
 
 #define DEBUG_SERIAL Serial
+#define DEBUG_SWITCH BDPIN_DIP_SW_1
+#define DEBUG_LED    BDPIN_LED_USER_4
 
 
 extern dxl_mem_op3_t* p_dxl_mem;
+
+#define BUG   0  // debugging not active
+#define DEBUG 1  // debugging active
+static uint8_t debugging = BUG;
 
 static uint8_t debug_state = 0;
 
@@ -47,8 +53,19 @@ void dxl_debug_loop(void) {
     static uint32_t tTime[16];
     uint8_t ch;
 
+    /* Activate debug mode if dip switch active */
+    uint32_t dip = digitalReadFast(DEBUG_SWITCH) ? DEBUG : BUG;
 
-    if (DEBUG_SERIAL.available()) {
+    if (debugging != dip) {
+        // update to selected mode
+        debugging = dip;
+
+        // show debug state with LED and high/low buzzer
+        tone(BDPIN_BUZZER, (dip == DEBUG ? 1000 : 500), 100);
+        digitalWriteFast(DEBUG_LED, (dip == DEBUG ? HIGH : LOW));
+    }
+
+    if (debugging && DEBUG_SERIAL.available()) {
         ch = DEBUG_SERIAL.read();
 
 
@@ -79,6 +96,7 @@ void dxl_debug_menu_show_list(void) {
     DEBUG_SERIAL.println("d - show step");
     DEBUG_SERIAL.println("l - show control table");
     DEBUG_SERIAL.println("q - exit menu");
+    DEBUG_SERIAL.println("x - break debug loop");
     DEBUG_SERIAL.println("---------------------------");
 }
 
@@ -116,6 +134,14 @@ bool dxl_debug_menu_loop(uint8_t ch) {
             DEBUG_SERIAL.println(" ");
             dxl_debug_menu_shwo_ctrltbl();
             break;
+
+        case 'x':
+            exit_menu   = true;
+            debug_state = 0;
+            DEBUG_SERIAL.println(" ");
+            DEBUG_SERIAL.println("breaking debug loop...");
+            DEBUG_SERIAL.println("loop will restart unless DIP1 is off");
+
 
         default: exit_menu = true; break;
     }
