@@ -17,15 +17,12 @@
 
 
 #define DEBUG_SERIAL Serial
+#define DEBUG_BAUD   57600
 #define DEBUG_SWITCH BDPIN_DIP_SW_1
-#define DEBUG_LED    BDPIN_LED_USER_4
+#define DEBUG_LED    BDPIN_LED_USER_3
 
 
 extern dxl_mem_op3_t* p_dxl_mem;
-
-#define BUG   0  // debugging not active
-#define DEBUG 1  // debugging active
-static uint8_t debugging = BUG;
 
 static uint8_t debug_state = 0;
 
@@ -35,13 +32,33 @@ static bool dxl_debug_menu_loop(uint8_t ch);
 static void dxl_debug_menu_show_cmdline(void);
 static bool dxl_debug_menu_shwo_ctrltbl();
 
+static void dxl_debug_send_write_command(void);
+
+typedef struct {
+    uint8_t header1     = 0xFF;
+    uint8_t header2     = 0xFF;
+    uint8_t header3     = 0xFD;
+    uint8_t reserved    = 0x00;
+    uint8_t id          = 0;
+    uint8_t len_l       = 0x90;
+    uint8_t len_h       = 0x00;
+    uint8_t instruction = 0x03;
+    uint8_t addr_l      = 0;
+    uint8_t addr_h      = 0;
+    uint8_t data1       = 0;
+    uint8_t data2       = 0;
+    uint8_t data3       = 0;
+    uint8_t data4       = 0;
+    uint8_t crc_l       = 0;
+    uint8_t crc_h       = 0;
+} __attribute__((packed)) dxl_debug_write_packet_t;
 
 /*---------------------------------------------------------------------------
      TITLE   : dxl_debug_init
      WORK    :
 ---------------------------------------------------------------------------*/
 void dxl_debug_init(void) {
-    DEBUG_SERIAL.begin(57600);
+    DEBUG_SERIAL.begin(DEBUG_BAUD);
 }
 
 
@@ -54,18 +71,13 @@ void dxl_debug_loop(void) {
     uint8_t ch;
 
     /* Activate debug mode if dip switch active */
-    uint32_t dip = digitalReadFast(DEBUG_SWITCH) ? DEBUG : BUG;
+    uint8_t dip = digitalReadFast(DEBUG_SWITCH);
+    // show debug state with LED
+    digitalWriteFast(DEBUG_LED, dip);
+    // set state (dip switch pulled up)
+    debug_state = !dip;
 
-    if (debugging != dip) {
-        // update to selected mode
-        debugging = dip;
-
-        // show debug state with LED and high/low buzzer
-        tone(BDPIN_BUZZER, (dip == DEBUG ? 1000 : 500), 100);
-        digitalWriteFast(DEBUG_LED, (dip == DEBUG ? HIGH : LOW));
-    }
-
-    if (debugging && DEBUG_SERIAL.available()) {
+    if (DEBUG_SERIAL.available()) {
         ch = DEBUG_SERIAL.read();
 
 
@@ -95,8 +107,8 @@ void dxl_debug_menu_show_list(void) {
     DEBUG_SERIAL.println("m - show menu");
     DEBUG_SERIAL.println("d - show step");
     DEBUG_SERIAL.println("l - show control table");
+    DEBUG_SERIAL.println("s - send dynamixel write command");
     DEBUG_SERIAL.println("q - exit menu");
-    DEBUG_SERIAL.println("x - break debug loop");
     DEBUG_SERIAL.println("---------------------------");
 }
 
@@ -135,12 +147,10 @@ bool dxl_debug_menu_loop(uint8_t ch) {
             dxl_debug_menu_shwo_ctrltbl();
             break;
 
-        case 'x':
-            exit_menu   = true;
-            debug_state = 0;
+        case 's':
             DEBUG_SERIAL.println(" ");
-            DEBUG_SERIAL.println("breaking debug loop...");
-            DEBUG_SERIAL.println("loop will restart unless DIP1 is off");
+            dxl_debug_send_write_command();
+            break;
 
 
         default: exit_menu = true; break;
@@ -337,4 +347,72 @@ bool dxl_debug_menu_shwo_ctrltbl() {
     DEBUG_SERIAL.print(p_dxl_mem->IMU_Control);
     DEBUG_SERIAL.print("\t 0x");
     DEBUG_SERIAL.println(p_dxl_mem->IMU_Control, HEX);
+}
+
+/**
+ * @brief Send a dynamixel command to the specified ID
+ */
+void dxl_debug_send_write_command(void) {
+
+    // init variables for storage
+    int id;
+    int addr;
+    int data;
+
+    char buf[32];
+    buf[31] = '\0';  // just in case
+
+    DEBUG_SERIAL.println(
+        "Input format `<id> <addr> <data> ~` with sentinel. Command has 30 second timeout. Input wait is BLOCKING");
+
+    // read into buffer (blocking, very bad)
+    DEBUG_SERIAL.setTimeout(30 * 1000);  // set 30 second timeout
+    DEBUG_SERIAL.readBytesUntil('~', buf, 24);
+    /**/ DEBUG_SERIAL.println("[*] read bytes");
+    DEBUG_SERIAL.setTimeout(1000);  // reset to default
+    /**/ DEBUG_SERIAL.println("[*] reset timeout");
+
+    // fill vars
+    if (buf[1] == 'x') {  // hex
+        sscanf(buf, "%x %x %x ~", &id, &addr, &data);
+    }
+    else {  // decimal
+        sscanf(buf, "%d %d %d ~", &id, &addr, &data);
+    }
+
+    /**/ DEBUG_SERIAL.println("[*] filled vars");
+
+    // create instruction struct
+    dxl_debug_write_packet_t packet;
+
+    // fill in the blanks
+    packet.id     = (uint8_t) (id & 0xFF);
+    packet.addr_l = (uint8_t) (addr & 0x00FF);
+    packet.addr_h = (uint8_t) (addr & 0xFF00) >> 8;
+    packet.data1  = (uint8_t) (data & 0x000000FF);
+    packet.data2  = (uint8_t) (data & 0x0000FF00) >> 8;
+    packet.data3  = (uint8_t) (data & 0x00FF0000) >> 16;
+    packet.data4  = (uint8_t) (data & 0xFF000000) >> 24;
+
+    /**/ DEBUG_SERIAL.println("[*] filled packet");
+
+    // calculate CRC
+    uint16_t crc = 0;
+    /**/ DEBUG_SERIAL.println("Completed packet");
+    // pass each consective byte of the struct until we reach the CRC field
+    for (int i = 0; i < (sizeof(packet) - 2); ++i) {
+        /**/ DEBUG_SERIAL.printf("%x ", *((uint8_t*) (&packet + i)));
+
+        dxlUpdateCrc(&crc, *((uint8_t*) (&packet + i)));
+    }
+    // done, insert crc into struct
+    packet.crc_l = (crc & 0x00FF);
+    packet.crc_h = (crc & 0xFF00) >> 8;
+
+    /**/ DEBUG_SERIAL.printf("%x ", packet.crc_l);
+    /**/ DEBUG_SERIAL.printf("%x ", packet.crc_h);
+    /**/ DEBUG_SERIAL.println(" ");
+
+    // send packet
+    dxl_hw_write((uint8_t*) (&packet), sizeof(packet));
 }
