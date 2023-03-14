@@ -49,7 +49,6 @@ void dxl_debug_init(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 void dxl_debug_loop(void) {
-    static uint32_t tTime[16];
     uint8_t ch;
 
     /* Activate debug mode if dip switch active */
