@@ -335,60 +335,111 @@ bool dxl_debug_menu_shwo_ctrltbl() {
  */
 void dxl_debug_send_write_command(void) {
 
-    // init variables for storage
-    int id;
-    int addr;
-    int data;
+    // const uint8_t buf_size = 32;
+    // char buf[buf_size];
+    // buf[buf_size - 1] = '\0';  // just in case
 
-    char buf[32];
-    buf[31] = '\0';  // just in case
+    // DEBUG_SERIAL.print("Input format `<id> <addr> <data> ~` with sentinel. ");
+    // DEBUG_SERIAL.print("[!] Input wait is BLOCKING because im LAZY");
 
-    DEBUG_SERIAL.print("Input format `<id> <addr> <data> ~` with sentinel. ");
-    DEBUG_SERIAL.print("Command has 30 second timeout. Input wait is BLOCKING");
+    // // read into buffer (blocking, very bad)
+    // int i = 0;
+    // while (i < buf_size - 1) {
+    //     if (DEBUG_SERIAL.available()) {
+    //         uint8_t ch = DEBUG_SERIAL.read();
+    //         /**/ DEBUG_SERIAL.print(ch);
+    //         // handle sentinel value (or other possible EOF)
+    //         if (ch == '~' || ch == '\n' || ch == '\r') {
+    //             buf[i] = '\0';
+    //             break;
+    //         }
 
-    // read into buffer (blocking, very bad)
-    DEBUG_SERIAL.setTimeout(30 * 1000);  // set 30 second timeout
-    DEBUG_SERIAL.readBytesUntil('~', buf, 31);
-    /**/ DEBUG_SERIAL.println("[*] read bytes");
+    //         // otherwise insert
+    //         buf[i++] = ch;
+    //     }
+    // }
+
+    // /**/ DEBUG_SERIAL.println("[*] finished read");
+
+    // // fill vars
+    // char* end;
+    // int id   = strtol(buf, &end, 10);
+    // int addr = strtol(buf, &end, 10);
+    // int data = strtol(buf, &end, 10);
+
+    // /**/ DEBUG_SERIAL.println("[*] filled vars");
+
+    // // create instruction struct
+    // dxl_debug_write_packet_t packet;
+
+    // // fill in the blanks
+    // packet.id     = (uint8_t) (id & 0xFF);
+    // packet.addr_l = (uint8_t) (addr & 0x00FF);
+    // packet.addr_h = (uint8_t) (addr & 0xFF00) >> 8;
+    // packet.data1  = (uint8_t) (data & 0x000000FF);
+    // packet.data2  = (uint8_t) (data & 0x0000FF00) >> 8;
+    // packet.data3  = (uint8_t) (data & 0x00FF0000) >> 16;
+    // packet.data4  = (uint8_t) (data & 0xFF000000) >> 24;
+
+    // /**/ DEBUG_SERIAL.println("[*] filled packet");
+
+    // // calculate CRC
+    // uint16_t crc = 0;
+    // /**/ DEBUG_SERIAL.println("Completed packet");
+    // // pass each consective byte of the struct until we reach the CRC field
+    // for (int i = 0; i < (sizeof(packet) - 2); ++i) {
+    //     /**/ DEBUG_SERIAL.printf("%x ", *((uint8_t*) (&packet + i)));
+
+    //     dxlUpdateCrc(&crc, *((uint8_t*) (&packet + i)));
+    // }
+
+    DEBUG_SERIAL.setTimeout(10000);  // 10 second timeout
+    DEBUG_SERIAL.print("Enter values as decimal followed by any whitespace");
+    DEBUG_SERIAL.print("\nID> ");
+    int id = DEBUG_SERIAL.parseInt();
+    DEBUG_SERIAL.print("\nAddr> ");
+    int addr = DEBUG_SERIAL.parseInt();
+    DEBUG_SERIAL.print("\nData> ");
+    int data = DEBUG_SERIAL.parseInt();
     DEBUG_SERIAL.setTimeout(1000);  // reset to default
-    /**/ DEBUG_SERIAL.println("[*] reset timeout");
 
-    // fill vars
-    sscanf(buf, "%d %d %d ~", &id, &addr, &data);
-
-    /**/ DEBUG_SERIAL.println("[*] filled vars");
-
-    // create instruction struct
-    dxl_debug_write_packet_t packet;
-
+    uint8_t packet[] = {0xFF, 0xFF, 0xFD, 0x00, 0, 0x90, 0x00, 0x30, 0, 0, 0, 0, 0, 0, 0, 0};
+    enum blanks {
+        ID     = 4,
+        ADDR_L = 8,
+        ADDR_H = 9,
+        DATA1  = 10,
+        DATA2  = 11,
+        DATA3  = 12,
+        DATA4  = 13,
+        CRC_L  = 14,
+        CRC_H  = 15
+    };
     // fill in the blanks
-    packet.id     = (uint8_t) (id & 0xFF);
-    packet.addr_l = (uint8_t) (addr & 0x00FF);
-    packet.addr_h = (uint8_t) (addr & 0xFF00) >> 8;
-    packet.data1  = (uint8_t) (data & 0x000000FF);
-    packet.data2  = (uint8_t) (data & 0x0000FF00) >> 8;
-    packet.data3  = (uint8_t) (data & 0x00FF0000) >> 16;
-    packet.data4  = (uint8_t) (data & 0xFF000000) >> 24;
-
-    /**/ DEBUG_SERIAL.println("[*] filled packet");
+    packet[ID]     = (uint8_t) (id & 0xFF);
+    packet[ADDR_L] = (uint8_t) (addr & 0x00FF);
+    packet[ADDR_H] = (uint8_t) (addr & 0xFF00) >> 8;
+    packet[DATA1]  = (uint8_t) (data & 0x000000FF);
+    packet[DATA2]  = (uint8_t) (data & 0x0000FF00) >> 8;
+    packet[DATA3]  = (uint8_t) (data & 0x00FF0000) >> 16;
+    packet[DATA4]  = (uint8_t) (data & 0xFF000000) >> 24;
 
     // calculate CRC
     uint16_t crc = 0;
-    /**/ DEBUG_SERIAL.println("Completed packet");
+
     // pass each consective byte of the struct until we reach the CRC field
     for (int i = 0; i < (sizeof(packet) - 2); ++i) {
-        /**/ DEBUG_SERIAL.printf("%x ", *((uint8_t*) (&packet + i)));
-
-        dxlUpdateCrc(&crc, *((uint8_t*) (&packet + i)));
+        /**/ DEBUG_SERIAL.printf("%x ", packet[i]);
+        dxlUpdateCrc(&crc, packet[i]);
     }
     // done, insert crc into struct
-    packet.crc_l = (crc & 0x00FF);
-    packet.crc_h = (crc & 0xFF00) >> 8;
+    packet[CRC_L] = (crc & 0x00FF);
+    packet[CRC_H] = (crc & 0xFF00) >> 8;
 
-    /**/ DEBUG_SERIAL.printf("%x ", packet.crc_l);
-    /**/ DEBUG_SERIAL.printf("%x ", packet.crc_h);
+    /**/ DEBUG_SERIAL.printf("%x ", packet[CRC_L]);
+    /**/ DEBUG_SERIAL.printf("%x ", packet[CRC_L]);
     /**/ DEBUG_SERIAL.println(" ");
 
     // send packet
-    dxl_hw_write((uint8_t*) (&packet), sizeof(packet));
+    dxl_hw_write(packet, sizeof(packet));
 }
