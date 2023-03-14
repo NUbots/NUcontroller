@@ -36,7 +36,7 @@ typedef struct {
     uint8_t header3     = 0xFD;
     uint8_t reserved    = 0x00;
     uint8_t id          = 0;
-    uint8_t len_l       = 0x90;
+    uint8_t len_l       = 0x09;
     uint8_t len_h       = 0x00;
     uint8_t instruction = 0x03;
     uint8_t addr_l      = 0;

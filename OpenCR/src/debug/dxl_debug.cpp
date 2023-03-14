@@ -403,7 +403,7 @@ void dxl_debug_send_write_command(void) {
     int data = DEBUG_SERIAL.parseInt();
     DEBUG_SERIAL.setTimeout(1000);  // reset to default
 
-    uint8_t packet[] = {0xFF, 0xFF, 0xFD, 0x00, 0, 0x90, 0x00, 0x30, 0, 0, 0, 0, 0, 0, 0, 0};
+    uint8_t packet[] = {0xFF, 0xFF, 0xFD, 0x00, 0, 0x09, 0x00, 0x03, 0, 0, 0, 0, 0, 0, 0, 0};
     enum blanks {
         ID     = 4,
         ADDR_L = 8,
