@@ -28,4 +28,6 @@ extern "C" {
 void dxl_debug_init(void);
 void dxl_debug_loop(void);
 
+extern void dxlUpdateCrc(uint16_t* p_crc_cur, uint8_t data_in);
+
 #endif
