@@ -65,9 +65,7 @@ uint32_t dxl_hw_begin(uint8_t baud) {
     }
 
 
-    //DXL_PORT.begin(Baudrate);
-    // Hardcode 1M because macro fails
-    DXL_PORT.begin(1000000);
+    DXL_PORT.begin(Baudrate);
 
     return Baudrate;
 }
