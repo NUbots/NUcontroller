@@ -121,7 +121,7 @@ void dxlAddInstFunc(dxl_t* p_packet, uint8_t inst, dxl_error_t (*func)(dxl_t* p_
  *  the passed packet
  * @param p_packet Note that this is *not* a packet as per the documentation,
  *  but rather p_packet->tx.data[] (or rx) is the actual packet
-*/
+ */
 dxl_error_t dxlProcessInst(dxl_t* p_packet) {
     dxl_error_t ret = DXL_RET_OK;
     uint8_t inst;
@@ -157,7 +157,9 @@ dxl_error_t dxlProcessInst(dxl_t* p_packet) {
         case INST_BULK_WRITE: func = (dxl_error_t(*)(dxl_t*)) p_packet->inst_func.bulk_write; break;
     }
 
-
+    // call the function corresponding to the packet we recieved if:
+    // - the function is defined AND
+    // - the packet ID belongs to the opencr OR is the global id
     if (func != NULL) {
         if (p_packet->rx.id != dxlGetId(p_packet) && p_packet->rx.id != DXL_GLOBAL_ID) {
             ret = DXL_RET_ERROR_NO_ID;
@@ -172,8 +174,8 @@ dxl_error_t dxlProcessInst(dxl_t* p_packet) {
 
 /**
  * @brief starts serial communication at a specified baud rate
- * @param p_packet 
-*/
+ * @param p_packet
+ */
 bool dxlOpenPort(dxl_t* p_packet, uint8_t ch, uint32_t baud) {
     bool ret = true;
 
@@ -453,8 +455,8 @@ uint16_t dxlAddStuffing(uint8_t* p_data, uint16_t length) {
 
 /**
  * @brief Makes a status packet according to the spec: https://emanual.robotis.com/docs/en/dxl/protocol2/#status-packet
- *  
-*/
+ *
+ */
 dxl_error_t dxlMakePacketStatus(dxl_t* p_packet, uint8_t id, uint8_t error, uint8_t* p_data, uint16_t length) {
     dxl_error_t ret = DXL_RET_OK;
     uint16_t i      = 0;
