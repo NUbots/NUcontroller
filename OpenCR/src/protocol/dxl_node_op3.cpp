@@ -11,10 +11,10 @@
 
 #include <EEPROM.h>
 
-#include "dxl.h"
 #include "../debug/dxl_debug.h"
 #include "../hardware/dxl_hw.h"
 #include "../hardware/dxl_hw_op3.h"
+#include "dxl.h"
 
 
 #define RANGE_CHECK(addr, x) dxl_node_check_range(addr, (uint32_t) & (x), sizeof(x))
@@ -78,6 +78,11 @@ void dxl_node_op3_init(void) {
         EEPROM[2]                   = mem.data[2];
     }
 
+    // Fixes baud not updating if macro is updated
+    if (p_dxl_mem->Baud != DXL_NODE_OP3_BAUD) {
+        p_dxl_mem->Baud = DXL_NODE_OP3_BAUD;
+        EEPROM[4]       = mem.data[4];
+    }
 
     p_dxl_mem->IMU_Control = 0;
 
