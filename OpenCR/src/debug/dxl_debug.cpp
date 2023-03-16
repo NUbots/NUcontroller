@@ -411,10 +411,16 @@ void dxl_debug_send_write_command(void) {
     packet[CRC_L] = (crc & 0x00FF);
     packet[CRC_H] = (crc & 0xFF00) >> 8;
 
-    // print full packet as hex bytes
-    for (int i = 0; i < sizeof(packet); i++)
+
+    // create container packet and fill
+    dxl_t container;
+    for (int i = 0; i < sizeof(packet); i++) {
+        container.tx.data[i] = packet[i];
+        // print full packet as hex bytes
         DEBUG_SERIAL.printf("%02x ", packet[i]);
+    }
+    container.tx.packet_length = sizeof(packet);
 
     // send packet
-    dxl_hw_write(packet, sizeof(packet));
+    dxlTxPacket(&container);
 }
