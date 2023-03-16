@@ -340,9 +340,9 @@ dxl_error_t dxlRxPacketVer2_0(dxl_t* p_packet, uint8_t data_in) {
 
             if (p_packet->rx.crc_received == p_packet->rx.crc) {
                 p_packet->rx.cmd   = p_packet->rx.data[0];
-                p_packet->rx.error = p_packet->rx.data[1];
 
                 if (p_packet->rx.data[0] == DXL_INST_STATUS) {
+                    p_packet->rx.error = p_packet->rx.data[1];
                     p_packet->rx.p_param      = &p_packet->rx.data[2];
                     p_packet->rx.param_length = p_packet->rx.packet_length - 4;
                     ret                       = DXL_RET_RX_STATUS;
