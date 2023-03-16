@@ -212,8 +212,8 @@ dxl_error_t dxlRxPacket(dxl_t* p_packet) {
             data = dxlRxRead(p_packet);
             ret  = dxlRxPacketVer2_0(p_packet, data);
 
-            // Serial.print("rx data : ");
-            // Serial.println(data);
+            Serial.print("rx data : ");
+            Serial.println(data);
             if (ret != DXL_RET_EMPTY) {
                 break;
             }
@@ -526,16 +526,15 @@ dxl_error_t dxlTxPacket(dxl_t* p_packet) {
 
     dxl_hw_write(p_packet->tx.data, p_packet->tx.packet_length);
 
-    /*
-      for(int i=0; i<p_packet->tx.packet_length; i++)
-      {
+
+    for (int i = 0; i < p_packet->tx.packet_length; i++) {
 
         Serial.printf("%02X ", p_packet->tx.data[i]);
 
-        //Serial.println(p_packet->tx.data[i], HEX);
-      }
-      Serial.println(" ");
-    */
+        // Serial.println(p_packet->tx.data[i], HEX);
+    }
+    Serial.println(" ");
+
 
     return ret;
 }

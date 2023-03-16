@@ -236,17 +236,17 @@ void dxl_process_packet() {
                 if (dxl_sp.pre_id == dxl_sp.rx.id) {
                     dxlTxPacket(&dxl_sp);
                     process_state = DXL_PROCESS_INST;
-                    // Serial.println(" Bulk Read out");
+                    Serial.println(" Bulk Read out");
                 }
                 else {
-                    // Serial.print(" in ");
-                    // Serial.println(dxl_sp.rx.id, HEX);
+                    Serial.print(" in ");
+                    Serial.println(dxl_sp.rx.id, HEX);
                 }
             }
             else {
                 if (micros() - pre_time >= 50000) {
                     process_state = DXL_PROCESS_INST;
-                    // Serial.println(" Bulk Read timeout");
+                    Serial.println(" Bulk Read timeout");
                 }
             }
             break;
@@ -585,7 +585,7 @@ dxl_error_t read(dxl_t* p_dxl) {
 
     ret = dxlTxPacketStatus(p_dxl, p_dxl->id, 0, data, length);
 
-    // Serial.println(" Read");
+    Serial.println(" Read");
 
     return ret;
 }
@@ -632,7 +632,7 @@ dxl_error_t write(dxl_t* p_dxl) {
 
     processWrite(addr, p_data, length);
 
-    // Serial.println(" write");
+    Serial.println(" write");
     return ret;
 }
 
@@ -695,7 +695,7 @@ dxl_error_t sync_read(dxl_t* p_dxl) {
         }
     }
 
-    // Serial.println(" Sync Read");
+    Serial.println(" Sync Read");
 
     return ret;
 }
@@ -710,7 +710,7 @@ dxl_error_t sync_write(dxl_t* p_dxl) {
     uint16_t index;
 
     if (p_dxl->rx.id != DXL_GLOBAL_ID) {
-        // Serial.println(" Sync Write Err 0");
+        Serial.println(" Sync Write Err 0");
         return DXL_RET_EMPTY;
     }
 
@@ -718,19 +718,19 @@ dxl_error_t sync_write(dxl_t* p_dxl) {
     length = (p_dxl->rx.p_param[3] << 8) | p_dxl->rx.p_param[2];
 
 
-    // Serial.print(" Sync Write in : ");
-    // Serial.print(addr);
-    // Serial.print(" ");
-    // Serial.println(length);
+    Serial.print(" Sync Write in : ");
+    Serial.print(addr);
+    Serial.print(" ");
+    Serial.println(length);
 
     if (p_dxl->rx.param_length < (4 + length + 1)) {
         // dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
-        // Serial.println(" Sync Write Err 1");
+        Serial.println(" Sync Write Err 1");
         return DXL_RET_ERROR_LENGTH;
     }
     if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
         // dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
-        // Serial.println(" Sync Write Err 2");
+        Serial.println(" Sync Write Err 2");
         return DXL_RET_ERROR_LENGTH;
     }
 
@@ -747,7 +747,7 @@ dxl_error_t sync_write(dxl_t* p_dxl) {
         else {
             if (p_data[0] == p_dxl->id) {
                 processWrite(addr, &p_data[1], length);
-                // Serial.println(" Sync Write out");
+                Serial.println(" Sync Write out");
                 break;
             }
 
@@ -778,7 +778,7 @@ dxl_error_t bulk_read(dxl_t* p_dxl) {
 
 
     if (p_dxl->rx.param_length < 5 || (p_dxl->rx.param_length % 5) != 0) {
-        // Serial.print(" DXL_RET_ERROR_LENGTH ");
+        Serial.print(" DXL_RET_ERROR_LENGTH ");
         return DXL_RET_ERROR_LENGTH;
     }
 
@@ -792,8 +792,8 @@ dxl_error_t bulk_read(dxl_t* p_dxl) {
         length = (p_data[4] << 8) | p_data[3];
 
 
-        // Serial.print(" bulk in id ");
-        // Serial.println(p_data[0], HEX);
+        Serial.print(" bulk in id ");
+        Serial.println(p_data[0], HEX);
 
         if (p_data[0] == p_dxl->id) {
             p_dxl->current_id = p_dxl->id;
@@ -857,11 +857,11 @@ dxl_error_t bulk_write(dxl_t* p_dxl) {
             }
             processWrite(addr, &p_dxl->rx.p_param[index], length);
 
-            // Serial.print(addr);
-            // Serial.print(" ");
-            // Serial.print(length);
-            // Serial.print(" ");
-            // Serial.println(" bulk write ");
+            Serial.print(addr);
+            Serial.print(" ");
+            Serial.print(length);
+            Serial.print(" ");
+            Serial.println(" bulk write ");
             break;
         }
         index += length;
