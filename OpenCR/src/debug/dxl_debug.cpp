@@ -416,8 +416,6 @@ void dxl_debug_send_write_command(void) {
     dxl_t container;
     for (int i = 0; i < sizeof(packet); i++) {
         container.tx.data[i] = packet[i];
-        // print full packet as hex bytes
-        DEBUG_SERIAL.printf("%02x ", packet[i]);
     }
     container.tx.packet_length = sizeof(packet);
 
