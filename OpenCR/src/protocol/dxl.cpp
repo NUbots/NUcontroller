@@ -160,11 +160,11 @@ dxl_error_t dxlProcessInst(dxl_t* p_packet) {
     // - the function is defined AND
     // - the packet ID belongs to the opencr OR is the global id
     if (func != NULL) {
-        if (p_packet->rx.id != dxlGetId(p_packet) && p_packet->rx.id != DXL_GLOBAL_ID) {
-            ret = DXL_RET_ERROR_NO_ID;
+        if (p_packet->rx.id == dxlGetId(p_packet) || p_packet->rx.id != DXL_GLOBAL_ID) {
+            ret = func(p_packet);
         }
         else {
-            ret = func(p_packet);
+            ret = DXL_RET_ERROR_NO_ID;
         }
     }
 
@@ -341,9 +341,9 @@ dxl_error_t dxlRxPacketVer2_0(dxl_t* p_packet, uint8_t data_in) {
 
             if (p_packet->rx.crc_received == p_packet->rx.crc) {
                 p_packet->rx.cmd   = p_packet->rx.data[0];
-                p_packet->rx.error = p_packet->rx.data[1];
 
                 if (p_packet->rx.data[0] == DXL_INST_STATUS) {
+                    p_packet->rx.error = p_packet->rx.data[1];
                     p_packet->rx.p_param      = &p_packet->rx.data[2];
                     p_packet->rx.param_length = p_packet->rx.packet_length - 4;
                     ret                       = DXL_RET_RX_STATUS;
