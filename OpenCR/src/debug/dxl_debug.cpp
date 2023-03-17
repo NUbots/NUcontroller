@@ -17,7 +17,7 @@
 
 
 #define DEBUG_SERIAL Serial
-#define DEBUG_BAUD   57600
+#define DEBUG_BAUD   115200
 #define DEBUG_SWITCH BDPIN_DIP_SW_1
 #define DEBUG_LED    BDPIN_LED_USER_3
 
