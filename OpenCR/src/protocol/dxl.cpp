@@ -210,8 +210,8 @@ dxl_error_t dxlRxPacket(dxl_t* p_packet) {
             data = dxlRxRead(p_packet);
             ret  = dxlRxPacketVer2_0(p_packet, data);
 
-            Serial.print("rx data : ");
-            Serial.println(data);
+            Serial.printf("rx data : %02x %d\n", data, data);
+
             if (ret != DXL_RET_EMPTY) {
                 break;
             }
