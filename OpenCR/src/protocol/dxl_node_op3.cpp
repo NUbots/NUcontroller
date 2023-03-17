@@ -661,10 +661,6 @@ dxl_error_t sync_read(dxl_t* p_dxl) {
         // dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
-    if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
-        // dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
-        return DXL_RET_ERROR_LENGTH;
-    }
 
 
     p_dxl->pre_id     = 0xFF;
@@ -679,8 +675,15 @@ dxl_error_t sync_read(dxl_t* p_dxl) {
         p_dxl->pre_id = p_data[i];
     }
 
-
+    // If packet ID matches the openCR ID
     if (p_dxl->current_id == p_dxl->id) {
+
+        // Only error if the packet is for OpenCR
+        if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
+            // dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
+            return DXL_RET_ERROR;
+        }
+
         processRead(addr, data, length);
 
 
