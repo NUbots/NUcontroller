@@ -719,7 +719,7 @@ dxl_error_t sync_write(dxl_t* p_dxl) {
 
 
     Serial.print(" Sync Write in : ");
-    Serial.print(addr);
+    Serial.print(addr, HEX);
     Serial.print(" ");
     Serial.println(length);
 
