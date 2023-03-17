@@ -340,10 +340,10 @@ dxl_error_t dxlRxPacketVer2_0(dxl_t* p_packet, uint8_t data_in) {
             p_packet->rx.packet_length -= stuff_length;
 
             if (p_packet->rx.crc_received == p_packet->rx.crc) {
-                p_packet->rx.cmd   = p_packet->rx.data[0];
+                p_packet->rx.cmd = p_packet->rx.data[0];
 
                 if (p_packet->rx.data[0] == DXL_INST_STATUS) {
-                    p_packet->rx.error = p_packet->rx.data[1];
+                    p_packet->rx.error        = p_packet->rx.data[1];
                     p_packet->rx.p_param      = &p_packet->rx.data[2];
                     p_packet->rx.param_length = p_packet->rx.packet_length - 4;
                     ret                       = DXL_RET_RX_STATUS;
@@ -503,6 +503,13 @@ dxl_error_t dxlMakePacketStatus(dxl_t* p_packet, uint8_t id, uint8_t error, uint
 
     p_packet->tx.packet_length = packet_length + 7;
 
+    Serial.print("stat pkt : ");
+    for (int i = 0; i < p_packet->tx.packet_length; i++) {
+
+        Serial.printf("%02x ", p_packet->tx.data[i]);
+    }
+    Serial.println(" ");
+
     return ret;
 }
 
@@ -526,15 +533,12 @@ dxl_error_t dxlTxPacket(dxl_t* p_packet) {
 
     dxl_hw_write(p_packet->tx.data, p_packet->tx.packet_length);
 
-
+    Serial.print(" tx data : ");
     for (int i = 0; i < p_packet->tx.packet_length; i++) {
 
-        Serial.printf("%02X ", p_packet->tx.data[i]);
-
-        // Serial.println(p_packet->tx.data[i], HEX);
+        Serial.printf("%02x ", p_packet->tx.data[i]);
     }
     Serial.println(" ");
-
 
     return ret;
 }
