@@ -177,7 +177,7 @@ void dxl_node_op3_loop(void) {
 
 
 void dxl_process_packet() {
-    static uint8_t process_state = 0;
+    static uint8_t process_state = DXL_PROCESS_INST;
     dxl_error_t dxl_ret;
     static uint32_t pre_time;
 
@@ -186,10 +186,14 @@ void dxl_process_packet() {
         //-- INST
         //
         case DXL_PROCESS_INST:
+            // get an incoming packet
             dxl_ret = dxlRxPacket(&dxl_sp);
-
+            // if the packet was an instruction packet
             if (dxl_ret == DXL_RET_RX_INST) {
+                // process the instruction for basic instructions
                 dxl_ret = dxlProcessInst(&dxl_sp);
+                // if the instruction was a broadcast ping or bulk read then
+                // it needs special processing
 
                 if (dxl_ret == DXL_RET_PROCESS_BROAD_PING) {
                     dxl_sp.current_id = 1;
@@ -206,48 +210,64 @@ void dxl_process_packet() {
 
 
         //-- BROAD_PING
-        //
+        // waits to return the ping until either the ID before us returned, or
+        // until we poll through all IDs waiting 3ms on each ID.
         case DXL_PROCESS_BROAD_PING:
+            // Recieve a packet if there's one waiting
             dxl_ret = dxlRxPacket(&dxl_sp);
-
+            // If it's a status packet, then that's almost certainly a ping from
+            // a device before us in the queue
             if (dxl_ret == DXL_RET_RX_STATUS) {
+                // Increment the waiting ID by one (because that's the next packet
+                // we're expecting)
                 dxl_sp.current_id = dxl_sp.rx.id + 1;
             }
-            else {
-                if (micros() - pre_time >= 3000) {
-                    pre_time = micros();
-                    dxl_sp.current_id++;
-                }
+            // If we didn't get a packet in the last 3 ms then increment
+            else if (micros() - pre_time >= 3000) {
+                pre_time = micros();
+                dxl_sp.current_id++;
             }
 
+            // Once we reach our device ID (dxl_sp.id)
             if (dxl_sp.current_id == dxl_sp.id) {
                 dxlTxPacket(&dxl_sp);
                 process_state = DXL_PROCESS_INST;
             }
+            
             break;
 
         //-- BROAD_READ
-        //
+        // same story here as for ping, wait for other devices to return before
+        // we do.
         case DXL_PROCESS_BROAD_READ:
+            // Recieve a packet if there's one waiting
             dxl_ret = dxlRxPacket(&dxl_sp);
-
+            // If it's a status packet, then that's almost certainly a the read
+            // response from a device before us
             if (dxl_ret == DXL_RET_RX_STATUS) {
                 pre_time = micros();
+                // If we were the second last ID then we're now first in line
+
+                /// @warning I think this will only work for a maximum of 2
+                /// messages because pre_id is only ever set for the original
+                /// bulk read message.
+                /// But we should never really have to respond to a bulk read
+                /// from the openCR so fuck it.
                 if (dxl_sp.pre_id == dxl_sp.rx.id) {
                     dxlTxPacket(&dxl_sp);
                     process_state = DXL_PROCESS_INST;
                     Serial.println(" Bulk Read out");
                 }
+                // otherwise let it loop over
                 else {
                     Serial.print(" in ");
                     Serial.println(dxl_sp.rx.id, HEX);
                 }
             }
-            else {
-                if (micros() - pre_time >= 50000) {
-                    process_state = DXL_PROCESS_INST;
-                    Serial.println(" Bulk Read timeout");
-                }
+            // If we havent had a status packet in 50ms then timeout
+            else if (micros() - pre_time >= 50000) {
+                process_state = DXL_PROCESS_INST;
+                Serial.println(" Bulk Read timeout");
             }
             break;
 
@@ -535,6 +555,8 @@ dxl_error_t ping(dxl_t* p_dxl) {
     data[1] = (p_dxl_mem->Model_Number >> 8) & 0xFF;
     data[2] = p_dxl_mem->Firmware_Version;
 
+    // If the packet is broadcast ID 0xFE then we have to wait our turn before
+    // returning a status packet (so they arrive back in order).
     if (p_dxl->rx.id == DXL_GLOBAL_ID) {
         ret = dxlMakePacketStatus(p_dxl, p_dxl->id, 0, data, 3);
 
@@ -542,7 +564,8 @@ dxl_error_t ping(dxl_t* p_dxl) {
             ret = DXL_RET_PROCESS_BROAD_PING;
         }
     }
-    else {
+    // If it's specifically for us, then just send it
+    else if (p_dxl->rx.id == DXL_NODE_OP3_ID) {
         ret = dxlTxPacketStatus(p_dxl, p_dxl->id, 0, data, 3);
     }
 
@@ -798,14 +821,18 @@ dxl_error_t bulk_read(dxl_t* p_dxl) {
         Serial.print(" bulk in id ");
         Serial.println(p_data[0], HEX);
 
+        // If our ID is mentioned
         if (p_data[0] == p_dxl->id) {
+            // log it for later
             p_dxl->current_id = p_dxl->id;
-            break;
         }
-        p_dxl->pre_id = p_data[0];
+        // otherwise cache the last processed ID
+        else {
+            p_dxl->pre_id = p_data[0];
+        }
     }
 
-
+    // If one of the IDs was ours
     if (p_dxl->current_id == p_dxl->id) {
         if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
             return DXL_RET_ERROR_LENGTH;
@@ -814,11 +841,13 @@ dxl_error_t bulk_read(dxl_t* p_dxl) {
 
         processRead(addr, data, length);
 
-
+        // if our ID was the first, or only ID
         if (p_dxl->pre_id == 0xFF) {
             ret = dxlTxPacketStatus(p_dxl, p_dxl->id, 0, data, length);
         }
+        // otherwise make a status packet and wait our turn
         else {
+            // this fills the tx buffer for when we're ready
             ret = dxlMakePacketStatus(p_dxl, p_dxl->id, 0, data, length);
             if (ret == DXL_RET_OK) {
                 ret = DXL_RET_PROCESS_BROAD_READ;
