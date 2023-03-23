@@ -177,7 +177,7 @@ void dxl_node_op3_loop(void) {
 
 
 void dxl_process_packet() {
-    static uint8_t process_state = 0;
+    static uint8_t process_state = DXL_PROCESS_INST;
     dxl_error_t dxl_ret;
     static uint32_t pre_time;
 
@@ -186,10 +186,14 @@ void dxl_process_packet() {
         //-- INST
         //
         case DXL_PROCESS_INST:
+            // get an incoming packet
             dxl_ret = dxlRxPacket(&dxl_sp);
-
+            // if the packet was an instruction packet
             if (dxl_ret == DXL_RET_RX_INST) {
+                // process the instruction for basic instructions
                 dxl_ret = dxlProcessInst(&dxl_sp);
+                // if the instruction was a broadcast ping or bulk read then
+                // it needs special processing
 
                 if (dxl_ret == DXL_RET_PROCESS_BROAD_PING) {
                     dxl_sp.current_id = 1;
@@ -206,20 +210,24 @@ void dxl_process_packet() {
 
 
         //-- BROAD_PING
-        //
+        // waits to return the ping until either the ID before us returned, or
+        // until we poll through all IDs waiting 3ms on each ID.
         case DXL_PROCESS_BROAD_PING:
+            // Recieve a packet if there's one waiting
             dxl_ret = dxlRxPacket(&dxl_sp);
-
+            // If it's a status packet, then that's almost certainly a ping from
+            // a device before us in the queue
             if (dxl_ret == DXL_RET_RX_STATUS) {
+                // Increment the waiting ID by one (because that's the next packet
+                // we're expecting)
                 dxl_sp.current_id = dxl_sp.rx.id + 1;
             }
-            else {
-                if (micros() - pre_time >= 3000) {
-                    pre_time = micros();
-                    dxl_sp.current_id++;
-                }
+            // If we didn't get a packet in the last 3 ms then increment
+            else if (micros() - pre_time >= 3000) {
+                pre_time = micros();
+                dxl_sp.current_id++;
             }
-
+            // Once we reach our device ID (dxl_sp.id)
             if (dxl_sp.current_id == dxl_sp.id) {
                 dxlTxPacket(&dxl_sp);
                 process_state = DXL_PROCESS_INST;
@@ -535,6 +543,8 @@ dxl_error_t ping(dxl_t* p_dxl) {
     data[1] = (p_dxl_mem->Model_Number >> 8) & 0xFF;
     data[2] = p_dxl_mem->Firmware_Version;
 
+    // If the packet is broadcast ID 0xFE then we have to wait our turn before
+    // returning a status packet (so they arrive back in order).
     if (p_dxl->rx.id == DXL_GLOBAL_ID) {
         ret = dxlMakePacketStatus(p_dxl, p_dxl->id, 0, data, 3);
 
@@ -542,7 +552,8 @@ dxl_error_t ping(dxl_t* p_dxl) {
             ret = DXL_RET_PROCESS_BROAD_PING;
         }
     }
-    else {
+    // If it's specifically for us, then just send it
+    else if (p_dxl->rx.id == DXL_NODE_OP3_ID) {
         ret = dxlTxPacketStatus(p_dxl, p_dxl->id, 0, data, 3);
     }
 

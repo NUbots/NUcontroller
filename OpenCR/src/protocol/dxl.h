@@ -151,9 +151,11 @@ typedef struct {
     int8_t dxlport_ch;
     uint32_t dxlport_baud;
     uint8_t rx_state;
-    uint8_t id;
-    uint8_t current_id;
-    uint8_t pre_id;
+    // IDs we care about while processing packets, because some intrustions
+    // require that we wait our turn (in sequential ID order) before returning.
+    uint8_t id;         // ID of the OpenCR
+    uint8_t current_id; // ID of packet we're waiting on
+    uint8_t pre_id;     // ID of the last packet we processed
 
     uint32_t prev_time;
     uint8_t header_cnt;
