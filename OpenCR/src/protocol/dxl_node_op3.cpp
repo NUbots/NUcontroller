@@ -233,7 +233,7 @@ void dxl_process_packet() {
                 dxlTxPacket(&dxl_sp);
                 process_state = DXL_PROCESS_INST;
             }
-            
+
             break;
 
         //-- BROAD_READ
@@ -256,18 +256,18 @@ void dxl_process_packet() {
                 if (dxl_sp.pre_id == dxl_sp.rx.id) {
                     dxlTxPacket(&dxl_sp);
                     process_state = DXL_PROCESS_INST;
-                    Serial.println(" Bulk Read out");
+                    /// Serial.println(" Bulk Read out");
                 }
                 // otherwise let it loop over
                 else {
-                    Serial.print(" in ");
-                    Serial.println(dxl_sp.rx.id, HEX);
+                    /// Serial.print(" in ");
+                    /// Serial.println(dxl_sp.rx.id, HEX);
                 }
             }
             // If we havent had a status packet in 50ms then timeout
             else if (micros() - pre_time >= 50000) {
                 process_state = DXL_PROCESS_INST;
-                Serial.println(" Bulk Read timeout");
+                /// Serial.println(" Bulk Read timeout");
             }
             break;
 
@@ -529,6 +529,7 @@ void processRead(uint16_t addr, uint8_t* p_data, uint16_t length) {
 void processWrite(uint16_t addr, uint8_t* p_data, uint16_t length) {
     uint32_t i;
 
+    /// Serial.printf("Writing to memory address 0x%02x (%d): ", addr, addr);
 
     for (i = 0; i < length; i++) {
         if (mem.attr[addr] & DXL_MEM_ATTR_WO || mem.attr[addr] & DXL_MEM_ATTR_RW) {
@@ -536,9 +537,11 @@ void processWrite(uint16_t addr, uint8_t* p_data, uint16_t length) {
             if (mem.attr[addr] & DXL_MEM_ATTR_EEPROM) {
                 EEPROM[addr] = mem.data[addr];
             }
+            /// Serial.printf("%02x ", p_data[i]);
         }
         addr++;
     }
+    /// Serial.println(" ");
 }
 
 
@@ -608,7 +611,7 @@ dxl_error_t read(dxl_t* p_dxl) {
 
     ret = dxlTxPacketStatus(p_dxl, p_dxl->id, 0, data, length);
 
-    Serial.println(" Read");
+    /// Serial.println(" Read");
 
     return ret;
 }
@@ -629,6 +632,8 @@ dxl_error_t write(dxl_t* p_dxl) {
         return DXL_RET_EMPTY;
     }
 
+    /// Serial.print(" write");
+
     addr   = (p_dxl->rx.p_param[1] << 8) | p_dxl->rx.p_param[0];
     p_data = &p_dxl->rx.p_param[2];
 
@@ -636,26 +641,29 @@ dxl_error_t write(dxl_t* p_dxl) {
         length = p_dxl->rx.param_length - 2;
     }
     else {
+        /// Serial.println(" error");
         dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
 
     if (addr >= sizeof(dxl_mem_op3_t)) {
+        /// Serial.println(" error");
         dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
     if (length > DXL_MAX_BUFFER - 10) {
+        /// Serial.println(" error");
         dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
 
+    /// Serial.println(" success");
 
     dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_NONE, NULL, 0);
 
 
     processWrite(addr, p_data, length);
 
-    Serial.println(" write");
     return ret;
 }
 
@@ -721,7 +729,7 @@ dxl_error_t sync_read(dxl_t* p_dxl) {
         }
     }
 
-    Serial.println(" Sync Read");
+    /// Serial.println(" Sync Read");
 
     return ret;
 }
@@ -736,7 +744,7 @@ dxl_error_t sync_write(dxl_t* p_dxl) {
     uint16_t index;
 
     if (p_dxl->rx.id != DXL_GLOBAL_ID) {
-        Serial.println(" Sync Write Err 0");
+        /// Serial.println(" Sync Write Err 0");
         return DXL_RET_EMPTY;
     }
 
@@ -744,19 +752,19 @@ dxl_error_t sync_write(dxl_t* p_dxl) {
     length = (p_dxl->rx.p_param[3] << 8) | p_dxl->rx.p_param[2];
 
 
-    Serial.print(" Sync Write in : ");
-    Serial.print(addr, HEX);
-    Serial.print(" ");
-    Serial.println(length);
+    /// Serial.print(" Sync Write in : ");
+    /// Serial.print(addr, HEX);
+    /// Serial.print(" ");
+    /// Serial.println(length);
 
     if (p_dxl->rx.param_length < (4 + length + 1)) {
         // dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
-        Serial.println(" Sync Write Err 1");
+        /// Serial.println(" Sync Write Err 1");
         return DXL_RET_ERROR_LENGTH;
     }
     if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
         // dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
-        Serial.println(" Sync Write Err 2");
+        /// Serial.println(" Sync Write Err 2");
         return DXL_RET_ERROR_LENGTH;
     }
 
@@ -773,7 +781,7 @@ dxl_error_t sync_write(dxl_t* p_dxl) {
         else {
             if (p_data[0] == p_dxl->id) {
                 processWrite(addr, &p_data[1], length);
-                Serial.println(" Sync Write out");
+                /// Serial.println(" Sync Write out");
                 break;
             }
 
@@ -804,7 +812,7 @@ dxl_error_t bulk_read(dxl_t* p_dxl) {
 
 
     if (p_dxl->rx.param_length < 5 || (p_dxl->rx.param_length % 5) != 0) {
-        Serial.print(" DXL_RET_ERROR_LENGTH ");
+        /// Serial.print(" DXL_RET_ERROR_LENGTH ");
         return DXL_RET_ERROR_LENGTH;
     }
 
@@ -818,8 +826,8 @@ dxl_error_t bulk_read(dxl_t* p_dxl) {
         length = (p_data[4] << 8) | p_data[3];
 
 
-        Serial.print(" bulk in id ");
-        Serial.println(p_data[0], HEX);
+        /// Serial.print(" bulk in id ");
+        /// Serial.println(p_data[0], HEX);
 
         // If our ID is mentioned
         if (p_data[0] == p_dxl->id) {
@@ -889,11 +897,11 @@ dxl_error_t bulk_write(dxl_t* p_dxl) {
             }
             processWrite(addr, &p_dxl->rx.p_param[index], length);
 
-            Serial.print(addr);
-            Serial.print(" ");
-            Serial.print(length);
-            Serial.print(" ");
-            Serial.println(" bulk write ");
+            /// Serial.print(addr);
+            /// Serial.print(" ");
+            /// Serial.print(length);
+            /// Serial.print(" ");
+            /// Serial.println(" bulk write ");
             break;
         }
         index += length;

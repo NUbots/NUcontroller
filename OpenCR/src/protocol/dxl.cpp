@@ -212,7 +212,7 @@ dxl_error_t dxlRxPacket(dxl_t* p_packet) {
             data = dxlRxRead(p_packet);
             ret  = dxlRxPacketVer2_0(p_packet, data);
 
-            Serial.printf("rx data : %02x %d\n", data, data);
+            /// Serial.printf("rx data : %02x %d\n", data, data);
 
             if (ret != DXL_RET_EMPTY) {
                 break;
@@ -503,12 +503,12 @@ dxl_error_t dxlMakePacketStatus(dxl_t* p_packet, uint8_t id, uint8_t error, uint
 
     p_packet->tx.packet_length = packet_length + 7;
 
-    Serial.print("stat pkt : ");
+    /// Serial.print("stat pkt : ");
     for (int i = 0; i < p_packet->tx.packet_length; i++) {
 
-        Serial.printf("%02x ", p_packet->tx.data[i]);
+        /// Serial.printf("%02x ", p_packet->tx.data[i]);
     }
-    Serial.println(" ");
+    /// Serial.println(" ");
 
     return ret;
 }
@@ -533,12 +533,12 @@ dxl_error_t dxlTxPacket(dxl_t* p_packet) {
 
     dxl_hw_write(p_packet->tx.data, p_packet->tx.packet_length);
 
-    Serial.print(" tx data : ");
+    /// Serial.print(" tx data : ");
     for (int i = 0; i < p_packet->tx.packet_length; i++) {
 
-        Serial.printf("%02x ", p_packet->tx.data[i]);
+        /// Serial.printf("%02x ", p_packet->tx.data[i]);
     }
-    Serial.println(" ");
+    /// Serial.println(" ");
 
     return ret;
 }
