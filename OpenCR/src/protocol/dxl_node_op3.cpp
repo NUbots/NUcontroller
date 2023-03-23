@@ -227,11 +227,13 @@ void dxl_process_packet() {
                 pre_time = micros();
                 dxl_sp.current_id++;
             }
+
             // Once we reach our device ID (dxl_sp.id)
             if (dxl_sp.current_id == dxl_sp.id) {
                 dxlTxPacket(&dxl_sp);
                 process_state = DXL_PROCESS_INST;
             }
+            
             break;
 
         //-- BROAD_READ
