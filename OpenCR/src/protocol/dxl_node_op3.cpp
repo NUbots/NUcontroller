@@ -519,11 +519,14 @@ BOOL dxl_node_check_range(uint16_t addr, uint32_t addr_ptr, uint8_t length) {
 void processRead(uint16_t addr, uint8_t* p_data, uint16_t length) {
     uint32_t i;
 
+    /// Serial.printf("Reading %d bytes from addr 0x%02x (%d): ", length, addr, addr);
 
     for (i = 0; i < length; i++) {
         p_data[i] = dxl_node_read_byte(addr);
         addr++;
+        /// Serial.printf("%02x ", p_data[i]);
     }
+    /// Serial.println(" ");
 }
 
 void processWrite(uint16_t addr, uint8_t* p_data, uint16_t length) {
