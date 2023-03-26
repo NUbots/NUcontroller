@@ -109,7 +109,8 @@ typedef enum {
     DXL_RET_ERROR_CRC,
     DXL_RET_ERROR_LENGTH,
     DXL_RET_ERROR_NO_ID,
-    DXL_RET_ERROR
+    DXL_RET_ERROR,
+    DXL_RET_NO_STATUS_PKT
 } dxl_error_t;
 
 

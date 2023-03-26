@@ -11,6 +11,8 @@
 #include "../dxl_def.h"
 #include "../hardware/dxl_hw.h"
 
+// control table access for status return levels
+#include "dxl_node_op3.h"
 
 #define PACKET_STATE_IDLE     0
 #define PACKET_STATE_RESERVED 1
@@ -28,6 +30,8 @@
 
 //-- External Variables
 //
+// control table access for status return levels
+extern dxl_mem_op3_t* p_dxl_mem;
 
 //-- Internal Functions
 //
@@ -342,7 +346,7 @@ dxl_error_t dxlRxPacketVer2_0(dxl_t* p_packet, uint8_t data_in) {
             if (p_packet->rx.crc_received == p_packet->rx.crc) {
                 p_packet->rx.cmd = p_packet->rx.data[0];
 
-                if (p_packet->rx.data[0] == DXL_INST_STATUS) {
+                if (p_packet->rx.cmd == DXL_INST_STATUS) {
                     p_packet->rx.error        = p_packet->rx.data[1];
                     p_packet->rx.p_param      = &p_packet->rx.data[2];
                     p_packet->rx.param_length = p_packet->rx.packet_length - 4;
@@ -463,6 +467,28 @@ dxl_error_t dxlMakePacketStatus(dxl_t* p_packet, uint8_t id, uint8_t error, uint
     uint16_t stuff_length;
     uint16_t crc;
 
+    // Don't return status packet if the return level is too low
+    // https://emanual.robotis.com/docs/en/dxl/mx/mx-64-2/#status-return-level
+    if (p_dxl_mem->Status_Return_Level == 0) {
+        if (p_packet->rx.cmd != DXL_INST_PING) {
+            return DXL_RET_NO_STATUS_PKT;
+        }
+    }
+    if (p_dxl_mem->Status_Return_Level == 1) {
+        // Read commands (incl sync and bulk) end in HEX 2 (and no others do)
+        if ((p_packet->rx.cmd != DXL_INST_PING) && ((p_packet->rx.cmd & 0x0F) != 0x2)) {
+            return DXL_RET_NO_STATUS_PKT;
+        }
+    }
+
+    // Don't return status packet for broadcast ID, unless PING, SYNC READ or BULK READ
+    // https://emanual.robotis.com/docs/en/dxl/protocol2/#response-policy
+    if (p_packet->rx.id == DXL_ID_BROADCAST_ID) {
+        if (p_packet->rx.cmd != DXL_INST_PING && p_packet->rx.cmd != DXL_INST_SYNC_READ
+            && p_packet->rx.cmd != DXL_INST_BULK_READ) {
+            return DXL_RET_NO_STATUS_PKT;
+        }
+    }
 
     if (length > DXL_MAX_BUFFER - 7) {
         return DXL_RET_ERROR_LENGTH;
