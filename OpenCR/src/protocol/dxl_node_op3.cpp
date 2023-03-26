@@ -11,10 +11,10 @@
 
 #include <EEPROM.h>
 
-#include "dxl.h"
 #include "../debug/dxl_debug.h"
 #include "../hardware/dxl_hw.h"
 #include "../hardware/dxl_hw_op3.h"
+#include "dxl.h"
 
 
 #define RANGE_CHECK(addr, x) dxl_node_check_range(addr, (uint32_t) & (x), sizeof(x))
@@ -78,6 +78,11 @@ void dxl_node_op3_init(void) {
         EEPROM[2]                   = mem.data[2];
     }
 
+    // Fixes baud not updating if macro is updated
+    if (p_dxl_mem->Baud != DXL_NODE_OP3_BAUD) {
+        p_dxl_mem->Baud = DXL_NODE_OP3_BAUD;
+        EEPROM[4]       = mem.data[4];
+    }
 
     p_dxl_mem->IMU_Control = 0;
 
@@ -172,7 +177,7 @@ void dxl_node_op3_loop(void) {
 
 
 void dxl_process_packet() {
-    static uint8_t process_state = 0;
+    static uint8_t process_state = DXL_PROCESS_INST;
     dxl_error_t dxl_ret;
     static uint32_t pre_time;
 
@@ -181,10 +186,14 @@ void dxl_process_packet() {
         //-- INST
         //
         case DXL_PROCESS_INST:
+            // get an incoming packet
             dxl_ret = dxlRxPacket(&dxl_sp);
-
+            // if the packet was an instruction packet
             if (dxl_ret == DXL_RET_RX_INST) {
+                // process the instruction for basic instructions
                 dxl_ret = dxlProcessInst(&dxl_sp);
+                // if the instruction was a broadcast ping or bulk read then
+                // it needs special processing
 
                 if (dxl_ret == DXL_RET_PROCESS_BROAD_PING) {
                     dxl_sp.current_id = 1;
@@ -201,48 +210,64 @@ void dxl_process_packet() {
 
 
         //-- BROAD_PING
-        //
+        // waits to return the ping until either the ID before us returned, or
+        // until we poll through all IDs waiting 3ms on each ID.
         case DXL_PROCESS_BROAD_PING:
+            // Recieve a packet if there's one waiting
             dxl_ret = dxlRxPacket(&dxl_sp);
-
+            // If it's a status packet, then that's almost certainly a ping from
+            // a device before us in the queue
             if (dxl_ret == DXL_RET_RX_STATUS) {
+                // Increment the waiting ID by one (because that's the next packet
+                // we're expecting)
                 dxl_sp.current_id = dxl_sp.rx.id + 1;
             }
-            else {
-                if (micros() - pre_time >= 3000) {
-                    pre_time = micros();
-                    dxl_sp.current_id++;
-                }
+            // If we didn't get a packet in the last 3 ms then increment
+            else if (micros() - pre_time >= 3000) {
+                pre_time = micros();
+                dxl_sp.current_id++;
             }
 
+            // Once we reach our device ID (dxl_sp.id)
             if (dxl_sp.current_id == dxl_sp.id) {
                 dxlTxPacket(&dxl_sp);
                 process_state = DXL_PROCESS_INST;
             }
+
             break;
 
         //-- BROAD_READ
-        //
+        // same story here as for ping, wait for other devices to return before
+        // we do.
         case DXL_PROCESS_BROAD_READ:
+            // Recieve a packet if there's one waiting
             dxl_ret = dxlRxPacket(&dxl_sp);
-
+            // If it's a status packet, then that's almost certainly a the read
+            // response from a device before us
             if (dxl_ret == DXL_RET_RX_STATUS) {
                 pre_time = micros();
+                // If we were the second last ID then we're now first in line
+
+                /// @warning I think this will only work for a maximum of 2
+                /// messages because pre_id is only ever set for the original
+                /// bulk read message.
+                /// But we should never really have to respond to a bulk read
+                /// from the openCR so fuck it.
                 if (dxl_sp.pre_id == dxl_sp.rx.id) {
                     dxlTxPacket(&dxl_sp);
                     process_state = DXL_PROCESS_INST;
-                    // Serial.println(" Bulk Read out");
+                    /// Serial.println(" Bulk Read out");
                 }
+                // otherwise let it loop over
                 else {
-                    // Serial.print(" in ");
-                    // Serial.println(dxl_sp.rx.id, HEX);
+                    /// Serial.print(" in ");
+                    /// Serial.println(dxl_sp.rx.id, HEX);
                 }
             }
-            else {
-                if (micros() - pre_time >= 50000) {
-                    process_state = DXL_PROCESS_INST;
-                    // Serial.println(" Bulk Read timeout");
-                }
+            // If we havent had a status packet in 50ms then timeout
+            else if (micros() - pre_time >= 50000) {
+                process_state = DXL_PROCESS_INST;
+                /// Serial.println(" Bulk Read timeout");
             }
             break;
 
@@ -504,6 +529,7 @@ void processRead(uint16_t addr, uint8_t* p_data, uint16_t length) {
 void processWrite(uint16_t addr, uint8_t* p_data, uint16_t length) {
     uint32_t i;
 
+    /// Serial.printf("Writing to memory address 0x%02x (%d): ", addr, addr);
 
     for (i = 0; i < length; i++) {
         if (mem.attr[addr] & DXL_MEM_ATTR_WO || mem.attr[addr] & DXL_MEM_ATTR_RW) {
@@ -511,9 +537,11 @@ void processWrite(uint16_t addr, uint8_t* p_data, uint16_t length) {
             if (mem.attr[addr] & DXL_MEM_ATTR_EEPROM) {
                 EEPROM[addr] = mem.data[addr];
             }
+            /// Serial.printf("%02x ", p_data[i]);
         }
         addr++;
     }
+    /// Serial.println(" ");
 }
 
 
@@ -530,6 +558,8 @@ dxl_error_t ping(dxl_t* p_dxl) {
     data[1] = (p_dxl_mem->Model_Number >> 8) & 0xFF;
     data[2] = p_dxl_mem->Firmware_Version;
 
+    // If the packet is broadcast ID 0xFE then we have to wait our turn before
+    // returning a status packet (so they arrive back in order).
     if (p_dxl->rx.id == DXL_GLOBAL_ID) {
         ret = dxlMakePacketStatus(p_dxl, p_dxl->id, 0, data, 3);
 
@@ -537,7 +567,8 @@ dxl_error_t ping(dxl_t* p_dxl) {
             ret = DXL_RET_PROCESS_BROAD_PING;
         }
     }
-    else {
+    // If it's specifically for us, then just send it
+    else if (p_dxl->rx.id == DXL_NODE_OP3_ID) {
         ret = dxlTxPacketStatus(p_dxl, p_dxl->id, 0, data, 3);
     }
 
@@ -580,7 +611,7 @@ dxl_error_t read(dxl_t* p_dxl) {
 
     ret = dxlTxPacketStatus(p_dxl, p_dxl->id, 0, data, length);
 
-    // Serial.println(" Read");
+    /// Serial.println(" Read");
 
     return ret;
 }
@@ -601,6 +632,8 @@ dxl_error_t write(dxl_t* p_dxl) {
         return DXL_RET_EMPTY;
     }
 
+    /// Serial.print(" write");
+
     addr   = (p_dxl->rx.p_param[1] << 8) | p_dxl->rx.p_param[0];
     p_data = &p_dxl->rx.p_param[2];
 
@@ -608,26 +641,29 @@ dxl_error_t write(dxl_t* p_dxl) {
         length = p_dxl->rx.param_length - 2;
     }
     else {
+        /// Serial.println(" error");
         dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
 
     if (addr >= sizeof(dxl_mem_op3_t)) {
+        /// Serial.println(" error");
         dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
     if (length > DXL_MAX_BUFFER - 10) {
+        /// Serial.println(" error");
         dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
 
+    /// Serial.println(" success");
 
     dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_NONE, NULL, 0);
 
 
     processWrite(addr, p_data, length);
 
-    // Serial.println(" write");
     return ret;
 }
 
@@ -656,10 +692,6 @@ dxl_error_t sync_read(dxl_t* p_dxl) {
         // dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
-    if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
-        // dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
-        return DXL_RET_ERROR_LENGTH;
-    }
 
 
     p_dxl->pre_id     = 0xFF;
@@ -674,8 +706,15 @@ dxl_error_t sync_read(dxl_t* p_dxl) {
         p_dxl->pre_id = p_data[i];
     }
 
-
+    // If packet ID matches the openCR ID
     if (p_dxl->current_id == p_dxl->id) {
+
+        // Only error if the packet is for OpenCR
+        if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
+            // dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
+            return DXL_RET_ERROR;
+        }
+
         processRead(addr, data, length);
 
 
@@ -690,7 +729,7 @@ dxl_error_t sync_read(dxl_t* p_dxl) {
         }
     }
 
-    // Serial.println(" Sync Read");
+    /// Serial.println(" Sync Read");
 
     return ret;
 }
@@ -705,7 +744,7 @@ dxl_error_t sync_write(dxl_t* p_dxl) {
     uint16_t index;
 
     if (p_dxl->rx.id != DXL_GLOBAL_ID) {
-        // Serial.println(" Sync Write Err 0");
+        /// Serial.println(" Sync Write Err 0");
         return DXL_RET_EMPTY;
     }
 
@@ -713,19 +752,19 @@ dxl_error_t sync_write(dxl_t* p_dxl) {
     length = (p_dxl->rx.p_param[3] << 8) | p_dxl->rx.p_param[2];
 
 
-    // Serial.print(" Sync Write in : ");
-    // Serial.print(addr);
-    // Serial.print(" ");
-    // Serial.println(length);
+    /// Serial.print(" Sync Write in : ");
+    /// Serial.print(addr, HEX);
+    /// Serial.print(" ");
+    /// Serial.println(length);
 
     if (p_dxl->rx.param_length < (4 + length + 1)) {
         // dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
-        // Serial.println(" Sync Write Err 1");
+        /// Serial.println(" Sync Write Err 1");
         return DXL_RET_ERROR_LENGTH;
     }
     if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
         // dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
-        // Serial.println(" Sync Write Err 2");
+        /// Serial.println(" Sync Write Err 2");
         return DXL_RET_ERROR_LENGTH;
     }
 
@@ -742,7 +781,7 @@ dxl_error_t sync_write(dxl_t* p_dxl) {
         else {
             if (p_data[0] == p_dxl->id) {
                 processWrite(addr, &p_data[1], length);
-                // Serial.println(" Sync Write out");
+                /// Serial.println(" Sync Write out");
                 break;
             }
 
@@ -773,7 +812,7 @@ dxl_error_t bulk_read(dxl_t* p_dxl) {
 
 
     if (p_dxl->rx.param_length < 5 || (p_dxl->rx.param_length % 5) != 0) {
-        // Serial.print(" DXL_RET_ERROR_LENGTH ");
+        /// Serial.print(" DXL_RET_ERROR_LENGTH ");
         return DXL_RET_ERROR_LENGTH;
     }
 
@@ -787,17 +826,21 @@ dxl_error_t bulk_read(dxl_t* p_dxl) {
         length = (p_data[4] << 8) | p_data[3];
 
 
-        // Serial.print(" bulk in id ");
-        // Serial.println(p_data[0], HEX);
+        /// Serial.print(" bulk in id ");
+        /// Serial.println(p_data[0], HEX);
 
+        // If our ID is mentioned
         if (p_data[0] == p_dxl->id) {
+            // log it for later
             p_dxl->current_id = p_dxl->id;
-            break;
         }
-        p_dxl->pre_id = p_data[0];
+        // otherwise cache the last processed ID
+        else {
+            p_dxl->pre_id = p_data[0];
+        }
     }
 
-
+    // If one of the IDs was ours
     if (p_dxl->current_id == p_dxl->id) {
         if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
             return DXL_RET_ERROR_LENGTH;
@@ -806,11 +849,13 @@ dxl_error_t bulk_read(dxl_t* p_dxl) {
 
         processRead(addr, data, length);
 
-
+        // if our ID was the first, or only ID
         if (p_dxl->pre_id == 0xFF) {
             ret = dxlTxPacketStatus(p_dxl, p_dxl->id, 0, data, length);
         }
+        // otherwise make a status packet and wait our turn
         else {
+            // this fills the tx buffer for when we're ready
             ret = dxlMakePacketStatus(p_dxl, p_dxl->id, 0, data, length);
             if (ret == DXL_RET_OK) {
                 ret = DXL_RET_PROCESS_BROAD_READ;
@@ -852,11 +897,11 @@ dxl_error_t bulk_write(dxl_t* p_dxl) {
             }
             processWrite(addr, &p_dxl->rx.p_param[index], length);
 
-            // Serial.print(addr);
-            // Serial.print(" ");
-            // Serial.print(length);
-            // Serial.print(" ");
-            // Serial.println(" bulk write ");
+            /// Serial.print(addr);
+            /// Serial.print(" ");
+            /// Serial.print(length);
+            /// Serial.print(" ");
+            /// Serial.println(" bulk write ");
             break;
         }
         index += length;

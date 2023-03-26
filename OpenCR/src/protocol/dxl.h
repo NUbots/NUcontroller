@@ -39,20 +39,20 @@ extern "C" {
 /**
  * @brief Packet structure in byte order
  * @see https://emanual.robotis.com/docs/en/dxl/protocol2/#packet-parameters
- * 
+ *
  * Instruction packets only go up to PKT_INST_IDX and then straight to CRC.
  * Status packets have the PKT_ERROR_IDX param and then three additional bytes
  *  starting from PKT_STATUS_PARAM_IDX
  */
-#define PKT_HDR_1_IDX 0 // header bytes
+#define PKT_HDR_1_IDX 0  // header bytes
 #define PKT_HDR_2_IDX 1
 #define PKT_HDR_3_IDX 2
-#define PKT_RSV_IDX   3 // reserved
-#define PKT_ID_IDX    4 // packet ID
-#define PKT_LEN_L_IDX 5 // packet length (total incl CRC)
-#define PKT_LEN_H_IDX 6 
-#define PKT_INST_IDX  7 // instruction ID (defined below)
-#define PKT_ERROR_IDX 8 // error code - ONLY in status packet, not instruction
+#define PKT_RSV_IDX   3  // reserved
+#define PKT_ID_IDX    4  // packet ID
+#define PKT_LEN_L_IDX 5  // packet length (total incl CRC)
+#define PKT_LEN_H_IDX 6
+#define PKT_INST_IDX  7  // instruction ID (defined below)
+#define PKT_ERROR_IDX 8  // error code - ONLY in status packet, not instruction
 
 #define PKT_STATUS_PARAM_IDX 9
 
@@ -109,7 +109,8 @@ typedef enum {
     DXL_RET_ERROR_CRC,
     DXL_RET_ERROR_LENGTH,
     DXL_RET_ERROR_NO_ID,
-    DXL_RET_ERROR
+    DXL_RET_ERROR,
+    DXL_RET_NO_STATUS_PKT
 } dxl_error_t;
 
 
@@ -151,9 +152,11 @@ typedef struct {
     int8_t dxlport_ch;
     uint32_t dxlport_baud;
     uint8_t rx_state;
-    uint8_t id;
-    uint8_t current_id;
-    uint8_t pre_id;
+    // IDs we care about while processing packets, because some intrustions
+    // require that we wait our turn (in sequential ID order) before returning.
+    uint8_t id;         // ID of the OpenCR
+    uint8_t current_id; // ID of packet we're waiting on
+    uint8_t pre_id;     // ID of the last packet we processed
 
     uint32_t prev_time;
     uint8_t header_cnt;
@@ -182,6 +185,9 @@ dxl_error_t dxlTxPacketInst(dxl_t* p_packet);
 dxl_error_t dxlTxPacketStatus(dxl_t* p_packet, uint8_t id, uint8_t error, uint8_t* p_data, uint16_t length);
 dxl_error_t dxlTxPacket(dxl_t* p_packet);
 dxl_error_t dxlMakePacketStatus(dxl_t* p_packet, uint8_t id, uint8_t error, uint8_t* p_data, uint16_t length);
+
+/* Moved from being `static` in .c file to allow access from dxl_debug */
+void dxlUpdateCrc(uint16_t* p_crc_cur, uint8_t data_in);
 
 #ifdef __cplusplus
 }

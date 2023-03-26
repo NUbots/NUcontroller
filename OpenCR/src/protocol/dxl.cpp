@@ -11,6 +11,8 @@
 #include "../dxl_def.h"
 #include "../hardware/dxl_hw.h"
 
+// control table access for status return levels
+#include "dxl_node_op3.h"
 
 #define PACKET_STATE_IDLE     0
 #define PACKET_STATE_RESERVED 1
@@ -28,11 +30,12 @@
 
 //-- External Variables
 //
+// control table access for status return levels
+extern dxl_mem_op3_t* p_dxl_mem;
 
 //-- Internal Functions
 //
 static dxl_error_t dxlRxPacketVer2_0(dxl_t* p_packet, uint8_t data_in);
-static void dxlUpdateCrc(uint16_t* p_crc_cur, uint8_t data_in);
 static uint16_t dxlAddStuffing(uint8_t* p_data, uint16_t length);
 static uint16_t dxlRemoveStuffing(uint8_t* p_data, uint16_t length);
 
@@ -121,7 +124,7 @@ void dxlAddInstFunc(dxl_t* p_packet, uint8_t inst, dxl_error_t (*func)(dxl_t* p_
  *  the passed packet
  * @param p_packet Note that this is *not* a packet as per the documentation,
  *  but rather p_packet->tx.data[] (or rx) is the actual packet
-*/
+ */
 dxl_error_t dxlProcessInst(dxl_t* p_packet) {
     dxl_error_t ret = DXL_RET_OK;
     uint8_t inst;
@@ -157,13 +160,15 @@ dxl_error_t dxlProcessInst(dxl_t* p_packet) {
         case INST_BULK_WRITE: func = (dxl_error_t(*)(dxl_t*)) p_packet->inst_func.bulk_write; break;
     }
 
-
+    // call the function corresponding to the packet we recieved if:
+    // - the function is defined AND
+    // - the packet ID belongs to the opencr OR is the global id
     if (func != NULL) {
-        if (p_packet->rx.id != dxlGetId(p_packet) && p_packet->rx.id != DXL_GLOBAL_ID) {
-            ret = DXL_RET_ERROR_NO_ID;
+        if (p_packet->rx.id == dxlGetId(p_packet) || p_packet->rx.id != DXL_GLOBAL_ID) {
+            ret = func(p_packet);
         }
         else {
-            ret = func(p_packet);
+            ret = DXL_RET_ERROR_NO_ID;
         }
     }
 
@@ -172,8 +177,8 @@ dxl_error_t dxlProcessInst(dxl_t* p_packet) {
 
 /**
  * @brief starts serial communication at a specified baud rate
- * @param p_packet 
-*/
+ * @param p_packet
+ */
 bool dxlOpenPort(dxl_t* p_packet, uint8_t ch, uint32_t baud) {
     bool ret = true;
 
@@ -211,8 +216,8 @@ dxl_error_t dxlRxPacket(dxl_t* p_packet) {
             data = dxlRxRead(p_packet);
             ret  = dxlRxPacketVer2_0(p_packet, data);
 
-            // Serial.print("rx data : ");
-            // Serial.println(data);
+            /// Serial.printf("rx data : %02x %d\n", data, data);
+
             if (ret != DXL_RET_EMPTY) {
                 break;
             }
@@ -339,10 +344,10 @@ dxl_error_t dxlRxPacketVer2_0(dxl_t* p_packet, uint8_t data_in) {
             p_packet->rx.packet_length -= stuff_length;
 
             if (p_packet->rx.crc_received == p_packet->rx.crc) {
-                p_packet->rx.cmd   = p_packet->rx.data[0];
-                p_packet->rx.error = p_packet->rx.data[1];
+                p_packet->rx.cmd = p_packet->rx.data[0];
 
-                if (p_packet->rx.data[0] == DXL_INST_STATUS) {
+                if (p_packet->rx.cmd == DXL_INST_STATUS) {
+                    p_packet->rx.error        = p_packet->rx.data[1];
                     p_packet->rx.p_param      = &p_packet->rx.data[2];
                     p_packet->rx.param_length = p_packet->rx.packet_length - 4;
                     ret                       = DXL_RET_RX_STATUS;
@@ -453,8 +458,8 @@ uint16_t dxlAddStuffing(uint8_t* p_data, uint16_t length) {
 
 /**
  * @brief Makes a status packet according to the spec: https://emanual.robotis.com/docs/en/dxl/protocol2/#status-packet
- *  
-*/
+ *
+ */
 dxl_error_t dxlMakePacketStatus(dxl_t* p_packet, uint8_t id, uint8_t error, uint8_t* p_data, uint16_t length) {
     dxl_error_t ret = DXL_RET_OK;
     uint16_t i      = 0;
@@ -462,6 +467,28 @@ dxl_error_t dxlMakePacketStatus(dxl_t* p_packet, uint8_t id, uint8_t error, uint
     uint16_t stuff_length;
     uint16_t crc;
 
+    // Don't return status packet if the return level is too low
+    // https://emanual.robotis.com/docs/en/dxl/mx/mx-64-2/#status-return-level
+    if (p_dxl_mem->Status_Return_Level == 0) {
+        if (p_packet->rx.cmd != DXL_INST_PING) {
+            return DXL_RET_NO_STATUS_PKT;
+        }
+    }
+    if (p_dxl_mem->Status_Return_Level == 1) {
+        // Read commands (incl sync and bulk) end in HEX 2 (and no others do)
+        if ((p_packet->rx.cmd != DXL_INST_PING) && ((p_packet->rx.cmd & 0x0F) != 0x2)) {
+            return DXL_RET_NO_STATUS_PKT;
+        }
+    }
+
+    // Don't return status packet for broadcast ID, unless PING, SYNC READ or BULK READ
+    // https://emanual.robotis.com/docs/en/dxl/protocol2/#response-policy
+    if (p_packet->rx.id == DXL_ID_BROADCAST_ID) {
+        if (p_packet->rx.cmd != DXL_INST_PING && p_packet->rx.cmd != DXL_INST_SYNC_READ
+            && p_packet->rx.cmd != DXL_INST_BULK_READ) {
+            return DXL_RET_NO_STATUS_PKT;
+        }
+    }
 
     if (length > DXL_MAX_BUFFER - 7) {
         return DXL_RET_ERROR_LENGTH;
@@ -502,6 +529,13 @@ dxl_error_t dxlMakePacketStatus(dxl_t* p_packet, uint8_t id, uint8_t error, uint
 
     p_packet->tx.packet_length = packet_length + 7;
 
+    /// Serial.print("stat pkt : ");
+    for (int i = 0; i < p_packet->tx.packet_length; i++) {
+
+        /// Serial.printf("%02x ", p_packet->tx.data[i]);
+    }
+    /// Serial.println(" ");
+
     return ret;
 }
 
@@ -525,16 +559,12 @@ dxl_error_t dxlTxPacket(dxl_t* p_packet) {
 
     dxl_hw_write(p_packet->tx.data, p_packet->tx.packet_length);
 
-    /*
-      for(int i=0; i<p_packet->tx.packet_length; i++)
-      {
+    /// Serial.print(" tx data : ");
+    for (int i = 0; i < p_packet->tx.packet_length; i++) {
 
-        Serial.printf("%02X ", p_packet->tx.data[i]);
-
-        //Serial.println(p_packet->tx.data[i], HEX);
-      }
-      Serial.println(" ");
-    */
+        /// Serial.printf("%02x ", p_packet->tx.data[i]);
+    }
+    /// Serial.println(" ");
 
     return ret;
 }

@@ -14,8 +14,6 @@
 extern void dxl_hw_tx_enable(void);
 
 void setup() {
-    Serial.begin(115200);
-    Serial.println("op3 start");
     dxl_node_op3_init();
 }
 
