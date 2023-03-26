@@ -598,7 +598,7 @@ dxl_error_t read(dxl_t* p_dxl) {
 
 
     if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
-        dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
+        dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_ACCESS, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
     if (length > DXL_MAX_BUFFER - 10) {
@@ -648,7 +648,7 @@ dxl_error_t write(dxl_t* p_dxl) {
 
     if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
         /// Serial.println(" error");
-        dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
+        dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_ACCESS, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
     if (length > DXL_MAX_BUFFER - 10) {
@@ -711,7 +711,7 @@ dxl_error_t sync_read(dxl_t* p_dxl) {
 
         // Only error if the packet is for OpenCR
         if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
-            // dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
+            dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_ACCESS, NULL, 0);
             return DXL_RET_ERROR;
         }
 
