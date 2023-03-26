@@ -160,17 +160,18 @@ dxl_error_t dxlProcessInst(dxl_t* p_packet) {
         case INST_BULK_WRITE: func = (dxl_error_t(*)(dxl_t*)) p_packet->inst_func.bulk_write; break;
     }
 
-    // call the function corresponding to the packet we recieved if:
-    // - the function is defined AND
-    // - the packet ID belongs to the opencr OR is the global id
-    if (func != NULL) {
-        if (p_packet->rx.id == dxlGetId(p_packet) || p_packet->rx.id == DXL_GLOBAL_ID) {
-            ret = func(p_packet);
-        }
-        else {
-            ret = DXL_RET_ERROR_NO_ID;
-        }
+    // check the function was recognised/exists
+    if (func == NULL) {
+        return DXL_RET_EMPTY;
     }
+
+    // check the packet ID belongs to the OpenCR or is broadcast/global IS
+    if (p_packet->rx.id != dxlGetId(p_packet) && p_packet->rx.id != DXL_GLOBAL_ID) {
+        return DXL_RET_ERROR_NO_ID;
+    }
+
+    // checks passed, call function
+    ret = func(p_packet);
 
     return ret;
 }
