@@ -164,7 +164,7 @@ dxl_error_t dxlProcessInst(dxl_t* p_packet) {
     // - the function is defined AND
     // - the packet ID belongs to the opencr OR is the global id
     if (func != NULL) {
-        if (p_packet->rx.id == dxlGetId(p_packet) || p_packet->rx.id != DXL_GLOBAL_ID) {
+        if (p_packet->rx.id == dxlGetId(p_packet) || p_packet->rx.id == DXL_GLOBAL_ID) {
             ret = func(p_packet);
         }
         else {
