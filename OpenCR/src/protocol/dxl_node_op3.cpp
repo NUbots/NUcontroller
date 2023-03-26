@@ -200,7 +200,6 @@ void dxl_process_packet() {
                     pre_time          = micros();
                     process_state     = DXL_PROCESS_BROAD_PING;
                 }
-
             }
             break;
 
@@ -636,60 +635,8 @@ dxl_error_t sync_read(dxl_t* p_dxl) {
 
 
 dxl_error_t sync_write(dxl_t* p_dxl) {
-    dxl_error_t ret = DXL_RET_OK;
-    uint16_t addr;
-    uint16_t length;
-    uint8_t* p_data;
-    uint16_t remain_length;
-    uint16_t index;
-
-    if (p_dxl->rx.id != DXL_GLOBAL_ID) {
-        /// Serial.println(" Sync Write Err 0");
-        return DXL_RET_EMPTY;
-    }
-
-    addr   = (p_dxl->rx.p_param[1] << 8) | p_dxl->rx.p_param[0];
-    length = (p_dxl->rx.p_param[3] << 8) | p_dxl->rx.p_param[2];
-
-
-    /// Serial.print(" Sync Write in : ");
-    /// Serial.print(addr, HEX);
-    /// Serial.print(" ");
-    /// Serial.println(length);
-
-    if (p_dxl->rx.param_length < (4 + length + 1)) {
-        // dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
-        /// Serial.println(" Sync Write Err 1");
-        return DXL_RET_ERROR_LENGTH;
-    }
-    if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
-        // dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
-        /// Serial.println(" Sync Write Err 2");
-        return DXL_RET_ERROR_LENGTH;
-    }
-
-
-    index = 4;
-    while (1) {
-        p_data        = &p_dxl->rx.p_param[index];
-        remain_length = p_dxl->rx.param_length - index;
-
-
-        if (remain_length < (length + 1)) {
-            break;
-        }
-        else {
-            if (p_data[0] == p_dxl->id) {
-                processWrite(addr, &p_data[1], length);
-                /// Serial.println(" Sync Write out");
-                break;
-            }
-
-            index += length + 1;
-        }
-    }
-
-    return ret;
+    (void) (p_dxl);
+    return DXL_RET_NOT_REQUIRED;
 }
 
 
