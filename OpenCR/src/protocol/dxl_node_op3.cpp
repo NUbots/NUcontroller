@@ -594,7 +594,7 @@ dxl_error_t read(dxl_t* p_dxl) {
     length = (p_dxl->rx.p_param[3] << 8) | p_dxl->rx.p_param[2];
 
 
-    if (addr >= sizeof(dxl_mem_op3_t)) {
+    if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
         dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
@@ -640,7 +640,7 @@ dxl_error_t write(dxl_t* p_dxl) {
         return DXL_RET_ERROR_LENGTH;
     }
 
-    if (addr >= sizeof(dxl_mem_op3_t)) {
+    if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
         dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
