@@ -285,30 +285,43 @@ void dxl_node_op3_btn_loop(void) {
     static uint8_t btn_state = 0;
     static uint32_t btn_time = 0;
 
-
+    /**
+     * @brief Loop to detect a button press with debouncing.
+     *        If the button is held for 100 ms then disable dynamixel power
+     * @note Dynamixel power is never turned back on again, that must be done
+     *       externally by the host device. (in our case, HardwareIO on the NUC)
+     */
     switch (btn_state) {
+        /* Default state, button is NOT pressed */
         case 0:
             if (dxl_hw_op3_button_read(PIN_BUTTON_S4)) {
+                /* On initial button down state, record time of press */
                 btn_time  = millis();
+                /* Go to button DOWN state */
                 btn_state = 1;
             }
             break;
 
+        /* Button DOWN state */
         case 1:
             if (!dxl_hw_op3_button_read(PIN_BUTTON_S4))
+                /* If button has not been held down (i.e. bounce) then ignore */
                 btn_state = 0;
             if ((millis() - btn_time) > 100) {
+                /* If button has been held down for 100 ms, disable DXL power */
                 dxl_node_write_byte(24, 0);
-                btn_time  = millis();
+                btn_time = millis();
+                /* Go to button HELD state */
                 btn_state = 2;
             }
             break;
 
+        /* Button HELD state */
         case 2:
             if (!dxl_hw_op3_button_read(PIN_BUTTON_S4))
+                /* If button is no longer held, then restart the loop */
                 btn_state = 0;
             break;
-
         default: break;
     }
 }
