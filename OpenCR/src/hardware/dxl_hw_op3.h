@@ -13,6 +13,8 @@
 
 #include "../dxl_def.h"
 
+// contains #define's for button inputs and LED outputs
+#include "dxl_hw_interface.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,18 +54,45 @@ extern "C" {
 #define HIGH_BATTERY_LIMIT          VOLTAGE_LEVEL_6
 */
 
-#define PIN_LED_R 50
-#define PIN_LED_G 51
-#define PIN_LED_B 52
+#ifdef DXL_HW_INTERFACE_H
 
-#define PIN_LED_1 53
-#define PIN_LED_2 54
-#define PIN_LED_3 55
+    /* Use custom values from dxl_hw_interface.h */
 
-#define PIN_BUTTON_S1 56
-#define PIN_BUTTON_S2 57
-#define PIN_BUTTON_S3 58
-#define PIN_BUTTON_S4 59
+    #define PIN_LED_R HW_INTERFACE_LED_R
+    #define PIN_LED_G HW_INTERFACE_LED_G
+    #define PIN_LED_B HW_INTERFACE_LED_B
+
+    #define PIN_LED_1 HW_INTERFACE_LED_1
+    #define PIN_LED_2 HW_INTERFACE_LED_2
+    #define PIN_LED_3 HW_INTERFACE_LED_3
+
+    #define PIN_BUTTON_S1 HW_INTERFACE_BUTTON_RED
+    #define PIN_BUTTON_S2 HW_INTERFACE_BUTTON_GREEN
+    #define PIN_BUTTON_S3 HW_INTERFACE_BUTTON_BLACK
+    #define PIN_BUTTON_S4 59  // default value, unused
+
+    #define DXL_POWER_DISABLE_BUTTON HW_INTERFACE_BUTTON_RED
+
+#else
+
+    /* Old defaults */
+
+    #define PIN_LED_R 50
+    #define PIN_LED_G 51
+    #define PIN_LED_B 52
+
+    #define PIN_LED_1 53
+    #define PIN_LED_2 54
+    #define PIN_LED_3 55
+
+    #define PIN_BUTTON_S1 56
+    #define PIN_BUTTON_S2 57
+    #define PIN_BUTTON_S3 58
+    #define PIN_BUTTON_S4 59
+
+    #define DXL_POWER_DISABLE_BUTTON PIN_BUTTON_S4
+
+#endif  // DXL_HW_INTERFACE_H
 
 
 void dxl_hw_op3_init(void);

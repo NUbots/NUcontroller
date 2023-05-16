@@ -294,7 +294,7 @@ void dxl_node_op3_btn_loop(void) {
     switch (btn_state) {
         /* Default state, button is NOT pressed */
         case 0:
-            if (dxl_hw_op3_button_read(PIN_BUTTON_S4)) {
+            if (dxl_hw_op3_button_read(DXL_POWER_DISABLE_BUTTON)) {
                 /* On initial button down state, record time of press */
                 btn_time  = millis();
                 /* Go to button DOWN state */
@@ -304,7 +304,7 @@ void dxl_node_op3_btn_loop(void) {
 
         /* Button DOWN state */
         case 1:
-            if (!dxl_hw_op3_button_read(PIN_BUTTON_S4))
+            if (!dxl_hw_op3_button_read(DXL_POWER_DISABLE_BUTTON))
                 /* If button has not been held down (i.e. bounce) then ignore */
                 btn_state = 0;
             if ((millis() - btn_time) > 100) {
@@ -318,7 +318,7 @@ void dxl_node_op3_btn_loop(void) {
 
         /* Button HELD state */
         case 2:
-            if (!dxl_hw_op3_button_read(PIN_BUTTON_S4))
+            if (!dxl_hw_op3_button_read(DXL_POWER_DISABLE_BUTTON))
                 /* If button is no longer held, then restart the loop */
                 btn_state = 0;
             break;
