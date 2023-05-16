@@ -52,6 +52,10 @@ int16_t dxl_hw_op3_gyro_conv(int16_t value);
 void dxl_hw_op3_button_update();
 void dxl_hw_op3_voltage_update();
 
+/**
+ * @brief Use globals to control RGB led with PWM based on 500us timer interrupt
+ * @note 5 bit resolution, 500us timer
+ */
 void handler_led(void) {
     uint32_t i;
     static uint8_t led_counter = 0;
