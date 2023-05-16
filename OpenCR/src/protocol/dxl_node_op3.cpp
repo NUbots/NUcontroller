@@ -309,7 +309,7 @@ void dxl_node_op3_btn_loop(void) {
                 btn_state = 0;
             if ((millis() - btn_time) > 100) {
                 /* If button has been held down for 100 ms, disable DXL power */
-                dxl_node_write_byte(24, 0);
+                dxl_node_write_byte(24, 0); // control table 24 = dxl power
                 btn_time = millis();
                 /* Go to button HELD state */
                 btn_state = 2;
