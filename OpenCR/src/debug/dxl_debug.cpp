@@ -24,7 +24,7 @@
 
 extern dxl_mem_op3_t* p_dxl_mem;
 
-static uint8_t debug_state = 0;
+uint8_t debug_state = 0;
 
 
 static void dxl_debug_menu_show_list(void);

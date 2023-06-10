@@ -24,6 +24,7 @@ extern "C" {
 }
 #endif
 
+extern uint8_t debug_state;
 
 void dxl_debug_init(void);
 void dxl_debug_loop(void);

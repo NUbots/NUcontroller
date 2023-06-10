@@ -296,7 +296,7 @@ void dxl_node_op3_btn_loop(void) {
         case 0:
             if (dxl_hw_op3_button_read(DXL_POWER_DISABLE_BUTTON)) {
                 /* On initial button down state, record time of press */
-                btn_time  = millis();
+                btn_time = millis();
                 /* Go to button DOWN state */
                 btn_state = 1;
             }
@@ -309,7 +309,11 @@ void dxl_node_op3_btn_loop(void) {
                 btn_state = 0;
             if ((millis() - btn_time) > 100) {
                 /* If button has been held down for 100 ms, disable DXL power */
-                dxl_node_write_byte(24, 0); // control table 24 = dxl power
+                dxl_node_write_byte(24, 0);  // control table 24 = dxl power
+                /* Debug */
+                if (debug_state)
+                    Serial.print("DXL Power disabled");
+
                 btn_time = millis();
                 /* Go to button HELD state */
                 btn_state = 2;
