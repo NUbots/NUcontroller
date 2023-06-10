@@ -175,7 +175,7 @@ int16_t dxl_hw_op3_acc_conv(int16_t value) {
 
 /*---------------------------------------------------------------------------
      TITLE   : dxl_hw_op3_button_update
-     WORK    :
+     WORK    : button_value
 ---------------------------------------------------------------------------*/
 void dxl_hw_op3_button_update() {
     static uint8_t pin_state[BUTTON_PIN_MAX] = {
