@@ -69,7 +69,7 @@ extern "C" {
     #define PIN_BUTTON_S1 HW_INTERFACE_BUTTON_RED
     #define PIN_BUTTON_S2 HW_INTERFACE_BUTTON_GREEN
     #define PIN_BUTTON_S3 HW_INTERFACE_BUTTON_BLACK
-    #define PIN_BUTTON_S4 59  // default value, unused
+    #define PIN_BUTTON_S4 56  // default value, unused
 
     #define DXL_POWER_DISABLE_BUTTON HW_INTERFACE_BUTTON_RED
 
