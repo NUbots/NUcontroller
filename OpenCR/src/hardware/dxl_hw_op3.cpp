@@ -46,9 +46,6 @@ static uint8_t battery_state     = BATTERY_POWER_STARTUP;
 cIMU IMU;
 HardwareTimer Timer(TIMER_CH1);
 
-
-int16_t dxl_hw_op3_acc_conv(int16_t value);
-int16_t dxl_hw_op3_gyro_conv(int16_t value);
 void dxl_hw_op3_button_update();
 void dxl_hw_op3_voltage_update();
 
@@ -151,25 +148,6 @@ void dxl_hw_op3_update(void) {
 
     dxl_hw_op3_button_update();
     dxl_hw_op3_voltage_update();
-}
-
-
-/*---------------------------------------------------------------------------
-     TITLE   : dxl_hw_op3_acc_conv
-     WORK    :
----------------------------------------------------------------------------*/
-int16_t dxl_hw_op3_acc_conv(int16_t value) {
-    int16_t data;
-
-#if 0
-  data = constrain(value, -2048, 2048); // 8g->4g
-  data = data/4 + 512;
-  data = constrain(data, 0, 1023);
-#else
-    data = value;
-#endif
-
-    return (int16_t) data;
 }
 
 
@@ -418,29 +396,11 @@ uint8_t dxl_hw_op3_voltage_read(void) {
 
 
 /*---------------------------------------------------------------------------
-     TITLE   : dxl_hw_op3_gyro_conv
-     WORK    :
----------------------------------------------------------------------------*/
-int16_t dxl_hw_op3_gyro_conv(int16_t value) {
-    int16_t data;
-
-#if 0
-  data = constrain(value, -8200, 8200); // 2000deg->500deg
-  data = map(data, -8200, 8200, 0, 1023);
-#else
-    data = value;
-#endif
-
-    return (int16_t) data;
-}
-
-
-/*---------------------------------------------------------------------------
      TITLE   : dxl_hw_op3_acc_get_x
      WORK    :
 ---------------------------------------------------------------------------*/
 int16_t dxl_hw_op3_acc_get_x(void) {
-    return dxl_hw_op3_acc_conv(IMU.SEN.accRAW[0]);
+    return (int16_t) IMU.SEN.accRAW[0];
 }
 
 
@@ -449,11 +409,7 @@ int16_t dxl_hw_op3_acc_get_x(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 int16_t dxl_hw_op3_acc_get_y(void) {
-    int16_t ret;
-
-    ret = dxl_hw_op3_acc_conv(IMU.SEN.accRAW[1]);
-
-    return ret;
+    return (int16_t) IMU.SEN.accRAW[1];
 }
 
 
@@ -462,7 +418,7 @@ int16_t dxl_hw_op3_acc_get_y(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 int16_t dxl_hw_op3_acc_get_z(void) {
-    return dxl_hw_op3_acc_conv(IMU.SEN.accRAW[2]);
+    return (int16_t) IMU.SEN.accRAW[2];
 }
 
 
@@ -471,7 +427,7 @@ int16_t dxl_hw_op3_acc_get_z(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 int16_t dxl_hw_op3_gyro_get_x(void) {
-    return dxl_hw_op3_gyro_conv(IMU.SEN.gyroADC[0]);
+    return (int16_t) IMU.SEN.gyroADC[0];
 }
 
 
@@ -480,11 +436,7 @@ int16_t dxl_hw_op3_gyro_get_x(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 int16_t dxl_hw_op3_gyro_get_y(void) {
-    int16_t ret;
-
-    ret = dxl_hw_op3_gyro_conv(IMU.SEN.gyroADC[1]);
-
-    return ret;
+    return (int16_t) IMU.SEN.gyroADC[1];
 }
 
 
@@ -493,7 +445,7 @@ int16_t dxl_hw_op3_gyro_get_y(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 int16_t dxl_hw_op3_gyro_get_z(void) {
-    return dxl_hw_op3_gyro_conv(IMU.SEN.gyroADC[2]);
+    return (int16_t) IMU.SEN.gyroADC[2];
 }
 
 
