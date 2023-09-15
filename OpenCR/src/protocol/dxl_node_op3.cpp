@@ -294,11 +294,11 @@ void dxl_process_packet() {
 
 void dxl_node_op3_btn_loop(void) {
     if (dxl_hw_op3_button_read(DXL_POWER_DISABLE_BUTTON)) {
+        /* Log if in debug mode and power is currently on */
+        if (debug_state && dxl_node_read_byte(24))
+            Serial.print("DXL Power disabled");
         /* Control table 24 = DXL Power */
         dxl_node_write_byte(24, 0);
-        /* Log if in debug mode */
-        if (debug_state)
-            Serial.print("DXL Power disabled");
     }
 }
 
