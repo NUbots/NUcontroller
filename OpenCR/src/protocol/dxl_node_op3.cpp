@@ -133,6 +133,7 @@ void dxl_node_op3_loop(void) {
     p_dxl_mem->Pitch = dxl_hw_op3_get_rpy(1);
     p_dxl_mem->Yaw   = dxl_hw_op3_get_rpy(2);
 
+    // This used to only happen if we had a read command come through. Not sure if that was done for a reason.
     p_dxl_mem->Button = dxl_hw_op3_button_read(PIN_BUTTON_S1) << 0;
     p_dxl_mem->Button |= dxl_hw_op3_button_read(PIN_BUTTON_S2) << 1;
     p_dxl_mem->Button |= dxl_hw_op3_button_read(PIN_BUTTON_S3) << 2;
@@ -475,17 +476,15 @@ void dxl_node_write_byte(uint16_t addr, uint8_t data) {
      WORK    :
 ---------------------------------------------------------------------------*/
 BOOL dxl_node_check_range(uint16_t addr, uint32_t addr_ptr, uint8_t length) {
-    BOOL ret = FALSE;
-    uint32_t addr_offset;
 
-    addr_offset = addr_ptr - (uint32_t) p_dxl_mem;
+    uint32_t addr_offset = addr_ptr - (uint32_t) p_dxl_mem;
 
     if (addr >= (addr_offset + length - 1) && addr < (addr_offset + length)) {
-        ret = TRUE;
+        return TRUE;
     }
 
 
-    return ret;
+    return FALSE;
 }
 
 
@@ -493,21 +492,16 @@ BOOL dxl_node_check_range(uint16_t addr, uint32_t addr_ptr, uint8_t length) {
      dxl sp driver
 ---------------------------------------------------------------------------*/
 void processRead(uint16_t addr, uint8_t* p_data, uint16_t length) {
-    uint32_t i;
-
-
-    for (i = 0; i < length; i++) {
+    for (uint32_t i = 0; i < length; i++) {
         p_data[i] = dxl_node_read_byte(addr);
         addr++;
     }
 }
 
 void processWrite(uint16_t addr, uint8_t* p_data, uint16_t length) {
-    uint32_t i;
-
     /// Serial.printf("Writing to memory address 0x%02x (%d): ", addr, addr);
 
-    for (i = 0; i < length; i++) {
+    for (uint32_t i = 0; i < length; i++) {
         if (mem.attr[addr] & DXL_MEM_ATTR_WO || mem.attr[addr] & DXL_MEM_ATTR_RW) {
             dxl_node_write_byte(addr, p_data[i]);
             if (mem.attr[addr] & DXL_MEM_ATTR_EEPROM) {
