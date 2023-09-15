@@ -202,8 +202,6 @@ void dxl_hw_op3_button_update() {
                     pin_state[i] = BTN_INACTIVE;
                 }
                 break;
-
-            default: break;
         }
     }
 }
