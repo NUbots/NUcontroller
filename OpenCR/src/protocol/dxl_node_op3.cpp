@@ -133,6 +133,13 @@ void dxl_node_op3_loop(void) {
     p_dxl_mem->Pitch = dxl_hw_op3_get_rpy(1);
     p_dxl_mem->Yaw   = dxl_hw_op3_get_rpy(2);
 
+    p_dxl_mem->Button = dxl_hw_op3_button_read(PIN_BUTTON_S1) << 0;
+    p_dxl_mem->Button |= dxl_hw_op3_button_read(PIN_BUTTON_S2) << 1;
+    p_dxl_mem->Button |= dxl_hw_op3_button_read(PIN_BUTTON_S3) << 2;
+    p_dxl_mem->Button |= dxl_hw_op3_button_read(PIN_BUTTON_S4) << 3;
+
+    p_dxl_mem->Voltage = dxl_hw_op3_voltage_read();
+
 
     for (i = 0; i < 3; i++) {
         if (p_dxl_mem->IMU_Control & (1 << i)) {
@@ -167,6 +174,7 @@ void dxl_node_op3_loop(void) {
                 gyro_cali_state = 0;
             }
         }
+        p_dxl_mem->Voltage = dxl_hw_op3_voltage_read();
     }
 
 
@@ -402,18 +410,6 @@ void dxl_node_op3_change_baud(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 uint8_t dxl_node_read_byte(uint16_t addr) {
-    if (RANGE_CHECK(addr, p_dxl_mem->Button)) {
-        p_dxl_mem->Button = dxl_hw_op3_button_read(PIN_BUTTON_S1) << 0;
-        p_dxl_mem->Button |= dxl_hw_op3_button_read(PIN_BUTTON_S2) << 1;
-        p_dxl_mem->Button |= dxl_hw_op3_button_read(PIN_BUTTON_S3) << 2;
-        p_dxl_mem->Button |= dxl_hw_op3_button_read(PIN_BUTTON_S4) << 3;
-    }
-
-    if (RANGE_CHECK(addr, p_dxl_mem->Voltage)) {
-        p_dxl_mem->Voltage = dxl_hw_op3_voltage_read();
-    }
-
-
     return mem.data[addr];
 }
 
