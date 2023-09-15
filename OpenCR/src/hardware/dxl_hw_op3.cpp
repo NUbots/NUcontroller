@@ -156,33 +156,50 @@ void dxl_hw_op3_update(void) {
      WORK    : button_value
 ---------------------------------------------------------------------------*/
 void dxl_hw_op3_button_update() {
-    static uint8_t pin_state[BUTTON_PIN_MAX] = {
-        0,
+
+    // keep button state as "down" for longer before resetting
+    const uint8_t debounce_time_ms = 30;
+    const uint8_t release_time_ms  = 200;
+
+    enum btn_state { BTN_INACTIVE, BTN_ACTIVE };
+
+    static enum btn_state pin_state[BUTTON_PIN_MAX] = {
+        BTN_INACTIVE,
     };
-    uint8_t pin_in = 0;
-    uint32_t i;
     static uint32_t pin_time[BUTTON_PIN_MAX] = {
         0,
     };
 
+    // loop over each button
+    for (uint32_t i = 0; i < BUTTON_PIN_MAX; i++) {
 
-    for (i = 0; i < BUTTON_PIN_MAX; i++) {
-        pin_in = !digitalRead(button_pin_num[i]);
+        // get the raw pin value (pull up resistor so invert)
+        uint8_t pin_input = !digitalRead(button_pin_num[i]);
+
 
         switch (pin_state[i]) {
-            case 0:
-                if (button_value[i] != pin_in) {
-                    pin_state[i] = 1;
-                    pin_time[i]  = millis();
+            // if the button was last unpressed, or pressed and debounced
+            case BTN_INACTIVE:
+                // newly pressed, or was released since debounce
+                if (button_value[i] != pin_input) {
+                    // we have an action to log
+                    pin_state[i] = BTN_ACTIVE;
+                    // and record the timestamp for debouncing
+                    pin_time[i] = millis();
                 }
                 break;
 
-            case 1:
-                if ((millis() - pin_time[i]) > 30) {
-                    if (button_value[i] != pin_in) {
-                        button_value[i] = pin_in;
-                    }
-                    pin_state[i] = 0;
+            // we have a press or release to poll for
+            case BTN_ACTIVE:
+                uint32_t pin_time_delta = millis() - pin_time[i];
+                // if the button value is currently off, have a 30ms debounce timer before we log it as pressed.
+                // However, if it currently pressed, have a longer timeout before we consider it released.
+                if (((button_value[i] == 0) && (pin_time_delta > debounce_time_ms))
+                    || ((button_value[i] == 1) && (pin_time_delta > release_time_ms))) {
+                    // if it has, update the value
+                    button_value[i] = pin_input;
+                    // nothing more to do
+                    pin_state[i] = BTN_INACTIVE;
                 }
                 break;
 
@@ -203,7 +220,7 @@ uint8_t dxl_hw_op3_button_read(uint8_t pin_num) {
         }
     }
 
-        return 0;
+    return 0;
 }
 
 
