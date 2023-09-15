@@ -197,21 +197,13 @@ void dxl_hw_op3_button_update() {
      WORK    :
 ---------------------------------------------------------------------------*/
 uint8_t dxl_hw_op3_button_read(uint8_t pin_num) {
-    uint8_t pin_in = 0;
-    uint8_t i;
-
-    for (i = 0; i < BUTTON_PIN_MAX; i++) {
+    for (uint8_t i = 0; i < BUTTON_PIN_MAX; i++) {
         if (button_pin_num[i] == pin_num) {
-            break;
+            return button_value[i];
         }
     }
 
-    if (i == BUTTON_PIN_MAX)
         return 0;
-
-    pin_in = button_value[i];
-
-    return pin_in;
 }
 
 
@@ -380,17 +372,6 @@ void dxl_hw_op3_voltage_update(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 uint8_t dxl_hw_op3_voltage_read(void) {
-    /*
-    int adc_value;
-    float vol_value;
-
-    adc_value = analogRead(BDPIN_BAT_PWR_ADC);
-
-    vol_value = map(adc_value, 0, 1023, 0, 330*57/10);
-    vol_value = vol_value/10;
-    vol_value = constrain(vol_value, 0, 255);
-    */
-
     return (uint8_t) battery_voltage;
 }
 
