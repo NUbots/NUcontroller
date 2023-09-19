@@ -1,0 +1,4 @@
+../Core/Src/uart/rs485_c.cpp:22:19:HAL_StatusTypeDef uart::RS485_Receive(UART_HandleTypeDef*, uint8_t*, uint16_t, uint32_t)	32	static
+../Core/Src/uart/rs485_c.cpp:59:19:HAL_StatusTypeDef uart::RS485_Receive_IT(UART_HandleTypeDef*, uint8_t*, uint16_t)	32	static
+../Core/Src/uart/rs485_c.cpp:97:19:HAL_StatusTypeDef uart::RS485_Transmit(UART_HandleTypeDef*, const uint8_t*, uint16_t, uint32_t)	32	static
+../Core/Src/uart/rs485_c.cpp:134:19:HAL_StatusTypeDef uart::RS485_Transmit_IT(UART_HandleTypeDef*, const uint8_t*, uint16_t)	32	static

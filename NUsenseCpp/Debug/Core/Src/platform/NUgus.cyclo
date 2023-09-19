@@ -1,0 +1,5 @@
+/opt/st/stm32cubeide_1.13.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.0.202305231506/tools/arm-none-eabi/include/c++/11.3.1/arm-none-eabi/thumb/v7e-m+dp/hard/bits/gthr-default.h:229:1:int __gthread_key_delete(__gthread_key_t)    1
+../Core/Src/platform/NUgus.hpp:14:9:platform::MX64::MX64(uint8_t)    1
+../Core/Src/platform/NUgus.hpp:19:9:platform::MX106::MX106(uint8_t)    1
+../Core/Src/platform/NUgus.hpp:24:9:platform::XH540_W270::XH540_W270(uint8_t)    1
+../Core/Src/platform/NUgus.cpp:5:5:platform::NUsense::NUgus::NUgus()    1
