@@ -91,6 +91,13 @@ log/*
 /lib/
 pyvenv.cfg
 
+# STM32
+.metadata
+.settings
+Release\
+Debug\
+.launch
+
 # Misc
 tags
 *.swp
