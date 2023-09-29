@@ -90,7 +90,7 @@ void Error_Handler(void);
 #define BUZZER_SIG_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-
+extern uint8_t rx_flag;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

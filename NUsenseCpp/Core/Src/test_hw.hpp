@@ -10,6 +10,7 @@
 #include "settings.h"
 #include "usbd_cdc_if.h"
 #include "imu.h"
+#include "main.h"
 
 #include "dynamixel/Devices.hpp"
 #include "dynamixel/Packetiser.hpp"
@@ -25,6 +26,20 @@ namespace test_hw {
 
 uint8_t calculate_checksum(uint8_t* data, uint8_t length);
 uint16_t update_crc(uint16_t crc_accum, uint8_t* data_blk_ptr, uint16_t data_blk_size);
+
+#ifdef TEST_COMMS
+// Test communication with the NUC
+void comms(){
+	if (rx_flag == 1) {
+		rx_flag = 0;
+
+		HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_SET);
+	    HAL_Delay(100);
+		HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_RESET);
+		HAL_Delay(2000);
+	}
+}
+#endif
 
 #ifdef TEST_UART
 void uart() {

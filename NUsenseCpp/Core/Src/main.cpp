@@ -97,6 +97,10 @@ int main(void)
     }
 
 #else
+#ifdef TEST_COMMS
+    test_hw::comms();
+#endif
+
 #ifdef TEST_UART
     test_hw::uart();
 #endif
