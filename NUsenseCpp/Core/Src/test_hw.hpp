@@ -12,32 +12,108 @@
 #include "imu.h"
 #include "main.h"
 
-#include "dynamixel/Devices.hpp"
+//#include "dynamixel/Devices.hpp"
 #include "dynamixel/Packetiser.hpp"
-#include "dynamixel/Packet.hpp"
+//#include "dynamixel/Packet.hpp"
 #include "uart/Port.hpp"
-#include "uart/rs485_c.h"
+//#include "uart/rs485_c.h"
 #include "uart/RS485.h"
+
+#include <vector>
+#include "comms/ServoTarget.pb.h"
+#include "comms/pb_decode.h"
 
 #ifndef SRC_TEST_HW_HPP_
 #define SRC_TEST_HW_HPP_
 
-namespace test_hw {
+extern uint8_t UserRxBufferHS[APP_RX_DATA_SIZE];
 
+std::vector<char> pb_bytes;
+
+bool end_receive = false;
+bool decoded = false;
+
+uint16_t pbmsg_length = 0;
+
+namespace test_hw {
 uint8_t calculate_checksum(uint8_t* data, uint8_t length);
 uint16_t update_crc(uint16_t crc_accum, uint8_t* data_blk_ptr, uint16_t data_blk_size);
 
 #ifdef TEST_COMMS
 // Test communication with the NUC
+#define split_size 512
+
 void comms(){
-	if (rx_flag == 1) {
-		rx_flag = 0;
+
+	uint8_t buf_copy[split_size];
+
+	char tx_buf[] = "NUsense says hi";
+
+	while (!end_receive){
+		if (rx_flag == 1) {
+			rx_flag = 0;
+			// Copy to the buffer so we don't accidentally read it when it changes or write to it
+			memcpy(buf_copy, UserRxBufferHS, split_size);
+
+			// Check for the header - if the header is present then do the necessary processing
+			if (buf_copy[0] == (char)0xE2 && buf_copy[1] == (char)0x98 && buf_copy[2] == (char)0xA2) {
+
+				uint8_t high_byte = buf_copy[3];
+				uint8_t low_byte = buf_copy[4];
+				uint16_t pbmsg_length = static_cast<uint16_t>(high_byte << 8) | static_cast<uint16_t>(low_byte);
+
+				// Append the remaining 512 - 5 bytes to the protobuf_bytes then update pbmsg_length
+				pb_bytes.insert(pb_bytes.end(), &(buf_copy[5]), &(buf_copy[split_size - 1]));
+
+				pbmsg_length = pbmsg_length - pb_bytes.size();
+			}
+
+			// Don't stop appending to the pb_bytes vector until out pbmsg_length becomes 0.
+			// If the received length is greater than 2 * 512 it will go to the code block below
+			else if (pbmsg_length > split_size) {
+				pb_bytes.insert(pb_bytes.end(), &(buf_copy[0]), &(buf_copy[split_size-1]));
+				pbmsg_length -= split_size;
+			}
+
+			// Going into this block means that pbmsg_length is less than the split size which means that
+			// this is the last split that we need to process
+			else {
+				pb_bytes.insert(pb_bytes.end(), &(buf_copy[0]), &(buf_copy[pbmsg_length]));
+				end_receive = true;
+				pbmsg_length = 0;
+
+			}
+		}
+	}
+
+	// Decoding time
+	pb_istream_t input_stream = pb_istream_from_buffer(reinterpret_cast<const pb_byte_t*>(pb_bytes.data()), pb_bytes.size());
+	message_actuation_ServoTargets fake_st = message_actuation_ServoTargets_init_zero;
+
+	decoded = pb_decode(&input_stream, message_actuation_ServoTargets_fields, &fake_st);
+	if (!decoded) {
+		HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_SET);
+		HAL_Delay(500);
+		HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_RESET);
+		HAL_Delay(500);
 
 		HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_SET);
-	    HAL_Delay(100);
+		HAL_Delay(500);
 		HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_RESET);
-		HAL_Delay(2000);
+		HAL_Delay(500);
+
+		HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_SET);
+		HAL_Delay(500);
+		HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_RESET);
+		HAL_Delay(500);
 	}
+
+	else {
+		HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_SET);
+		HAL_Delay(5000);
+		HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_RESET);
+	}
+
 }
 #endif
 

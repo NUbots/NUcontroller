@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 #include "settings.h"
 #include "platform/NUsense/NUsenseIO.hpp"
+#include "test_hw.hpp"
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
