@@ -134,10 +134,8 @@ void dxl_node_op3_loop(void) {
     p_dxl_mem->Yaw   = dxl_hw_op3_get_rpy(2);
 
     // This used to only happen if we had a read command come through. Not sure if that was done for a reason.
-    p_dxl_mem->Button = dxl_hw_op3_button_read(PIN_BUTTON_S1) << 0;
-    p_dxl_mem->Button |= dxl_hw_op3_button_read(PIN_BUTTON_S2) << 1;
-    p_dxl_mem->Button |= dxl_hw_op3_button_read(PIN_BUTTON_S3) << 2;
-    p_dxl_mem->Button |= dxl_hw_op3_button_read(PIN_BUTTON_S4) << 3;
+    p_dxl_mem->Button = (dxl_hw_op3_button_read(PIN_BUTTON_S1) << 0) | (dxl_hw_op3_button_read(PIN_BUTTON_S2) << 1)
+                        | (dxl_hw_op3_button_read(PIN_BUTTON_S3) << 2) | (dxl_hw_op3_button_read(PIN_BUTTON_S4) << 3);
 
     p_dxl_mem->Voltage = dxl_hw_op3_voltage_read();
 
