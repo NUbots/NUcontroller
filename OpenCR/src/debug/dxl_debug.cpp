@@ -33,6 +33,7 @@ static void dxl_debug_menu_show_cmdline(void);
 static bool dxl_debug_menu_shwo_ctrltbl();
 
 static void dxl_debug_send_write_command(void);
+static void dxl_debug_test_gpio(void);
 
 
 /*---------------------------------------------------------------------------
@@ -49,26 +50,24 @@ void dxl_debug_init(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 void dxl_debug_loop(void) {
-    uint8_t ch;
+    uint8_t debug_override = 0;
+
 
     /* Activate debug mode if dip switch active */
     uint8_t dip = digitalReadFast(DEBUG_SWITCH);
     // show debug state with LED
     digitalWriteFast(DEBUG_LED, dip);
-    // set state (dip switch pulled up)
-    debug_state = !dip;
+    // set state (dip switch pulled up), or override if needed
+    debug_state = !dip | debug_override;
 
     if (DEBUG_SERIAL.available()) {
-        ch = DEBUG_SERIAL.read();
+        uint8_t ch = DEBUG_SERIAL.read();
 
 
         switch (debug_state) {
             case 0:
-                if (ch == 'm') {
-                    debug_state = 1;
-                    dxl_debug_menu_show_list();
-                    dxl_debug_menu_show_cmdline();
-                }
+                // force debug on if '~' is sent, regardless of dip switch.
+                debug_override = (ch == '~');
                 break;
 
             case 1: dxl_debug_menu_loop(ch); break;
@@ -89,6 +88,7 @@ void dxl_debug_menu_show_list(void) {
     DEBUG_SERIAL.println("d - show step");
     DEBUG_SERIAL.println("l - show control table");
     DEBUG_SERIAL.println("s - send dynamixel write command");
+    DEBUG_SERIAL.println("g - test gpio (buttons)");
     DEBUG_SERIAL.println("q - exit menu");
     DEBUG_SERIAL.println("---------------------------");
 }
@@ -131,6 +131,11 @@ bool dxl_debug_menu_loop(uint8_t ch) {
         case 's':
             DEBUG_SERIAL.println(" ");
             dxl_debug_send_write_command();
+            break;
+
+        case 'g':
+            DEBUG_SERIAL.println(" ");
+            dxl_debug_test_gpio();
             break;
 
 
@@ -421,4 +426,59 @@ void dxl_debug_send_write_command(void) {
 
     // send packet
     dxlTxPacket(&container);
+}
+
+/**
+ * @brief poll the gpio pins to see what is being read
+ */
+void dxl_debug_test_gpio(void) {
+    // hold each pgio pin as a bit
+    static uint32_t buttonState = 0;
+    // from the 10x10 header on the board
+    const uint8_t num_gpio_pins                = 18;
+    const uint32_t gpio_pin_num[num_gpio_pins] = {BDPIN_GPIO_1,
+                                                  BDPIN_GPIO_2,
+                                                  BDPIN_GPIO_3,
+                                                  BDPIN_GPIO_4,
+                                                  BDPIN_GPIO_5,
+                                                  BDPIN_GPIO_6,
+                                                  BDPIN_GPIO_7,
+                                                  BDPIN_GPIO_8,
+                                                  BDPIN_GPIO_9,
+                                                  BDPIN_GPIO_10,
+                                                  BDPIN_GPIO_11,
+                                                  BDPIN_GPIO_12,
+                                                  BDPIN_GPIO_13,
+                                                  BDPIN_GPIO_14,
+                                                  BDPIN_GPIO_15,
+                                                  BDPIN_GPIO_16,
+                                                  BDPIN_GPIO_17,
+                                                  BDPIN_GPIO_18};
+
+    // we want to be able to break from the loop if a character is sent
+    char ch;
+
+    // testing loop
+    do {
+        uint32_t thisButtonState = 0;
+        // poll each gpio pin
+        for (int i = 0; i < num_gpio_pins; i++) {
+            // is it this easy? i don't remember
+            thisButtonState |= digitalRead(gpio_pin_num[i]) << i;
+        }
+
+        // check it's new
+        if (thisButtonState != buttonState) {
+            // update state variable
+            buttonState = thisButtonState;
+            // if it's new then print
+            DEBUG_SERIAL.print('0x');
+            DEBUG_SERIAL.println(buttonState, HEX);
+        }
+
+        // if a charcater was sent, read it, else make it null
+        ch = DEBUG_SERIAL.available() ? DEBUG_SERIAL.read() : '\0';
+    }
+    // no character sent
+    while (ch == '\0');
 }
