@@ -440,7 +440,7 @@ void dxl_debug_test_gpio(void) {
     DEBUG_SERIAL.println("m - return to menu");
     DEBUG_SERIAL.println("b - toggle debouncing (default on)");
     DEBUG_SERIAL.println("---------------------------");
-    DEBUG_SERIAL.println("......x.........987654321");
+    DEBUG_SERIAL.println("      x.........987654321");
 
     /* config variables */
     // do we want debounced or raw pin values
