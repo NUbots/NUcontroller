@@ -537,10 +537,10 @@ void dxl_debug_test_gpio(void) {
         if (gpio_state_now != gpio_state) {
 
             // debug the debug
-            DEBUG_SERIAL.print("\n[*] ");
-            DEBUG_SERIAL.print(gpio_state_now, BIN);
-            DEBUG_SERIAL.print(" ");
-            DEBUG_SERIAL.println(gpio_state, BIN);
+            // DEBUG_SERIAL.print("\n[*] ");
+            // DEBUG_SERIAL.print(gpio_state_now, BIN);
+            // DEBUG_SERIAL.print(" ");
+            // DEBUG_SERIAL.println(gpio_state, BIN);
 
             // update state variable
             gpio_state = gpio_state_now;
@@ -554,7 +554,7 @@ void dxl_debug_test_gpio(void) {
             DEBUG_SERIAL.print("] ");
 
             // print pin state with a leading 1 to ensure every bit prints (not truncated 0)
-            DEBUG_SERIAL.println((gpio_state & (1 << num_gpio_pins)), BIN);
+            DEBUG_SERIAL.println((gpio_state | (1 << num_gpio_pins)), BIN);
 
             // And print the button state too
             //     uint32_t addr = (uint32_t) &p_dxl_mem->Button - (uint32_t) p_dxl_mem;
