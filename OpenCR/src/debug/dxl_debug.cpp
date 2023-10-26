@@ -441,8 +441,12 @@ void dxl_debug_test_gpio(void) {
     DEBUG_SERIAL.println("b - toggle debouncing (default on)");
     DEBUG_SERIAL.println("---------------------------");
 
-    // from the 10x10 header on the board
-    const uint8_t num_gpio_pins                = 18;
+    /* config variables */
+    // do we want debounced or raw pin values
+    bool debounce = true;
+    // The 10x10 header on the board, minus 3v3 and GND
+    const uint8_t num_gpio_pins = 18;
+    // gpio pin definitions from OpenCR's chip.h
     const uint32_t gpio_pin_num[num_gpio_pins] = {BDPIN_GPIO_1,
                                                   BDPIN_GPIO_2,
                                                   BDPIN_GPIO_3,
@@ -472,8 +476,6 @@ void dxl_debug_test_gpio(void) {
     char ch;
 
     /* debounce variables */
-    // do we want debounced or raw pin values
-    bool debounce = true;
     // keep track of whether a pin is being debounced (as bit)
     static uint32_t gpio_debounce_state = 0;
     // how long to wait for debouncing
@@ -484,7 +486,7 @@ void dxl_debug_test_gpio(void) {
     };
 
 
-    // gpio testing loop
+    /* gpio testing loop */
     do {
         // initialise our temp state variable to 0
         gpio_state_now = 0;
