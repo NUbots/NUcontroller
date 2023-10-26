@@ -82,19 +82,19 @@
  *
  *          - Hardware requirements for interface board are
  *              Use silkscreen GPIO 3..12 (TEST_PIN1..10)
- * 
+ *
  *              S1 -> Silkscreen GPIO 9  (TEST_PIN7)
  *              S2 -> Silkscreen GPIO 10 (TEST_PIN8)
  *              S3 -> Silkscreen GPIO 11 (TEST_PIN9)
- * 
+ *
  *              Short Silkscreen GPIO 9 and 12 (TEST_PIN7 and TEST_PIN_10)
  *               - this was so buttons 1 and 4 are internally the same?
  */
 
-
-#define HW_INTERFACE_BUTTON_RED   59
-#define HW_INTERFACE_BUTTON_GREEN 51
-#define HW_INTERFACE_BUTTON_BLACK 52
+// These are now DEFINITELY correct. Set after manually inspecting buttons with debug tool
+#define HW_INTERFACE_BUTTON_RED   BDPIN_GPIO_7
+#define HW_INTERFACE_BUTTON_GREEN BDPIN_GPIO_8
+#define HW_INTERFACE_BUTTON_BLACK BDPIN_GPIO_9
 
 #define HW_INTERFACE_LED_1 53
 #define HW_INTERFACE_LED_2 54
