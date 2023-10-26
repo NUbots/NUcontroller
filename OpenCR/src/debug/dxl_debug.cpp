@@ -434,17 +434,13 @@ void dxl_debug_send_write_command(void) {
 void dxl_debug_test_gpio(void) {
     // entry messages
     DEBUG_SERIAL.println("---------------------------");
-    DEBUG_SERIAL.println("GPIO state will print on update");
-    DEBUG_SERIAL.println("lsb is BDPIN_GPIO_1, msb is BDPIN_GPIO_18");
+    DEBUG_SERIAL.println("> gpio state will print on update");
+    DEBUG_SERIAL.println("> pins are in bit order with LSB as BDPIN_GPIO_1 (silkscreen gpio 3)");
+    DEBUG_SERIAL.println("> MSB is always 1 to prevent zeroes truncating");
     DEBUG_SERIAL.println("m - return to menu");
     DEBUG_SERIAL.println("b - toggle debouncing (default on)");
     DEBUG_SERIAL.println("---------------------------");
 
-    // for keeping track while printing
-    static uint16_t poll_round = 0;
-
-    // hold each pgio pin as a bit
-    static uint32_t gpio_state = 0;
     // from the 10x10 header on the board
     const uint8_t num_gpio_pins                = 18;
     const uint32_t gpio_pin_num[num_gpio_pins] = {BDPIN_GPIO_1,
@@ -466,11 +462,18 @@ void dxl_debug_test_gpio(void) {
                                                   BDPIN_GPIO_17,
                                                   BDPIN_GPIO_18};
 
-    /**
-     * debounce variables
-     */
+    // for keeping track while printing (overflow at 255)
+    static uint8_t poll_count = 0;
+    // bit field for each gpio pin value
+    static uint32_t gpio_state = 0;
+    // temp loop variable for state
+    uint32_t gpio_state_now = 0;
+    // scope serial character variable outside do-while
+    char ch;
+
+    /* debounce variables */
     // do we want debounced or raw pin values
-    bool debounceOn = true;
+    bool debounce = true;
     // keep track of whether a pin is being debounced (as bit)
     static uint32_t gpio_debounce_state = 0;
     // how long to wait for debouncing
@@ -480,84 +483,79 @@ void dxl_debug_test_gpio(void) {
         0,
     };
 
-    // scope serial char variable to outside do-while body
-    char ch;
 
-    // testing loop
+    // gpio testing loop
     do {
         // initialise our temp state variable to 0
-        uint32_t gpio_state_now = 0;
+        gpio_state_now = 0;
 
         // poll each gpio pin
         for (int pin = 0; pin < num_gpio_pins; pin++) {
 
-            // the last "real" (debounced) pin state
+            // read the current real time state (invert because of pullups)
+            const uint8_t pin_state_now = !digitalRead(gpio_pin_num[pin]);
+            // the last "true" (debounced) pin state
             const uint8_t pin_value = (gpio_state >> pin) & 1;
 
-            // read the current real time state
-            uint8_t pin_state_now = !digitalRead(gpio_pin_num[pin]);
-
-            // run debounce routine
-            if (debounceOn) {
-                // select bit to see if current pin is active
-                switch ((gpio_debounce_state >> pin) & 1) {
-
-                    // inactive, pin not HIGH or already debounced
-                    case 0:
-                        // if the pin state has changed since last debounce
-                        if (pin_value != pin_state_now) {
-                            // set the bit to log a debounce action
-                            gpio_debounce_state |= 1 << pin;
-                            // and record the timestamp for debouncing
-                            pin_time[pin] = millis();
-                        }
-                        break;
-
-                    // active, we have a press or release to poll for
-                    case 1:
-                        // is the time delta greater than the debounce threshold
-                        if ((millis() - pin_time[pin]) > debounce_time_ms) {
-                            // update the "real" current gpio state
-                            // clear bit no matter what
-                            gpio_state_now &= ~(1 << pin);
-                            // and set it if the pin state is active
-                            gpio_state_now |= pin_state_now << pin;
-                            // clear the debounce state
-                            gpio_debounce_state &= ~(1 << pin);
-                        }
-                        break;
-                    // Achievement Get: How did we get here?
-                    default:
-                        // uhhhhh
-                        DEBUG_SERIAL.print("[!] Error in debounce routine. exiting...");
-                        // reset state variables just in case
-                        gpio_state = gpio_debounce_state = 0;
-                        return;
-                }
-            }
-            // pure pin polling
-            else {
+            // simple pin polling if debounce is off
+            if (debounce == false) {
                 // set the bit active if pin is active
                 gpio_state_now |= pin_state_now << pin;
             }
+
+            // otherwise run debounce routine
+            else {
+                // is the pin currently being debounced?
+                const bool pin_debouncing = (gpio_debounce_state >> pin) & 1;
+
+                // pin inactive, already debounced / nothing happened yet
+                if (pin_debouncing == false) {
+                    // if the pin state has changed since last debounce
+                    if (pin_value != pin_state_now) {
+                        // set the bit to log a debounce action
+                        gpio_debounce_state |= 1 << pin;
+                        // and record the timestamp for debouncing
+                        pin_time[pin] = millis();
+                    }
+                }
+                // active, we recently went high or low
+                else {
+                    // is the time delta greater than the debounce threshold
+                    if ((millis() - pin_time[pin]) > debounce_time_ms) {
+                        // update the  current gpio state
+                        gpio_state_now &= ~(1 << pin);           // bit reset
+                        gpio_state_now |= pin_state_now << pin;  // bit set
+
+                        // clear the debounce state
+                        gpio_debounce_state &= ~(1 << pin);
+                    }
+                }
+            }
         }
 
+        // bit mask the field just in case
         // check it's new
         if (gpio_state_now != gpio_state) {
+
+            // debug the debug
+            DEBUG_SERIAL.print("\n[*] ");
+            DEBUG_SERIAL.print(gpio_state_now, BIN);
+            DEBUG_SERIAL.print(" ");
+            DEBUG_SERIAL.println(gpio_state, BIN);
+
             // update state variable
             gpio_state = gpio_state_now;
 
-            // if it's new then print
-            // round counter
+            // poll counter
             DEBUG_SERIAL.print("[");
             // leading zeros
-            DEBUG_SERIAL.print(poll_round < 100 ? "0" : "");
-            DEBUG_SERIAL.print(poll_round < 10 ? "0" : "");
+            DEBUG_SERIAL.print(poll_count < 100 ? (poll_count < 10 ? "00" : "0") : "");
             // print round and increment
-            DEBUG_SERIAL.print(poll_round++);
+            DEBUG_SERIAL.print(poll_count++);
             DEBUG_SERIAL.print("] ");
-            // actual pin state
-            DEBUG_SERIAL.println(gpio_state, BIN);
+
+            // print pin state with a leading 1 to ensure every bit prints (not truncated 0)
+            DEBUG_SERIAL.println((gpio_state & (1 << num_gpio_pins)), BIN);
 
             // And print the button state too
             //     uint32_t addr = (uint32_t) &p_dxl_mem->Button - (uint32_t) p_dxl_mem;
@@ -573,10 +571,10 @@ void dxl_debug_test_gpio(void) {
 
         // toggle debouncing if 'b' sent
         if (ch == 'b') {
-            debounceOn = debounceOn ? false : true;
+            debounce = debounce ? false : true;
             // print status
             DEBUG_SERIAL.print(">> debounce ");
-            DEBUG_SERIAL.println(debounceOn ? "enabled" : "disabled");
+            DEBUG_SERIAL.println(debounce ? "enabled" : "disabled");
         }
     }
     // exit character
