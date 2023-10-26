@@ -24,7 +24,12 @@
 
 extern dxl_mem_op3_t* p_dxl_mem;
 
+// are we in debug mode (generally set by DIP switch)
 uint8_t debug_state = 0;
+// have we forced debug mode on?
+uint8_t debug_override = 0;
+// character to force debug mode
+const char override_char = '`';  // grave (`)
 
 
 static void dxl_debug_menu_show_list(void);
@@ -50,8 +55,6 @@ void dxl_debug_init(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 void dxl_debug_loop(void) {
-    uint8_t debug_override = 0;
-
 
     /* Activate debug mode if dip switch active */
     uint8_t dip = digitalReadFast(DEBUG_SWITCH);
@@ -66,8 +69,8 @@ void dxl_debug_loop(void) {
 
         switch (debug_state) {
             case 0:
-                // force debug on if '~' is sent, regardless of dip switch.
-                debug_override = (ch == '~');
+                // force debug on if override is sent, regardless of dip switch.
+                debug_override = (ch == override_char);
                 break;
 
             case 1: dxl_debug_menu_loop(ch); break;
@@ -117,6 +120,8 @@ bool dxl_debug_menu_loop(uint8_t ch) {
 
         case 'q':
             exit_menu = true;
+            // disable override on menu exit
+            debug_override = 0;
             DEBUG_SERIAL.println(" ");
             DEBUG_SERIAL.println("exit menu...");
             break;
