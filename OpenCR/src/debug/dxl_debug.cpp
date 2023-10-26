@@ -440,6 +440,9 @@ void dxl_debug_test_gpio(void) {
     DEBUG_SERIAL.println("b - toggle debouncing (default on)");
     DEBUG_SERIAL.println("---------------------------");
 
+    // for keeping track while printing
+    static uint16_t poll_round = 0;
+
     // hold each pgio pin as a bit
     static uint32_t gpio_state = 0;
     // from the 10x10 header on the board
@@ -512,10 +515,8 @@ void dxl_debug_test_gpio(void) {
 
                     // active, we have a press or release to poll for
                     case 1:
-                        // how long has it been
-                        uint32_t pin_time_delta = millis() - pin_time[pin];
                         // is the time delta greater than the debounce threshold
-                        if (pin_time_delta > debounce_time_ms) {
+                        if ((millis() - pin_time[pin]) > debounce_time_ms) {
                             // update the "real" current gpio state
                             // clear bit no matter what
                             gpio_state_now &= ~(1 << pin);
@@ -528,6 +529,10 @@ void dxl_debug_test_gpio(void) {
                     // Achievement Get: How did we get here?
                     default:
                         // uhhhhh
+                        DEBUG_SERIAL.print("[!] Error in debounce routine. exiting...");
+                        // reset state variables just in case
+                        gpio_state = gpio_debounce_state = 0;
+                        return;
                 }
             }
             // pure pin polling
@@ -543,6 +548,15 @@ void dxl_debug_test_gpio(void) {
             gpio_state = gpio_state_now;
 
             // if it's new then print
+            // round counter
+            DEBUG_SERIAL.print("[");
+            // leading zeros
+            DEBUG_SERIAL.print(poll_round < 100 ? "0" : "");
+            DEBUG_SERIAL.print(poll_round < 10 ? "0" : "");
+            // print round and increment
+            DEBUG_SERIAL.print(poll_round++);
+            DEBUG_SERIAL.print("] ");
+            // actual pin state
             DEBUG_SERIAL.println(gpio_state, BIN);
 
             // And print the button state too
@@ -568,5 +582,5 @@ void dxl_debug_test_gpio(void) {
     // exit character
     while (ch != 'm');
     // show menu
-    dxl_debug_menu_show_list()
+    dxl_debug_menu_show_list();
 }
