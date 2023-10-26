@@ -435,11 +435,12 @@ void dxl_debug_test_gpio(void) {
     // entry messages
     DEBUG_SERIAL.println("---------------------------");
     DEBUG_SERIAL.println("> gpio state will print on update");
-    DEBUG_SERIAL.println("> pins are in bit order with LSB as BDPIN_GPIO_1 (silkscreen gpio 3)");
+    DEBUG_SERIAL.println("> pins in bit order w/ LSB = BDPIN_GPIO_1 (silkscreen gpio 3)");
     DEBUG_SERIAL.println("> MSB is always 1 to prevent zeroes truncating");
     DEBUG_SERIAL.println("m - return to menu");
     DEBUG_SERIAL.println("b - toggle debouncing (default on)");
     DEBUG_SERIAL.println("---------------------------");
+    DEBUG_SERIAL.println("......x.........987654321");
 
     /* config variables */
     // do we want debounced or raw pin values
