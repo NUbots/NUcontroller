@@ -561,10 +561,12 @@ void dxl_debug_test_gpio(void) {
         if (ch == 'b') {
             debounceOn = debounceOn ? false : true;
             // print status
-            DEBUG_SERIAL.print("debounce ");
+            DEBUG_SERIAL.print(">> debounce ");
             DEBUG_SERIAL.println(debounceOn ? "enabled" : "disabled");
         }
     }
-    // no character sent
+    // exit character
     while (ch != 'm');
+    // show menu
+    dxl_debug_menu_show_list()
 }
