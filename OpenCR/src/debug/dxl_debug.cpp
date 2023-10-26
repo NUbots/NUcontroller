@@ -471,7 +471,7 @@ void dxl_debug_test_gpio(void) {
     // bit field for each gpio pin value
     static uint32_t gpio_state = 0;
     // temp loop variable for state
-    uint32_t gpio_state_now = 0;
+    static uint32_t gpio_state_now = 0;
     // scope serial character variable outside do-while
     char ch;
 
@@ -488,9 +488,6 @@ void dxl_debug_test_gpio(void) {
 
     /* gpio testing loop */
     do {
-        // initialise our temp state variable to 0
-        gpio_state_now = 0;
-
         // poll each gpio pin
         for (int pin = 0; pin < num_gpio_pins; pin++) {
 
