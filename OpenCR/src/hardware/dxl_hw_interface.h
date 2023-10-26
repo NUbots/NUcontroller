@@ -43,10 +43,40 @@
  *          > sets global for PWM value
  *      - handler_led(void)
  *          > Triggered by interrupt, sets values based on globals
- *
+ * 
+ * - The interface board has:
+ *     S1 -> Silkscreen GPIO 9  (TEST_PIN7)
+ *     S2 -> Silkscreen GPIO 10 (TEST_PIN8)
+ *     S3 -> Silkscreen GPIO 11 (TEST_PIN9)
+ *     Short Silkscreen GPIO 9 and 12 (TEST_PIN7 and TEST_PIN_10)
+ *      - This shorts S1 and S4, because S1 is our red button but the 
+ *        default firmware uses S4 for Dynamixel power disable. Avoids 
+ *        potential problems in the future.
  */
 
+
 /**
+ * If you want to change these mappings, double check you have the correct pins
+ * by using the GPIO pin tester in debug mode
+ */
+#define HW_INTERFACE_BUTTON_RED   BDPIN_GPIO_7  // 56
+#define HW_INTERFACE_BUTTON_GREEN BDPIN_GPIO_8  // 57
+#define HW_INTERFACE_BUTTON_BLACK BDPIN_GPIO_9  // 58
+
+#define HW_INTERFACE_LED_1 BDPIN_GPIO_4  // 53
+#define HW_INTERFACE_LED_2 BDPIN_GPIO_5  // 54
+#define HW_INTERFACE_LED_3 BDPIN_GPIO_6  // 55
+
+#define HW_INTERFACE_LED_R BDPIN_GPIO_1  // 50
+#define HW_INTERFACE_LED_G BDPIN_GPIO_2  // 51
+#define HW_INTERFACE_LED_B BDPIN_GPIO_3  // 52
+
+#endif  // DXL_HW_INTERFACE_H
+
+/*****
+ * If you're ever confused by the button/gio pin numbering, try here.
+ *****
+ *
  * https://github.com/ROBOTIS-GIT/OpenCR-Hardware/blob/master/Schematic/OpenCR_REVH.pdf
  *  - Will be in the range of TEST_PIN_1..12
  *      - TEST_PIN_1  -> 69  (PB10)
@@ -56,7 +86,7 @@
  *      - TEST_PIN_5  -> 2   (PE3)
  *      - TEST_PIN_6  -> 87  (PG2)
  *      - TEST_PIN_7  -> 63  (PE10)
- *           ...         ⋮    ⋮
+ *            ⋮          ⋮    ⋮
  *      - TEST_PIN_12 -> 68  (PE15)
  *
  * https://github.com/ROBOTIS-GIT/OpenCR/blob/master/arduino/opencr_arduino/opencr/variants/OpenCR/chip.h
@@ -79,30 +109,4 @@
  *              PIN_BUTTON_S2   BDPIN_GPIO_8    Silkscreen GPIO 10
  *              PIN_BUTTON_S3   BDPIN_GPIO_9    Silkscreen GPIO 11
  *              PIN_BUTTON_S4   BDPIN_GPIO_10   Silkscreen GPIO 12
- *
- *          - Hardware requirements for interface board are
- *              Use silkscreen GPIO 3..12 (TEST_PIN1..10)
- *
- *              S1 -> Silkscreen GPIO 9  (TEST_PIN7)
- *              S2 -> Silkscreen GPIO 10 (TEST_PIN8)
- *              S3 -> Silkscreen GPIO 11 (TEST_PIN9)
- *
- *              Short Silkscreen GPIO 9 and 12 (TEST_PIN7 and TEST_PIN_10)
- *               - this was so buttons 1 and 4 are internally the same?
  */
-
-
-// These are now DEFINITELY correct. Set after manually inspecting buttons with debug tool
-#define HW_INTERFACE_BUTTON_RED   BDPIN_GPIO_7  // 56
-#define HW_INTERFACE_BUTTON_GREEN BDPIN_GPIO_8  // 57
-#define HW_INTERFACE_BUTTON_BLACK BDPIN_GPIO_9  // 58
-
-#define HW_INTERFACE_LED_1 BDPIN_GPIO_4  // 53
-#define HW_INTERFACE_LED_2 BDPIN_GPIO_5  // 54
-#define HW_INTERFACE_LED_3 BDPIN_GPIO_6  // 55
-
-#define HW_INTERFACE_LED_R BDPIN_GPIO_1  // 50
-#define HW_INTERFACE_LED_G BDPIN_GPIO_2  // 51
-#define HW_INTERFACE_LED_B BDPIN_GPIO_3  // 52
-
-#endif  // DXL_HW_INTERFACE_H
