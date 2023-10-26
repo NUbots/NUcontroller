@@ -432,8 +432,16 @@ void dxl_debug_send_write_command(void) {
  * @brief poll the gpio pins to see what is being read
  */
 void dxl_debug_test_gpio(void) {
+    // entry messages
+    DEBUG_SERIAL.println("---------------------------");
+    DEBUG_SERIAL.println("GPIO state will print on update");
+    DEBUG_SERIAL.println("lsb is BDPIN_GPIO_1, msb is BDPIN_GPIO_18");
+    DEBUG_SERIAL.println("m - return to menu");
+    DEBUG_SERIAL.println("b - toggle debouncing (default on)");
+    DEBUG_SERIAL.println("---------------------------");
+
     // hold each pgio pin as a bit
-    static uint32_t buttonState = 0;
+    static uint32_t gpio_state = 0;
     // from the 10x10 header on the board
     const uint8_t num_gpio_pins                = 18;
     const uint32_t gpio_pin_num[num_gpio_pins] = {BDPIN_GPIO_1,
@@ -455,30 +463,108 @@ void dxl_debug_test_gpio(void) {
                                                   BDPIN_GPIO_17,
                                                   BDPIN_GPIO_18};
 
-    // we want to be able to break from the loop if a character is sent
+    /**
+     * debounce variables
+     */
+    // do we want debounced or raw pin values
+    bool debounceOn = true;
+    // keep track of whether a pin is being debounced (as bit)
+    static uint32_t gpio_debounce_state = 0;
+    // how long to wait for debouncing
+    const uint8_t debounce_time_ms = 30;
+    // ms since last pin poll time
+    static uint32_t pin_time[num_gpio_pins] = {
+        0,
+    };
+
+    // scope serial char variable to outside do-while body
     char ch;
 
     // testing loop
     do {
-        uint32_t thisButtonState = 0;
+        // initialise our temp state variable to 0
+        uint32_t gpio_state_now = 0;
+
         // poll each gpio pin
-        for (int i = 0; i < num_gpio_pins; i++) {
-            // is it this easy? i don't remember
-            thisButtonState |= digitalRead(gpio_pin_num[i]) << i;
+        for (int pin = 0; pin < num_gpio_pins; pin++) {
+
+            // the last "real" (debounced) pin state
+            const uint8_t pin_value = (gpio_state >> pin) & 1;
+
+            // read the current real time state
+            uint8_t pin_state_now = !digitalRead(gpio_pin_num[pin]);
+
+            // run debounce routine
+            if (debounceOn) {
+                // select bit to see if current pin is active
+                switch ((gpio_debounce_state >> pin) & 1) {
+
+                    // inactive, pin not HIGH or already debounced
+                    case 0:
+                        // if the pin state has changed since last debounce
+                        if (pin_value != pin_state_now) {
+                            // set the bit to log a debounce action
+                            gpio_debounce_state |= 1 << pin;
+                            // and record the timestamp for debouncing
+                            pin_time[pin] = millis();
+                        }
+                        break;
+
+                    // active, we have a press or release to poll for
+                    case 1:
+                        // how long has it been
+                        uint32_t pin_time_delta = millis() - pin_time[pin];
+                        // is the time delta greater than the debounce threshold
+                        if (pin_time_delta > debounce_time_ms) {
+                            // update the "real" current gpio state
+                            // clear bit no matter what
+                            gpio_state_now &= ~(1 << pin);
+                            // and set it if the pin state is active
+                            gpio_state_now |= pin_state_now << pin;
+                            // clear the debounce state
+                            gpio_debounce_state &= ~(1 << pin);
+                        }
+                        break;
+                    // Achievement Get: How did we get here?
+                    default:
+                        // uhhhhh
+                }
+            }
+            // pure pin polling
+            else {
+                // set the bit active if pin is active
+                gpio_state_now |= pin_state_now << pin;
+            }
         }
 
         // check it's new
-        if (thisButtonState != buttonState) {
+        if (gpio_state_now != gpio_state) {
             // update state variable
-            buttonState = thisButtonState;
+            gpio_state = gpio_state_now;
+
             // if it's new then print
-            DEBUG_SERIAL.print('0x');
-            DEBUG_SERIAL.println(buttonState, HEX);
+            DEBUG_SERIAL.println(gpio_state, BIN);
+
+            // And print the button state too
+            //     uint32_t addr = (uint32_t) &p_dxl_mem->Button - (uint32_t) p_dxl_mem;
+            //     DEBUG_SERIAL.print(addr);
+            //     DEBUG_SERIAL.print("\t Button          \t ");
+            //     DEBUG_SERIAL.print(p_dxl_mem->Button);
+            //     DEBUG_SERIAL.print("\t 0x");
+            //     DEBUG_SERIAL.println(p_dxl_mem->Button, HEX);
         }
 
         // if a charcater was sent, read it, else make it null
         ch = DEBUG_SERIAL.available() ? DEBUG_SERIAL.read() : '\0';
+
+        // toggle debouncing if 'b' sent
+        if (ch == 'b') {
+            debounceOn = debounceOn ? false : true;
+            // print status
+            DEBUG_SERIAL.print("debounce ");
+            DEBUG_SERIAL.println(debounceOn ? "enabled" : "disabled");
+        }
     }
     // no character sent
-    while (ch == '\0');
+    while (ch != 'm');
 }
