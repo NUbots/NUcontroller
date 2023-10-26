@@ -91,17 +91,18 @@
  *               - this was so buttons 1 and 4 are internally the same?
  */
 
+
 // These are now DEFINITELY correct. Set after manually inspecting buttons with debug tool
-#define HW_INTERFACE_BUTTON_RED   BDPIN_GPIO_7
-#define HW_INTERFACE_BUTTON_GREEN BDPIN_GPIO_8
-#define HW_INTERFACE_BUTTON_BLACK BDPIN_GPIO_9
+#define HW_INTERFACE_BUTTON_RED   BDPIN_GPIO_7  // 56
+#define HW_INTERFACE_BUTTON_GREEN BDPIN_GPIO_8  // 57
+#define HW_INTERFACE_BUTTON_BLACK BDPIN_GPIO_9  // 58
 
-#define HW_INTERFACE_LED_1 53
-#define HW_INTERFACE_LED_2 54
-#define HW_INTERFACE_LED_3 55
+#define HW_INTERFACE_LED_1 BDPIN_GPIO_4  // 53
+#define HW_INTERFACE_LED_2 BDPIN_GPIO_5  // 54
+#define HW_INTERFACE_LED_3 BDPIN_GPIO_6  // 55
 
-#define HW_INTERFACE_LED_R 56
-#define HW_INTERFACE_LED_G 57
-#define HW_INTERFACE_LED_B 58
+#define HW_INTERFACE_LED_R BDPIN_GPIO_1  // 50
+#define HW_INTERFACE_LED_G BDPIN_GPIO_2  // 51
+#define HW_INTERFACE_LED_B BDPIN_GPIO_3  // 52
 
 #endif  // DXL_HW_INTERFACE_H
