@@ -46,9 +46,6 @@
  *
  */
 
-/// @todo Fill these in with correct pins as per OpenCR schematic once Clayton
-///       knows what pins go where.
-
 /**
  * https://github.com/ROBOTIS-GIT/OpenCR-Hardware/blob/master/Schematic/OpenCR_REVH.pdf
  *  - Will be in the range of TEST_PIN_1..12
@@ -85,10 +82,13 @@
  *
  *          - Hardware requirements for interface board are
  *              Use silkscreen GPIO 3..12 (TEST_PIN1..10)
- *              S1 -> Silkscreen GPIO 9 (TEST_PIN7)
+ * 
+ *              S1 -> Silkscreen GPIO 9  (TEST_PIN7)
  *              S2 -> Silkscreen GPIO 10 (TEST_PIN8)
  *              S3 -> Silkscreen GPIO 11 (TEST_PIN9)
+ * 
  *              Short Silkscreen GPIO 9 and 12 (TEST_PIN7 and TEST_PIN_10)
+ *               - this was so buttons 1 and 4 are internally the same?
  */
 
 
