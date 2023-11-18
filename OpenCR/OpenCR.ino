@@ -8,10 +8,8 @@
  *  Edited on: 2022. 02. 16.
  *      Author: Dexter Konijn
  */
+
 #include "./src/protocol/dxl_node_op3.h"
-
-
-extern void dxl_hw_tx_enable(void);
 
 void setup() {
     dxl_node_op3_init();
