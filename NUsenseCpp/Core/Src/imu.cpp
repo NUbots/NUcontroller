@@ -10,7 +10,7 @@
 
 #include "imu.h"
 
-using namespace NUsense
+using namespace NUsense;
 
 static volatile uint8_t spi_int_flags;
 
