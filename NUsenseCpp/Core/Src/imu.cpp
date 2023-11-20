@@ -10,6 +10,8 @@
 
 #include "imu.h"
 
+using namespace NUsense
+
 static volatile uint8_t spi_int_flags;
 
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef * hspi) {

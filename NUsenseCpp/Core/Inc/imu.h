@@ -277,6 +277,8 @@
  * This bit automatically sets to 1 when a FSYNC interrupt has been generated.
  * The bit clears to 0 after the register has been read.
  */
+namespace NUsense {
+                }
 
 //-------------------------------------------
 // – INT/DRDY PIN / BYPASS ENABLE CONFIGURATION R/W
