@@ -10,7 +10,7 @@ namespace platform::NUsense {
         // successfully received. If so, then handle it and send the next read-
         // instruction.
         for (int i = 0; i < NUM_PORTS; i++) {
-        //for (int i = 0; i < 1; i++) {
+
             platform::NUsense::NUgus::ID chain_index = (chains[i])[chain_indices[i]];
 
             if (packet_handlers[i].check_sts
