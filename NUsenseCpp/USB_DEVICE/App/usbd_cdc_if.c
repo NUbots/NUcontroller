@@ -22,7 +22,14 @@
 #include "usbd_cdc_if.h"
 
 /* USER CODE BEGIN INCLUDE */
+uint8_t rx_buf[RX_BUF_SIZE];
+uint8_t rx_flag = 0;
 
+uint16_t rx_buf_idx = 0;
+uint16_t rx_buf_len = 0;
+uint32_t rx_len = 0;
+
+extern uint8_t copy_fin;
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -31,7 +38,6 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
 /* USER CODE END PV */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -49,7 +55,6 @@
   */
 
 /* USER CODE BEGIN PRIVATE_TYPES */
-uint8_t rx_flag = 0;
 /* USER CODE END PRIVATE_TYPES */
 
 /**
@@ -262,12 +267,20 @@ static int8_t CDC_Control_HS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   */
 static int8_t CDC_Receive_HS(uint8_t* Buf, uint32_t *Len)
 {
-  /* USER CODE BEGIN 11 */
-  USBD_CDC_SetRxBuffer(&hUsbDeviceHS, &Buf[0]);
-  USBD_CDC_ReceivePacket(&hUsbDeviceHS);
+	/* USER CODE BEGIN 11 */
+	USBD_CDC_SetRxBuffer(&hUsbDeviceHS, &Buf[0]);
 
-  // Copy buffer data then raise receive flag
-  rx_flag = 1;
+	// Raise flags
+	rx_flag = 1;
+	rx_len = *Len;
+
+	// Do memcpy here to append data from the supplied buffer to rx_buf
+	memcpy(&rx_buf[rx_buf_len], &Buf[0], rx_len);
+
+	rx_buf_len = rx_buf_len + rx_len;
+
+	// Tell the USB stack we're ready to receive more data
+	USBD_CDC_ReceivePacket(&hUsbDeviceHS);
 
   return (USBD_OK);
   /* USER CODE END 11 */

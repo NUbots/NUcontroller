@@ -30,6 +30,7 @@
 #include "usbd_cdc.h"
 
 /* USER CODE BEGIN INCLUDE */
+#define RX_BUF_SIZE 2048U
 
 /* USER CODE END INCLUDE */
 
