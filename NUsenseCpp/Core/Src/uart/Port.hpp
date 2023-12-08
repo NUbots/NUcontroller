@@ -144,12 +144,9 @@ public:
      */
     uint16_t read();
     /**
-<<<<<<< HEAD
      * @brief    
      */
     /**
-=======
->>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
      * @brief   Flushes all the bytes out of the rx-buffer.
      */
     void flush_rx();
