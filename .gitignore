@@ -96,7 +96,7 @@ pyvenv.cfg
 .settings
 Release\
 Debug\
-.launch
+*.launch
 
 # Misc
 tags

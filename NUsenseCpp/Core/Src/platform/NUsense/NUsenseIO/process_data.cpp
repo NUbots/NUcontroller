@@ -6,7 +6,6 @@
 namespace platform::NUsense {
 
     void NUsenseIO::process_servo_data(
-        std::array<platform::ServoState,NUMBER_OF_DEVICES>& servo_states,
         const dynamixel::StatusReturnCommand<sizeof(DynamixelServoReadData)> packet
     ) {
         const DynamixelServoReadData data = *(reinterpret_cast<const DynamixelServoReadData*>(packet.data.data()));
