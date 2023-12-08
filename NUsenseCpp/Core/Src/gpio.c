@@ -56,10 +56,14 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, DXL_DIR3_Pin|DXL_DIR1_Pin|DXL_DIR6_Pin|SPARE1_Pin
+<<<<<<< HEAD
                           |DXL_DIR5_Pin|SPARE2_Pin|DXL_DIR2_Pin|SPARE4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, SPARE5_Pin|SPARE3_Pin, GPIO_PIN_RESET);
+=======
+                          |DXL_DIR5_Pin|SPARE2_Pin|DXL_DIR2_Pin, GPIO_PIN_RESET);
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, DXL_PWR_EN_Pin|BUZZER_SIG_Pin, GPIO_PIN_RESET);
@@ -85,14 +89,21 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(MPU_NSS_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PDPin PDPin PDPin PDPin
+<<<<<<< HEAD
                            PDPin PDPin PDPin PDPin */
   GPIO_InitStruct.Pin = DXL_DIR3_Pin|DXL_DIR1_Pin|DXL_DIR6_Pin|SPARE1_Pin
                           |DXL_DIR5_Pin|SPARE2_Pin|DXL_DIR2_Pin|SPARE4_Pin;
+=======
+                           PDPin PDPin PDPin */
+  GPIO_InitStruct.Pin = DXL_DIR3_Pin|DXL_DIR1_Pin|DXL_DIR6_Pin|SPARE1_Pin
+                          |DXL_DIR5_Pin|SPARE2_Pin|DXL_DIR2_Pin;
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
+<<<<<<< HEAD
   /*Configure GPIO pins : PCPin PCPin */
   GPIO_InitStruct.Pin = SPARE5_Pin|SPARE3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -100,6 +111,8 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
+=======
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
   /*Configure GPIO pins : PBPin PBPin */
   GPIO_InitStruct.Pin = DXL_PWR_EN_Pin|BUZZER_SIG_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;

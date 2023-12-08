@@ -133,6 +133,12 @@ void dxl_node_op3_loop(void) {
     p_dxl_mem->Pitch = dxl_hw_op3_get_rpy(1);
     p_dxl_mem->Yaw   = dxl_hw_op3_get_rpy(2);
 
+    // This used to only happen if we had a read command come through. Not sure if that was done for a reason.
+    p_dxl_mem->Button = (dxl_hw_op3_button_read(PIN_BUTTON_S1) << 0) | (dxl_hw_op3_button_read(PIN_BUTTON_S2) << 1)
+                        | (dxl_hw_op3_button_read(PIN_BUTTON_S3) << 2) | (dxl_hw_op3_button_read(PIN_BUTTON_S4) << 3);
+
+    p_dxl_mem->Voltage = dxl_hw_op3_voltage_read();
+
 
     for (i = 0; i < 3; i++) {
         if (p_dxl_mem->IMU_Control & (1 << i)) {
@@ -167,6 +173,7 @@ void dxl_node_op3_loop(void) {
                 gyro_cali_state = 0;
             }
         }
+        p_dxl_mem->Voltage = dxl_hw_op3_voltage_read();
     }
 
 
@@ -285,11 +292,11 @@ void dxl_process_packet() {
 
 void dxl_node_op3_btn_loop(void) {
     if (dxl_hw_op3_button_read(DXL_POWER_DISABLE_BUTTON)) {
+        /* Log if in debug mode and power is currently on */
+        if (debug_state && dxl_node_read_byte(24))
+            Serial.print("DXL Power disabled");
         /* Control table 24 = DXL Power */
         dxl_node_write_byte(24, 0);
-        /* Log if in debug mode */
-        if (debug_state)
-            Serial.print("DXL Power disabled");
     }
 }
 
@@ -402,18 +409,6 @@ void dxl_node_op3_change_baud(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 uint8_t dxl_node_read_byte(uint16_t addr) {
-    if (RANGE_CHECK(addr, p_dxl_mem->Button)) {
-        p_dxl_mem->Button = dxl_hw_op3_button_read(PIN_BUTTON_S1) << 0;
-        p_dxl_mem->Button |= dxl_hw_op3_button_read(PIN_BUTTON_S2) << 1;
-        p_dxl_mem->Button |= dxl_hw_op3_button_read(PIN_BUTTON_S3) << 2;
-        p_dxl_mem->Button |= dxl_hw_op3_button_read(PIN_BUTTON_S4) << 3;
-    }
-
-    if (RANGE_CHECK(addr, p_dxl_mem->Voltage)) {
-        p_dxl_mem->Voltage = dxl_hw_op3_voltage_read();
-    }
-
-
     return mem.data[addr];
 }
 
@@ -479,17 +474,15 @@ void dxl_node_write_byte(uint16_t addr, uint8_t data) {
      WORK    :
 ---------------------------------------------------------------------------*/
 BOOL dxl_node_check_range(uint16_t addr, uint32_t addr_ptr, uint8_t length) {
-    BOOL ret = FALSE;
-    uint32_t addr_offset;
 
-    addr_offset = addr_ptr - (uint32_t) p_dxl_mem;
+    uint32_t addr_offset = addr_ptr - (uint32_t) p_dxl_mem;
 
     if (addr >= (addr_offset + length - 1) && addr < (addr_offset + length)) {
-        ret = TRUE;
+        return TRUE;
     }
 
 
-    return ret;
+    return FALSE;
 }
 
 
@@ -497,21 +490,16 @@ BOOL dxl_node_check_range(uint16_t addr, uint32_t addr_ptr, uint8_t length) {
      dxl sp driver
 ---------------------------------------------------------------------------*/
 void processRead(uint16_t addr, uint8_t* p_data, uint16_t length) {
-    uint32_t i;
-
-
-    for (i = 0; i < length; i++) {
+    for (uint32_t i = 0; i < length; i++) {
         p_data[i] = dxl_node_read_byte(addr);
         addr++;
     }
 }
 
 void processWrite(uint16_t addr, uint8_t* p_data, uint16_t length) {
-    uint32_t i;
-
     /// Serial.printf("Writing to memory address 0x%02x (%d): ", addr, addr);
 
-    for (i = 0; i < length; i++) {
+    for (uint32_t i = 0; i < length; i++) {
         if (mem.attr[addr] & DXL_MEM_ATTR_WO || mem.attr[addr] & DXL_MEM_ATTR_RW) {
             dxl_node_write_byte(addr, p_data[i]);
             if (mem.attr[addr] & DXL_MEM_ATTR_EEPROM) {

@@ -55,7 +55,11 @@ void MX_UART4_Init(void)
 
   /* USER CODE END UART4_Init 1 */
   huart4.Instance = UART4;
+<<<<<<< HEAD
   huart4.Init.BaudRate = 4000000;
+=======
+  huart4.Init.BaudRate = 1000000;
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
   huart4.Init.WordLength = UART_WORDLENGTH_8B;
   huart4.Init.StopBits = UART_STOPBITS_1;
   huart4.Init.Parity = UART_PARITY_NONE;
@@ -98,7 +102,11 @@ void MX_UART5_Init(void)
 
   /* USER CODE END UART5_Init 1 */
   huart5.Instance = UART5;
+<<<<<<< HEAD
   huart5.Init.BaudRate = 4000000;
+=======
+  huart5.Init.BaudRate = 1000000;
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
   huart5.Init.WordLength = UART_WORDLENGTH_8B;
   huart5.Init.StopBits = UART_STOPBITS_1;
   huart5.Init.Parity = UART_PARITY_NONE;
@@ -142,7 +150,11 @@ void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
+<<<<<<< HEAD
   huart1.Init.BaudRate = 4000000;
+=======
+  huart1.Init.BaudRate = 1000000;
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -186,7 +198,11 @@ void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
+<<<<<<< HEAD
   huart2.Init.BaudRate = 4000000;
+=======
+  huart2.Init.BaudRate = 1000000;
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -230,7 +246,11 @@ void MX_USART3_UART_Init(void)
 
   /* USER CODE END USART3_Init 1 */
   huart3.Instance = USART3;
+<<<<<<< HEAD
   huart3.Init.BaudRate = 4000000;
+=======
+  huart3.Init.BaudRate = 1000000;
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
   huart3.Init.WordLength = UART_WORDLENGTH_8B;
   huart3.Init.StopBits = UART_STOPBITS_1;
   huart3.Init.Parity = UART_PARITY_NONE;
@@ -274,7 +294,11 @@ void MX_USART6_UART_Init(void)
 
   /* USER CODE END USART6_Init 1 */
   huart6.Instance = USART6;
+<<<<<<< HEAD
   huart6.Init.BaudRate = 4000000;
+=======
+  huart6.Init.BaudRate = 1000000;
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
   huart6.Init.WordLength = UART_WORDLENGTH_8B;
   huart6.Init.StopBits = UART_STOPBITS_1;
   huart6.Init.Parity = UART_PARITY_NONE;

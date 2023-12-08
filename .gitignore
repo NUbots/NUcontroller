@@ -96,7 +96,11 @@ pyvenv.cfg
 .settings
 Release\
 Debug\
+<<<<<<< HEAD
 *.launch
+=======
+.launch
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
 
 # Misc
 tags

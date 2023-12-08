@@ -1,7 +1,10 @@
 #include "Port.hpp"
 
+<<<<<<< HEAD
 #include "signal.h"
 
+=======
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
 namespace uart {
 
     Port::Port(uint8_t uart_number = 1) :
@@ -59,6 +62,7 @@ namespace uart {
         //handle_rx();
     #endif
 
+<<<<<<< HEAD
         SET_SIGNAL_2();
 
         // If there is no byte to read, then return 0xFFFF as a value two bytes long so that is not to 
@@ -71,12 +75,21 @@ namespace uart {
         RESET_SIGNAL_2();
 
         SET_SIGNAL_3();
+=======
+        // If there is no byte to read, then return 0xFFFF as a value two bytes long so that is not to 
+        // be confused with a received byte.
+        if (!get_available_rx())
+            return 0xFFFF;
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
 
         // Read from the front of the buffer.
         read_byte = rx_buffer.pop();
 
+<<<<<<< HEAD
         RESET_SIGNAL_3();
 
+=======
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
         return read_byte;
     }
 
@@ -108,6 +121,7 @@ namespace uart {
 
     void Port::handle_rx() {
     #ifdef USE_DMA_RX_BUFFER
+<<<<<<< HEAD
         uint16_t old_back;
         static uint16_t count = 0;
 
@@ -118,6 +132,12 @@ namespace uart {
 
         // Update the back of the buffer.
         old_back = rx_buffer.back;
+=======
+        uint16_t old_back, count;
+        // Update the back of the buffer.
+        old_back = rx_buffer.back;
+        count = rs_link.get_receive_counter();
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
         rx_buffer.back = (PORT_BUFFER_SIZE - count) % PORT_BUFFER_SIZE;
         rx_buffer.size +=
                 rx_buffer.back >= old_back ?

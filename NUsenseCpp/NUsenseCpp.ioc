@@ -278,6 +278,7 @@ Mcu.Pin27=PC7
 Mcu.Pin28=PA13 (JTMS/SWDIO)
 Mcu.Pin29=PA14 (JTCK/SWCLK)
 Mcu.Pin3=PA0
+<<<<<<< HEAD
 Mcu.Pin30=PC10
 Mcu.Pin31=PC11
 Mcu.Pin32=PC12
@@ -295,12 +296,32 @@ Mcu.Pin42=PB6
 Mcu.Pin43=PB7
 Mcu.Pin44=VP_SYS_VS_Systick
 Mcu.Pin45=VP_USB_DEVICE_VS_USB_DEVICE_CDC_HS
+=======
+Mcu.Pin30=PC12
+Mcu.Pin31=PD0
+Mcu.Pin32=PD1
+Mcu.Pin33=PD2
+Mcu.Pin34=PD3
+Mcu.Pin35=PD4
+Mcu.Pin36=PD5
+Mcu.Pin37=PD6
+Mcu.Pin38=PB5
+Mcu.Pin39=PB6
+Mcu.Pin4=PA1
+Mcu.Pin40=PB7
+Mcu.Pin41=VP_SYS_VS_Systick
+Mcu.Pin42=VP_USB_DEVICE_VS_USB_DEVICE_CDC_HS
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
 Mcu.Pin5=PA2
 Mcu.Pin6=PA3
 Mcu.Pin7=PA5
 Mcu.Pin8=PB0
 Mcu.Pin9=PB1
+<<<<<<< HEAD
 Mcu.PinsNb=46
+=======
+Mcu.PinsNb=43
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
 Mcu.ThirdPartyNb=0
 Mcu.UserConstants=
 Mcu.UserName=STM32H753VITx
@@ -386,6 +407,7 @@ PB7.PinState=GPIO_PIN_RESET
 PB7.Signal=GPIO_Output
 PC0.Mode=Device_HS
 PC0.Signal=USB_OTG_HS_ULPI_STP
+<<<<<<< HEAD
 PC10.GPIOParameters=GPIO_Label
 PC10.GPIO_Label=SPARE5
 PC10.Locked=true
@@ -394,6 +416,8 @@ PC11.GPIOParameters=GPIO_Label
 PC11.GPIO_Label=SPARE3
 PC11.Locked=true
 PC11.Signal=GPIO_Output
+=======
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
 PC12.Mode=Asynchronous
 PC12.Signal=UART5_TX
 PC2_C.Mode=Device_HS
@@ -444,10 +468,13 @@ PD5.Mode=Asynchronous
 PD5.Signal=USART2_TX
 PD6.Mode=Asynchronous
 PD6.Signal=USART2_RX
+<<<<<<< HEAD
 PD7.GPIOParameters=GPIO_Label
 PD7.GPIO_Label=SPARE4
 PD7.Locked=true
 PD7.Signal=GPIO_Output
+=======
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
 PD8.Mode=Asynchronous
 PD8.Signal=USART3_TX
 PD9.Mode=Asynchronous
@@ -508,6 +535,7 @@ ProjectManager.UAScriptBeforePath=
 ProjectManager.UnderRoot=true
 ProjectManager.functionlistsort=1-SystemClock_Config-RCC-false-HAL-false,2-MX_GPIO_Init-GPIO-false-HAL-true,3-MX_DMA_Init-DMA-false-HAL-true,4-MX_SPI4_Init-SPI4-false-HAL-true,5-MX_UART4_Init-UART4-false-HAL-true,6-MX_UART5_Init-UART5-false-HAL-true,7-MX_USART1_UART_Init-USART1-false-HAL-true,8-MX_USART2_UART_Init-USART2-false-HAL-true,9-MX_USART3_UART_Init-USART3-false-HAL-true,10-MX_USB_DEVICE_Init-USB_DEVICE-false-HAL-false,11-MX_USART6_UART_Init-USART6-false-HAL-true,0-MX_CORTEX_M7_Init-CORTEX_M7-false-HAL-true
 RCC.ADCFreq_Value=129000000
+<<<<<<< HEAD
 RCC.AHB12Freq_Value=240000000
 RCC.AHB4Freq_Value=240000000
 RCC.APB1Freq_Value=120000000
@@ -584,6 +612,74 @@ RCC.VCO1OutputFreq_Value=960000000
 RCC.VCO2OutputFreq_Value=258000000
 RCC.VCO3OutputFreq_Value=258000000
 RCC.VCOInput1Freq_Value=16000000
+=======
+RCC.AHB12Freq_Value=64000000
+RCC.AHB4Freq_Value=64000000
+RCC.APB1Freq_Value=32000000
+RCC.APB2Freq_Value=32000000
+RCC.APB3Freq_Value=64000000
+RCC.APB4Freq_Value=64000000
+RCC.AXIClockFreq_Value=64000000
+RCC.CECFreq_Value=32000
+RCC.CKPERFreq_Value=64000000
+RCC.CortexFreq_Value=64000000
+RCC.CpuClockFreq_Value=64000000
+RCC.D1CPREFreq_Value=64000000
+RCC.D2PPRE1=RCC_APB1_DIV2
+RCC.D2PPRE2=RCC_APB2_DIV2
+RCC.DFSDMACLkFreq_Value=129000000
+RCC.DFSDMFreq_Value=32000000
+RCC.DIVP1Freq_Value=129000000
+RCC.DIVP2Freq_Value=129000000
+RCC.DIVP3Freq_Value=129000000
+RCC.DIVQ1Freq_Value=129000000
+RCC.DIVQ2Freq_Value=129000000
+RCC.DIVQ3Freq_Value=129000000
+RCC.DIVR1Freq_Value=129000000
+RCC.DIVR2Freq_Value=129000000
+RCC.DIVR3Freq_Value=129000000
+RCC.FDCANFreq_Value=129000000
+RCC.FMCFreq_Value=64000000
+RCC.FamilyName=M
+RCC.HCLK3ClockFreq_Value=64000000
+RCC.HCLKFreq_Value=64000000
+RCC.HRTIMFreq_Value=64000000
+RCC.I2C123Freq_Value=32000000
+RCC.I2C4Freq_Value=64000000
+RCC.IPParameters=ADCFreq_Value,AHB12Freq_Value,AHB4Freq_Value,APB1Freq_Value,APB2Freq_Value,APB3Freq_Value,APB4Freq_Value,AXIClockFreq_Value,CECFreq_Value,CKPERFreq_Value,CortexFreq_Value,CpuClockFreq_Value,D1CPREFreq_Value,D2PPRE1,D2PPRE2,DFSDMACLkFreq_Value,DFSDMFreq_Value,DIVP1Freq_Value,DIVP2Freq_Value,DIVP3Freq_Value,DIVQ1Freq_Value,DIVQ2Freq_Value,DIVQ3Freq_Value,DIVR1Freq_Value,DIVR2Freq_Value,DIVR3Freq_Value,FDCANFreq_Value,FMCFreq_Value,FamilyName,HCLK3ClockFreq_Value,HCLKFreq_Value,HRTIMFreq_Value,I2C123Freq_Value,I2C4Freq_Value,LPTIM1Freq_Value,LPTIM2Freq_Value,LPTIM345Freq_Value,LPUART1Freq_Value,LTDCFreq_Value,MCO1PinFreq_Value,MCO2PinFreq_Value,QSPIFreq_Value,RNGFreq_Value,RTCFreq_Value,SAI1Freq_Value,SAI23Freq_Value,SAI4AFreq_Value,SAI4BFreq_Value,SDMMCFreq_Value,SPDIFRXFreq_Value,SPI123Freq_Value,SPI45Freq_Value,SPI6Freq_Value,SWPMI1Freq_Value,SYSCLKFreq_VALUE,Tim1OutputFreq_Value,Tim2OutputFreq_Value,TraceFreq_Value,USART16Freq_Value,USART234578Freq_Value,USBCLockSelection,USBFreq_Value,VCO1OutputFreq_Value,VCO2OutputFreq_Value,VCO3OutputFreq_Value,VCOInput1Freq_Value,VCOInput2Freq_Value,VCOInput3Freq_Value
+RCC.LPTIM1Freq_Value=32000000
+RCC.LPTIM2Freq_Value=64000000
+RCC.LPTIM345Freq_Value=64000000
+RCC.LPUART1Freq_Value=64000000
+RCC.LTDCFreq_Value=129000000
+RCC.MCO1PinFreq_Value=64000000
+RCC.MCO2PinFreq_Value=64000000
+RCC.QSPIFreq_Value=64000000
+RCC.RNGFreq_Value=48000000
+RCC.RTCFreq_Value=32000
+RCC.SAI1Freq_Value=129000000
+RCC.SAI23Freq_Value=129000000
+RCC.SAI4AFreq_Value=129000000
+RCC.SAI4BFreq_Value=129000000
+RCC.SDMMCFreq_Value=129000000
+RCC.SPDIFRXFreq_Value=129000000
+RCC.SPI123Freq_Value=129000000
+RCC.SPI45Freq_Value=32000000
+RCC.SPI6Freq_Value=64000000
+RCC.SWPMI1Freq_Value=32000000
+RCC.SYSCLKFreq_VALUE=64000000
+RCC.Tim1OutputFreq_Value=64000000
+RCC.Tim2OutputFreq_Value=64000000
+RCC.TraceFreq_Value=64000000
+RCC.USART16Freq_Value=32000000
+RCC.USART234578Freq_Value=32000000
+RCC.USBCLockSelection=RCC_USBCLKSOURCE_HSI48
+RCC.USBFreq_Value=48000000
+RCC.VCO1OutputFreq_Value=258000000
+RCC.VCO2OutputFreq_Value=258000000
+RCC.VCO3OutputFreq_Value=258000000
+RCC.VCOInput1Freq_Value=2000000
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
 RCC.VCOInput2Freq_Value=2000000
 RCC.VCOInput3Freq_Value=2000000
 SH.GPXTI10.0=GPIO_EXTI10
@@ -591,13 +687,18 @@ SH.GPXTI10.ConfNb=1
 SPI4.BaudRatePrescaler=SPI_BAUDRATEPRESCALER_16
 SPI4.CLKPhase=SPI_PHASE_2EDGE
 SPI4.CLKPolarity=SPI_POLARITY_HIGH
+<<<<<<< HEAD
 SPI4.CalculateBaudRate=7.5 MBits/s
+=======
+SPI4.CalculateBaudRate=2.0 MBits/s
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
 SPI4.DataSize=SPI_DATASIZE_8BIT
 SPI4.Direction=SPI_DIRECTION_2LINES
 SPI4.IPParameters=VirtualType,Mode,Direction,CalculateBaudRate,BaudRatePrescaler,DataSize,TIMode,CLKPolarity,CLKPhase
 SPI4.Mode=SPI_MODE_MASTER
 SPI4.TIMode=SPI_TIMODE_DISABLE
 SPI4.VirtualType=VM_MASTER
+<<<<<<< HEAD
 UART4.BaudRate=4000000
 UART4.IPParameters=BaudRate
 UART5.BaudRate=4000000
@@ -613,6 +714,23 @@ USART3.BaudRate=4000000
 USART3.IPParameters=VirtualMode-Asynchronous,BaudRate
 USART3.VirtualMode-Asynchronous=VM_ASYNC
 USART6.BaudRate=4000000
+=======
+UART4.BaudRate=1000000
+UART4.IPParameters=BaudRate
+UART5.BaudRate=1000000
+UART5.IPParameters=BaudRate
+USART1.BaudRate=1000000
+USART1.FIFOMode=FIFOMODE_DISABLE
+USART1.IPParameters=VirtualMode-Asynchronous,BaudRate,FIFOMode
+USART1.VirtualMode-Asynchronous=VM_ASYNC
+USART2.BaudRate=1000000
+USART2.IPParameters=VirtualMode-Asynchronous,BaudRate
+USART2.VirtualMode-Asynchronous=VM_ASYNC
+USART3.BaudRate=1000000
+USART3.IPParameters=VirtualMode-Asynchronous,BaudRate
+USART3.VirtualMode-Asynchronous=VM_ASYNC
+USART6.BaudRate=1000000
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
 USART6.IPParameters=VirtualMode,BaudRate
 USART6.VirtualMode=VM_ASYNC
 USB_DEVICE.CLASS_NAME_HS=CDC

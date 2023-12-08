@@ -76,10 +76,13 @@ void Error_Handler(void);
 #define DXL_DIR1_GPIO_Port GPIOD
 #define DXL_DIR6_Pin GPIO_PIN_15
 #define DXL_DIR6_GPIO_Port GPIOD
+<<<<<<< HEAD
 #define SPARE5_Pin GPIO_PIN_10
 #define SPARE5_GPIO_Port GPIOC
 #define SPARE3_Pin GPIO_PIN_11
 #define SPARE3_GPIO_Port GPIOC
+=======
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
 #define SPARE1_Pin GPIO_PIN_0
 #define SPARE1_GPIO_Port GPIOD
 #define DXL_DIR5_Pin GPIO_PIN_1
@@ -88,8 +91,11 @@ void Error_Handler(void);
 #define SPARE2_GPIO_Port GPIOD
 #define DXL_DIR2_Pin GPIO_PIN_4
 #define DXL_DIR2_GPIO_Port GPIOD
+<<<<<<< HEAD
 #define SPARE4_Pin GPIO_PIN_7
 #define SPARE4_GPIO_Port GPIOD
+=======
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
 #define DXL_PWR_EN_Pin GPIO_PIN_6
 #define DXL_PWR_EN_GPIO_Port GPIOB
 #define BUZZER_SIG_Pin GPIO_PIN_7

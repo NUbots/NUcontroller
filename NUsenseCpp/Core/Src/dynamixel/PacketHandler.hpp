@@ -3,8 +3,11 @@
 #include "Packetiser.hpp"
 #include "../platform/NUsense/NUgus.hpp"
 
+<<<<<<< HEAD
 #include "signal.h"
 
+=======
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
 #ifndef DYNAMIXEL_PACKETHANDLER_HPP
 #define DYNAMIXEL_PACKETHANDLER_HPP
 
@@ -52,6 +55,7 @@ namespace dynamixel {
             uint16_t read_result = port.read();
             if (read_result == NO_BYTE_READ)
                 return NONE;
+<<<<<<< HEAD
 
             SET_SIGNAL_4();
 
@@ -60,6 +64,12 @@ namespace dynamixel {
 
             RESET_SIGNAL_4();
 
+=======
+            
+            // If so, then decode it.
+            packetiser.decode(read_result);
+
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
             // Unless the packetiser has a whole packet, return.
             if (!packetiser.is_packet_ready()) {
                 return NONE;

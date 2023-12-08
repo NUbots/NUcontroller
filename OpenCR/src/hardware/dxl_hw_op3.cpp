@@ -46,9 +46,6 @@ static uint8_t battery_state     = BATTERY_POWER_STARTUP;
 cIMU IMU;
 HardwareTimer Timer(TIMER_CH1);
 
-
-int16_t dxl_hw_op3_acc_conv(int16_t value);
-int16_t dxl_hw_op3_gyro_conv(int16_t value);
 void dxl_hw_op3_button_update();
 void dxl_hw_op3_voltage_update();
 
@@ -155,60 +152,56 @@ void dxl_hw_op3_update(void) {
 
 
 /*---------------------------------------------------------------------------
-     TITLE   : dxl_hw_op3_acc_conv
-     WORK    :
----------------------------------------------------------------------------*/
-int16_t dxl_hw_op3_acc_conv(int16_t value) {
-    int16_t data;
-
-#if 0
-  data = constrain(value, -2048, 2048); // 8g->4g
-  data = data/4 + 512;
-  data = constrain(data, 0, 1023);
-#else
-    data = value;
-#endif
-
-    return (int16_t) data;
-}
-
-
-/*---------------------------------------------------------------------------
      TITLE   : dxl_hw_op3_button_update
      WORK    : button_value
 ---------------------------------------------------------------------------*/
 void dxl_hw_op3_button_update() {
-    static uint8_t pin_state[BUTTON_PIN_MAX] = {
-        0,
+
+    // keep button state as "down" for longer before resetting
+    const uint8_t debounce_time_ms = 30;
+    const uint8_t release_time_ms  = 200;
+
+    enum btn_state { BTN_INACTIVE, BTN_ACTIVE };
+
+    static enum btn_state pin_state[BUTTON_PIN_MAX] = {
+        BTN_INACTIVE,
     };
-    uint8_t pin_in = 0;
-    uint32_t i;
     static uint32_t pin_time[BUTTON_PIN_MAX] = {
         0,
     };
 
+    // loop over each button
+    for (uint32_t i = 0; i < BUTTON_PIN_MAX; i++) {
 
-    for (i = 0; i < BUTTON_PIN_MAX; i++) {
-        pin_in = !digitalRead(button_pin_num[i]);
+        // get the raw pin value (pull up resistor so invert)
+        uint8_t pin_input = !digitalRead(button_pin_num[i]);
+
 
         switch (pin_state[i]) {
-            case 0:
-                if (button_value[i] != pin_in) {
-                    pin_state[i] = 1;
-                    pin_time[i]  = millis();
+            // if the button was last unpressed, or pressed and debounced
+            case BTN_INACTIVE:
+                // newly pressed, or was released since debounce
+                if (button_value[i] != pin_input) {
+                    // we have an action to log
+                    pin_state[i] = BTN_ACTIVE;
+                    // and record the timestamp for debouncing
+                    pin_time[i] = millis();
                 }
                 break;
 
-            case 1:
-                if ((millis() - pin_time[i]) > 30) {
-                    if (button_value[i] != pin_in) {
-                        button_value[i] = pin_in;
-                    }
-                    pin_state[i] = 0;
+            // we have a press or release to poll for
+            case BTN_ACTIVE:
+                uint32_t pin_time_delta = millis() - pin_time[i];
+                // if the button value is currently off, have a 30ms debounce timer before we log it as pressed.
+                // However, if it currently pressed, have a longer timeout before we consider it released.
+                if (((button_value[i] == 0) && (pin_time_delta > debounce_time_ms))
+                    || ((button_value[i] == 1) && (pin_time_delta > release_time_ms))) {
+                    // if it has, update the value
+                    button_value[i] = pin_input;
+                    // nothing more to do
+                    pin_state[i] = BTN_INACTIVE;
                 }
                 break;
-
-            default: break;
         }
     }
 }
@@ -219,21 +212,13 @@ void dxl_hw_op3_button_update() {
      WORK    :
 ---------------------------------------------------------------------------*/
 uint8_t dxl_hw_op3_button_read(uint8_t pin_num) {
-    uint8_t pin_in = 0;
-    uint8_t i;
-
-    for (i = 0; i < BUTTON_PIN_MAX; i++) {
+    for (uint8_t i = 0; i < BUTTON_PIN_MAX; i++) {
         if (button_pin_num[i] == pin_num) {
-            break;
+            return button_value[i];
         }
     }
 
-    if (i == BUTTON_PIN_MAX)
-        return 0;
-
-    pin_in = button_value[i];
-
-    return pin_in;
+    return 0;
 }
 
 
@@ -402,36 +387,7 @@ void dxl_hw_op3_voltage_update(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 uint8_t dxl_hw_op3_voltage_read(void) {
-    /*
-    int adc_value;
-    float vol_value;
-
-    adc_value = analogRead(BDPIN_BAT_PWR_ADC);
-
-    vol_value = map(adc_value, 0, 1023, 0, 330*57/10);
-    vol_value = vol_value/10;
-    vol_value = constrain(vol_value, 0, 255);
-    */
-
     return (uint8_t) battery_voltage;
-}
-
-
-/*---------------------------------------------------------------------------
-     TITLE   : dxl_hw_op3_gyro_conv
-     WORK    :
----------------------------------------------------------------------------*/
-int16_t dxl_hw_op3_gyro_conv(int16_t value) {
-    int16_t data;
-
-#if 0
-  data = constrain(value, -8200, 8200); // 2000deg->500deg
-  data = map(data, -8200, 8200, 0, 1023);
-#else
-    data = value;
-#endif
-
-    return (int16_t) data;
 }
 
 
@@ -440,7 +396,7 @@ int16_t dxl_hw_op3_gyro_conv(int16_t value) {
      WORK    :
 ---------------------------------------------------------------------------*/
 int16_t dxl_hw_op3_acc_get_x(void) {
-    return dxl_hw_op3_acc_conv(IMU.SEN.accRAW[0]);
+    return (int16_t) IMU.SEN.accRAW[0];
 }
 
 
@@ -449,11 +405,7 @@ int16_t dxl_hw_op3_acc_get_x(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 int16_t dxl_hw_op3_acc_get_y(void) {
-    int16_t ret;
-
-    ret = dxl_hw_op3_acc_conv(IMU.SEN.accRAW[1]);
-
-    return ret;
+    return (int16_t) IMU.SEN.accRAW[1];
 }
 
 
@@ -462,7 +414,7 @@ int16_t dxl_hw_op3_acc_get_y(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 int16_t dxl_hw_op3_acc_get_z(void) {
-    return dxl_hw_op3_acc_conv(IMU.SEN.accRAW[2]);
+    return (int16_t) IMU.SEN.accRAW[2];
 }
 
 
@@ -471,7 +423,7 @@ int16_t dxl_hw_op3_acc_get_z(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 int16_t dxl_hw_op3_gyro_get_x(void) {
-    return dxl_hw_op3_gyro_conv(IMU.SEN.gyroADC[0]);
+    return (int16_t) IMU.SEN.gyroADC[0];
 }
 
 
@@ -480,11 +432,7 @@ int16_t dxl_hw_op3_gyro_get_x(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 int16_t dxl_hw_op3_gyro_get_y(void) {
-    int16_t ret;
-
-    ret = dxl_hw_op3_gyro_conv(IMU.SEN.gyroADC[1]);
-
-    return ret;
+    return (int16_t) IMU.SEN.gyroADC[1];
 }
 
 
@@ -493,7 +441,7 @@ int16_t dxl_hw_op3_gyro_get_y(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 int16_t dxl_hw_op3_gyro_get_z(void) {
-    return dxl_hw_op3_gyro_conv(IMU.SEN.gyroADC[2]);
+    return (int16_t) IMU.SEN.gyroADC[2];
 }
 
 

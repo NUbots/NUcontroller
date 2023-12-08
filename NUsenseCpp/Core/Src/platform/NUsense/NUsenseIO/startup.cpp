@@ -292,6 +292,7 @@ namespace platform::NUsense {
             }
         }
 
+<<<<<<< HEAD
         // Set the state of each expect status as a response to a write-instruction.
         status_states.fill(StatusState::WRITE_1_RESPONSE);
 
@@ -299,6 +300,19 @@ namespace platform::NUsense {
         std::vector<platform::NUsense::NUgus::ID> chain = chains[0];
         for (int i = 0; i < NUM_PORTS; i++) {
             send_servo_write_1_request((chains[i])[chain_indices[i]], i);
+=======
+        // Send the first write-instruction to begin the chain-reaction on each
+        // port.
+        std::vector<platform::NUsense::NUgus::ID> chain = chains[0];
+        for (int i = 0; i < NUM_PORTS; i++) {
+            ports[i].write(
+                dynamixel::ReadCommand(
+                    (uint8_t)(chains[i])[chain_indices[i]],
+                    (uint16_t)platform::NUsense::AddressBook::SERVO_READ,
+                    (uint16_t)sizeof(platform::NUsense::DynamixelServoReadData)
+                )
+            );
+>>>>>>> 7c81a4a620df92baa139a6dc1669529b3993de71
         }
 
     }
