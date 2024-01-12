@@ -47,6 +47,9 @@ int copy_fin = 0;
 bool packet_fin = false;
 uint16_t pb_length = 0;
 
+uint8_t decode_count = 0;
+uint16_t rx_count = 0;
+
 namespace test_hw {
 uint8_t calculate_checksum(uint8_t* data, uint8_t length);
 uint16_t update_crc(uint16_t crc_accum, uint8_t* data_blk_ptr, uint16_t data_blk_size);
@@ -59,7 +62,7 @@ void comms(){
 		if (rx_flag) {
 			// Reset rx_flag - this flag is turned on by the USB receive call back and turned off here
 			rx_flag = 0;
-
+			rx_count += 1;
 			// Check if we have a header and if we do extract our lengths and pb bytes
 			if (    (rx_buf[rx_buf_front] == (char)0xE2)
                 &&  (rx_buf[(rx_buf_front + 1) % RX_BUF_SIZE] == (char)0x98)
@@ -95,6 +98,7 @@ void comms(){
 
 			decoded = pb_decode(&input_stream, message_actuation_ServoTargets_fields, &targets);
 
+			decode_count += 1;
             // for (size_t i = 0; i < targets.targets_count; ++i) {
                 // 
             // }
