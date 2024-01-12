@@ -36,15 +36,15 @@ uint16_t pb_packet_length = 0;
 extern uint8_t rx_buf[];
 extern uint8_t  rx_flag;
 
-extern uint16_t rx_buf_idx;
-extern uint16_t rx_buf_len;
+extern uint16_t rx_buf_front;
+extern uint16_t rx_buf_back;
 
 extern uint32_t rx_len;
 
 bool decoded = false;
 
 int copy_fin = 0;
-uint8_t packet_fin = 0;
+bool packet_fin = false;
 uint16_t pb_length = 0;
 
 namespace test_hw {
@@ -61,20 +61,28 @@ void comms(){
 			rx_flag = 0;
 
 			// Check if we have a header and if we do extract our lengths and pb bytes
-			bool has_magic_one   = rx_buf[rx_buf_idx] == (char)0xE2;
-			bool has_magic_two   = rx_buf[(rx_buf_idx + 1) % RX_BUF_SIZE] == (char)0x98;
-			bool has_magic_three = rx_buf[(rx_buf_idx + 2) % RX_BUF_SIZE] == (char)0xA2;
+			if (    (rx_buf[rx_buf_front] == (char)0xE2)
+                &&  (rx_buf[(rx_buf_front + 1) % RX_BUF_SIZE] == (char)0x98)
+                &&  (rx_buf[(rx_buf_front + 2) % RX_BUF_SIZE] == (char)0xA2)) {
 
-			bool header_detected = has_magic_one && has_magic_two && has_magic_three;
+				pb_length = static_cast<uint16_t>(rx_buf[(rx_buf_front + 3) % RX_BUF_SIZE] << 8) | static_cast<uint16_t>(rx_buf[(rx_buf_front + 4) % RX_BUF_SIZE]);
 
-			if (header_detected) {
-				pb_length = static_cast<uint16_t>(rx_buf[(rx_buf_idx + 3) % RX_BUF_SIZE] << 8) | static_cast<uint16_t>(rx_buf[(rx_buf_idx + 4) % RX_BUF_SIZE]);
-				memcpy(&pb_packets[0], &rx_buf[(rx_buf_idx + 5) % RX_BUF_SIZE], pb_length);
-				packet_fin = 1;
+                if (rx_buf_front + pb_length >= RX_BUF_SIZE) {
+
+                    memcpy(&pb_packets[0], &rx_buf[(rx_buf_front + 5) % RX_BUF_SIZE], RX_BUF_SIZE - rx_buf_front - 5);
+                    memcpy(&pb_packets[RX_BUF_SIZE - rx_buf_front - 5], &rx_buf[0], pb_length + rx_buf_front - RX_BUF_SIZE + 5);
+                }
+                else{
+                    memcpy(&pb_packets[0], &rx_buf[(rx_buf_front + 5) % RX_BUF_SIZE], pb_length);
+                }
+				
+                packet_fin = true;
+                rx_buf_front = (rx_buf_front + pb_length + 5) % RX_BUF_SIZE;
 			}
-
-			// Update index accessor after receiving a packet, making sure to wrap around in case it exceeds the buffer's length
-			rx_buf_idx = rx_buf_len;
+            else {
+                // Update index accessor after receiving a packet, making sure to wrap around in case it exceeds the buffer's length
+                rx_buf_front++;
+            }
 
 		}
 
@@ -82,23 +90,27 @@ void comms(){
 			packet_fin = 0;
 
 			// Decoding time
-			pb_istream_t input_stream = pb_istream_from_buffer(reinterpret_cast<const pb_byte_t*>(&pb_packets[0]), rx_buf_len - rx_buf_idx);
-			message_actuation_ServoTargets fake_st = message_actuation_ServoTargets_init_zero;
+			pb_istream_t input_stream = pb_istream_from_buffer(reinterpret_cast<const pb_byte_t*>(&pb_packets[0]), pb_length);
+			message_actuation_ServoTargets targets = message_actuation_ServoTargets_init_zero;
 
-			decoded = pb_decode(&input_stream, message_actuation_ServoTargets_fields, &fake_st);
+			decoded = pb_decode(&input_stream, message_actuation_ServoTargets_fields, &targets);
+
+            // for (size_t i = 0; i < targets.targets_count; ++i) {
+                // 
+            // }
 
 			// After decoding, empty the pb_packets vector to avoid corruption
 			memset(&pb_packets[0], 0, RX_BUF_SIZE);
 
 			// Ring buzzer if we've decoded our message correctly
 			if (decoded) {
-//				HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_SET);
-//				HAL_Delay(500);
-//				HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_RESET);
-//				HAL_Delay(500);
-				}
+                HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_SET);
+    			HAL_Delay(500);
+				HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_RESET);
+				HAL_Delay(500);
 			}
 		}
+	}
 
 }
 #endif

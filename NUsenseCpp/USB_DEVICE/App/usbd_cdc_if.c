@@ -25,8 +25,8 @@
 uint8_t rx_buf[RX_BUF_SIZE];
 uint8_t rx_flag = 0;
 
-uint16_t rx_buf_idx = 0;
-uint16_t rx_buf_len = 0;
+uint16_t rx_buf_front = 0;
+uint16_t rx_buf_back = 0;
 uint32_t rx_len = 0;
 
 extern uint8_t copy_fin;
@@ -270,16 +270,22 @@ static int8_t CDC_Receive_HS(uint8_t* Buf, uint32_t *Len)
 	/* USER CODE BEGIN 11 */
 	USBD_CDC_SetRxBuffer(&hUsbDeviceHS, &Buf[0]);
 
-	// Raise flags
-	rx_flag = 1;
 	rx_len = *Len;
 
-	// Do memcpy here to append data from the supplied buffer to rx_buf
-	memcpy(&rx_buf[rx_buf_len], &Buf[0], rx_len);
+  // If the max buffer size is exceeded, wrap around using 2 memcpy calls
+  if (rx_buf_back + rx_len > RX_BUF_SIZE) {
+    memcpy(&rx_buf[rx_buf_back], &Buf[0], RX_BUF_SIZE - rx_buf_back);
+    memcpy(&rx_buf[0], &Buf[RX_BUF_SIZE - rx_buf_back], rx_buf_back + rx_len - RX_BUF_SIZE);
+  }
+  // If not then 1 memcpy call should suffice
+  else {
+    memcpy(&rx_buf[rx_buf_back], &Buf[0], rx_len);
+  }
 
-	rx_buf_len = rx_buf_len + rx_len;
+	rx_buf_back = (rx_buf_back + rx_len) % RX_BUF_SIZE;
 
 	// Tell the USB stack we're ready to receive more data
+	rx_flag = 1;
 	USBD_CDC_ReceivePacket(&hUsbDeviceHS);
 
   return (USBD_OK);
