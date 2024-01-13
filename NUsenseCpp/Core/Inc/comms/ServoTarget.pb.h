@@ -32,7 +32,8 @@ typedef struct _message_actuation_ServoTarget {
 } message_actuation_ServoTarget;
 
 typedef struct _message_actuation_ServoTargets {
-    pb_callback_t targets;
+    pb_size_t targets_count;
+    message_actuation_ServoTarget targets[20];
 } message_actuation_ServoTargets;
 
 
@@ -42,9 +43,9 @@ extern "C" {
 
 /* Initializer values for message structs */
 #define message_actuation_ServoTarget_init_default {false, google_protobuf_Timestamp_init_default, 0, 0, 0, 0}
-#define message_actuation_ServoTargets_init_default {{{NULL}, NULL}}
+#define message_actuation_ServoTargets_init_default {0, {message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default}}
 #define message_actuation_ServoTarget_init_zero  {false, google_protobuf_Timestamp_init_zero, 0, 0, 0, 0}
-#define message_actuation_ServoTargets_init_zero {{{NULL}, NULL}}
+#define message_actuation_ServoTargets_init_zero {0, {message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define message_actuation_ServoTarget_time_tag   1
@@ -66,8 +67,8 @@ X(a, STATIC,   SINGULAR, FLOAT,    torque,            5)
 #define message_actuation_ServoTarget_time_MSGTYPE google_protobuf_Timestamp
 
 #define message_actuation_ServoTargets_FIELDLIST(X, a) \
-X(a, CALLBACK, REPEATED, MESSAGE,  targets,           1)
-#define message_actuation_ServoTargets_CALLBACK pb_default_field_callback
+X(a, STATIC,   REPEATED, MESSAGE,  targets,           1)
+#define message_actuation_ServoTargets_CALLBACK NULL
 #define message_actuation_ServoTargets_DEFAULT NULL
 #define message_actuation_ServoTargets_targets_MSGTYPE message_actuation_ServoTarget
 
@@ -79,8 +80,8 @@ extern const pb_msgdesc_t message_actuation_ServoTargets_msg;
 #define message_actuation_ServoTargets_fields &message_actuation_ServoTargets_msg
 
 /* Maximum encoded size of messages (where known) */
-/* message_actuation_ServoTargets_size depends on runtime parameters */
 #define message_actuation_ServoTarget_size       45
+#define message_actuation_ServoTargets_size      940
 
 #ifdef __cplusplus
 } /* extern "C" */

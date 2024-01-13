@@ -9,7 +9,7 @@
 PB_BIND(message_actuation_ServoTarget, message_actuation_ServoTarget, AUTO)
 
 
-PB_BIND(message_actuation_ServoTargets, message_actuation_ServoTargets, AUTO)
+PB_BIND(message_actuation_ServoTargets, message_actuation_ServoTargets, 2)
 
 
 
