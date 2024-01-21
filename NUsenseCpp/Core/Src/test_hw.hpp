@@ -12,7 +12,7 @@
 #include "usbd_cdc_if.h"
 #include "imu.h"
 #include "main.h"
-
+#include <algorithm>
 //#include "dynamixel/Devices.hpp"
 #include "dynamixel/Packetiser.hpp"
 //#include "dynamixel/Packet.hpp"
@@ -33,14 +33,6 @@ char pb_packets[RX_BUF_SIZE];
 
 uint16_t pb_packet_length = 0;
 
-extern uint8_t rx_buf[];
-extern uint8_t  rx_flag;
-
-extern uint16_t rx_buf_front;
-extern uint16_t rx_buf_back;
-
-extern uint32_t rx_len;
-
 bool decoded = false;
 
 int copy_fin = 0;
@@ -50,9 +42,33 @@ uint16_t pb_length = 0;
 uint8_t decode_count = 0;
 uint16_t rx_count = 0;
 
+uint16_t remaining_length = 0;
+
 namespace test_hw {
 uint8_t calculate_checksum(uint8_t* data, uint8_t length);
 uint16_t update_crc(uint16_t crc_accum, uint8_t* data_blk_ptr, uint16_t data_blk_size);
+
+/**
+ * @brief   Removes one byte from the front of the queue.
+ * @note    This is a helper function; it is not meant to encapsulate anything.
+ * @return  the byte to be removed,
+ */
+uint16_t pop(uint8_t* bytes, uint16_t length, uint16_t offset = 0) {
+    // Update the front to move back (higher) in the array unless there
+    // is nothing left in the buffer.
+    if (rx_buffer.size >= (length + offset)) {
+        if (rx_buffer.front + length >= RX_BUF_SIZE) {
+            memcpy(&bytes[0], &rx_buffer.data[(rx_buffer.front + offset) % RX_BUF_SIZE], RX_BUF_SIZE - rx_buffer.front - offset);
+            memcpy(&bytes[RX_BUF_SIZE - rx_buffer.front - offset], &rx_buffer.data[0], length - RX_BUF_SIZE + rx_buffer.front + offset);
+        }
+        else{
+            memcpy(&bytes[0], &rx_buffer.data[(rx_buffer.front + offset) % RX_BUF_SIZE], length);
+        }
+        rx_buffer.front = (rx_buffer.front + length + 5) % RX_BUF_SIZE;
+        rx_buffer.size -= length;
+    }
+    return length;
+}
 
 #ifdef TEST_COMMS
 // Test communication with the NUC
@@ -64,27 +80,32 @@ void comms(){
 			rx_flag = 0;
 			rx_count += 1;
 			// Check if we have a header and if we do extract our lengths and pb bytes
-			if (    (rx_buf[rx_buf_front] == (char)0xE2)
-                &&  (rx_buf[(rx_buf_front + 1) % RX_BUF_SIZE] == (char)0x98)
-                &&  (rx_buf[(rx_buf_front + 2) % RX_BUF_SIZE] == (char)0xA2)) {
+			if (    (rx_buffer.data[rx_buffer.front] == (char)0xE2)
+                &&  (rx_buffer.data[(rx_buffer.front + 1) % RX_BUF_SIZE] == (char)0x98)
+                &&  (rx_buffer.data[(rx_buffer.front + 2) % RX_BUF_SIZE] == (char)0xA2)) {
 
-				pb_length = static_cast<uint16_t>(rx_buf[(rx_buf_front + 3) % RX_BUF_SIZE] << 8) | static_cast<uint16_t>(rx_buf[(rx_buf_front + 4) % RX_BUF_SIZE]);
+				pb_length = static_cast<uint16_t>(rx_buffer.data[(rx_buffer.front + 3) % RX_BUF_SIZE] << 8) | static_cast<uint16_t>(rx_buffer.data[(rx_buffer.front + 4) % RX_BUF_SIZE]);
 
-                if (rx_buf_front + pb_length >= RX_BUF_SIZE) {
-
-                    memcpy(&pb_packets[0], &rx_buf[(rx_buf_front + 5) % RX_BUF_SIZE], RX_BUF_SIZE - rx_buf_front - 5);
-                    memcpy(&pb_packets[RX_BUF_SIZE - rx_buf_front - 5], &rx_buf[0], pb_length + rx_buf_front - RX_BUF_SIZE + 5);
+                if ((pb_length + 5) <= rx_buffer.size) {
+                    ponp((uint8_t*)pb_packets, pb_length, 5);
+                    packet_fin = true;
                 }
-                else{
-                    memcpy(&pb_packets[0], &rx_buf[(rx_buf_front + 5) % RX_BUF_SIZE], pb_length);
+                else {
+                    remaining_length = pb_length - rx_buffer.size - 5;
+                    pop((uint8_t*)pb_packets, rx_buffer.size - 5, 5);
                 }
-				
-                packet_fin = true;
-                rx_buf_front = (rx_buf_front + pb_length + 5) % RX_BUF_SIZE;
 			}
-            else {
+            else if ((remaining_length != 0) && (rx_buffer.size >= remaining_length)) {
+            	uint16_t old_size;
+            	old_size = pop((uint8_t*)&pb_packets[pb_length - remaining_length], remaining_length <= rx_buffer.size ? remaining_length : rx_buffer.size);
+                remaining_length -= old_size;
+                if (remaining_length == 0)
+                	packet_fin = true;
+            }
+            else if (rx_buffer.size != 0) {
                 // Update index accessor after receiving a packet, making sure to wrap around in case it exceeds the buffer's length
-                rx_buf_front++;
+                rx_buffer.front = (rx_buffer.front + 1) % RX_BUF_SIZE;
+                rx_buffer.size--;
             }
 
 		}
@@ -107,12 +128,12 @@ void comms(){
 			memset(&pb_packets[0], 0, RX_BUF_SIZE);
 
 			// Ring buzzer if we've decoded our message correctly
-			if (decoded) {
-                HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_SET);
-    			HAL_Delay(500);
-				HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_RESET);
-				HAL_Delay(500);
-			}
+//			if (decoded) {
+//                HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_SET);
+//    			HAL_Delay(500);
+//				HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_RESET);
+//				HAL_Delay(500);
+//			}
 		}
 	}
 
