@@ -57,76 +57,88 @@ namespace NUsense {
             /* Common Defines */
             const uint8_t IMU_READ  = 0x80;
             const uint8_t IMU_WRITE = 0x00;
-
-            /* Command Defines */                   /* ADR Register Function */
-            // Self Test
-            const uint8_t SELF_TEST_X_GYRO  = 0x00; /* Gyro X Self test Reg */
-            const uint8_t SELF_TEST_Y_GYRO  = 0x01; /* Gyro Y Self test Reg */
-            const uint8_t SELF_TEST_Z_GYRO  = 0x02; /* Gyro Z Self test Reg */
-            const uint8_t SELF_TEST_X_ACCEL = 0x0D; /* Accel X Self test Reg */
-            const uint8_t SELF_TEST_Y_ACCEL = 0x0E; /* Accel Y Self test Reg */
-            const uint8_t SELF_TEST_Z_ACCEL = 0x0F; /* Accel Z Self test Reg */
-            // Offset adjustment
-            const uint8_t XG_OFFS_USRH = 0x13;  /* Gyro X Offset Adjustment Reg 15:8 */
-            const uint8_t XG_OFFS_USRL = 0x14;  /* Gyro X Offset Adjustment Reg 7:0 */
-            const uint8_t YG_OFFS_USRH = 0x15;  /* Gyro Y Offset Adjustment Reg 15:8 */
-            const uint8_t YG_OFFS_USRL = 0x16;  /* Gyro Y Offset Adjustment Reg 7:0 */
-            const uint8_t ZG_OFFS_USRH = 0x17;  /* Gyro Z Offset Adjustment Reg 15:8 */
-            const uint8_t ZG_OFFS_USRL = 0x18;  /* Gyro Z Offset Adjustment Reg 7:0 */
-            // Configuration
-            const uint8_t SMPLRT_DIV    = 0x19; /* Sample Rate divider */
-            const uint8_t CONFIG        = 0x1A; /* Configuration */
-            const uint8_t GYRO_CONFIG   = 0x1B; /* Gyro Configuration */
-            const uint8_t ACCEL_CONFIG  = 0x1C; /* Accel Configuration */
-            const uint8_t ACCEL_CONFIG2 = 0x1D; /* Accel Configuration */
-            const uint8_t LP_MODE_CFG   = 0x1E; /* Low Power Mode Config */
-            // Interrupt Configuration
-            const uint8_t ACCEL_WOM_X_THR = 0x20; /* X-Axis Accel Wake-On Motion Threshold */
-            const uint8_t ACCEL_WOM_Y_THR = 0x21; /* Y-Axis Accel Wake-On Motion Threshold */
-            const uint8_t ACCEL_WOM_Z_THR = 0x22; /* Z-Axis Accel Wake-On Motion Threshold */
-            const uint8_t FIFO_EN         = 0x23; /* FIFO Enable */
-            const uint8_t FSYNC_INT       = 0x36; /* FSYNC Interrupt Status */
-            const uint8_t INT_PIN_CFG     = 0x37; /* INT/DRDY PIN / BYPASS Enable Config */
-            const uint8_t INT_ENABLE      = 0x38; /* Interrupt Enable */
-            const uint8_t DMP_INT_STATUS  = 0x39; /* DMP Interrupt Status */
-            const uint8_t INT_STATUS      = 0x3A; /* Interrupt Status */
-            // Accelerometer Measurements
-            const uint8_t ACCEL_XOUT_H = 0x3B; /* X_Accel High byte */
-            const uint8_t ACCEL_XOUT_L = 0x3C; /* X_Accel Low byte */
-            const uint8_t ACCEL_YOUT_H = 0x3D; /* Y_Accel High byte */
-            const uint8_t ACCEL_YOUT_L = 0x3E; /* Y_Accel Low byte */
-            const uint8_t ACCEL_ZOUT_H = 0x3F; /* Z_Accel High byte */
-            const uint8_t ACCEL_ZOUT_L = 0x40; /* Z_Accel Low byte */
-            // Temperature Measurements
-            const uint8_t TEMP_OUT_H = 0x41; /* Temp High Byte */
-            const uint8_t TEMP_OUT_L = 0x42; /* Temp Low Byte */
-            // Gyroscope Measurements
-            const uint8_t GYRO_XOUT_H = 0x43; /* X_GYRO High byte */
-            const uint8_t GYRO_XOUT_L = 0x44; /* X_GYRO Low byte */
-            const uint8_t GYRO_YOUT_H = 0x45; /* Y_GYRO High byte */
-            const uint8_t GYRO_YOUT_L = 0x46; /* Y_GYRO Low byte */
-            const uint8_t GYRO_ZOUT_H = 0x47; /* Z_GYRO High byte */
-            const uint8_t GYRO_ZOUT_L = 0x48; /* Z_GYRO Low byte */
-            // Additional Options/Configurations
-            const uint8_t SIGNAL_PATH_RESET = 0x68; /* Signal Path Reset */
-            const uint8_t ACCEL_INTEL_CTRL  = 0x69; /* Accel Intelligence Control */
-            const uint8_t USER_CTRL         = 0x6A; /* User Control */
-            // Power Management
-            const uint8_t PWR_MGMT_1 = 0x6B; /* Power Management 1 */
-            const uint8_t PWR_MGMT_2 = 0x6C; /* Power Management 2 */
-            // FIFO Commands
-            const uint8_t FIFO_COUNTH = 0x72; /* High FIFO count byte */
-            const uint8_t FIFO_COUNTL = 0x73; /* LOW FIFO count byte */
-            const uint8_t FIFO_R_W    = 0x74; /* FIFO buffer Read/Write 8 */
-            // WHO AM I
-            const uint8_t WHO_AM_I = 0x75; /* Device Information Register */
-            // ACCEL Offset Reg
-            const uint8_t XA_OFFSET_H = 0x77; /* X_Accel High byte offset calculation */
-            const uint8_t XA_OFFSET_L = 0x78; /* X_Accel Low byte offset calculation */
-            const uint8_t YA_OFFSET_H = 0x7A; /* Y_Accel High byte offset calculation */
-            const uint8_t YA_OFFSET_L = 0x7B; /* Y_Accel Low byte offset calculation */
-            const uint8_t ZA_OFFSET_H = 0x7D; /* Z_Accel High byte offset calculation */
-            const uint8_t ZA_OFFSET_L = 0x7E; /* Z_Accel Low byte offset calculation */
+            enum class Address : uint8_t {
+                /* Command Defines */                   /* ADR Register Function */
+                // Self Test
+                SELF_TEST_X_GYRO  = 0x00, /* Gyro X Self test Reg */
+                SELF_TEST_Y_GYRO  = 0x01, /* Gyro Y Self test Reg */
+                SELF_TEST_Z_GYRO  = 0x02, /* Gyro Z Self test Reg */
+                SELF_TEST_X_ACCEL = 0x0D, /* Accel X Self test Reg */
+                SELF_TEST_Y_ACCEL = 0x0E, /* Accel Y Self test Reg */
+                SELF_TEST_Z_ACCEL = 0x0F, /* Accel Z Self test Reg */
+                
+                // Offset adjustment
+                XG_OFFS_USRH = 0x13,  /* Gyro X Offset Adjustment Reg 15:8 */
+                XG_OFFS_USRL = 0x14,  /* Gyro X Offset Adjustment Reg 7:0 */
+                YG_OFFS_USRH = 0x15,  /* Gyro Y Offset Adjustment Reg 15:8 */
+                YG_OFFS_USRL = 0x16,  /* Gyro Y Offset Adjustment Reg 7:0 */
+                ZG_OFFS_USRH = 0x17,  /* Gyro Z Offset Adjustment Reg 15:8 */
+                ZG_OFFS_USRL = 0x18,  /* Gyro Z Offset Adjustment Reg 7:0 */
+                
+                // Configuration
+                SMPLRT_DIV    = 0x19, /* Sample Rate divider */
+                CONFIG        = 0x1A, /* Configuration */
+                GYRO_CONFIG   = 0x1B, /* Gyro Configuration */
+                ACCEL_CONFIG  = 0x1C, /* Accel Configuration */
+                ACCEL_CONFIG2 = 0x1D, /* Accel Configuration */
+                LP_MODE_CFG   = 0x1E, /* Low Power Mode Config */
+                
+                // Interrupt Configuration
+                ACCEL_WOM_X_THR = 0x20, /* X-Axis Accel Wake-On Motion Threshold */
+                ACCEL_WOM_Y_THR = 0x21, /* Y-Axis Accel Wake-On Motion Threshold */
+                ACCEL_WOM_Z_THR = 0x22, /* Z-Axis Accel Wake-On Motion Threshold */
+                FIFO_EN         = 0x23, /* FIFO Enable */
+                FSYNC_INT       = 0x36, /* FSYNC Interrupt Status */
+                INT_PIN_CFG     = 0x37, /* INT/DRDY PIN / BYPASS Enable Config */
+                INT_ENABLE      = 0x38, /* Interrupt Enable */
+                DMP_INT_STATUS  = 0x39, /* DMP Interrupt Status */
+                INT_STATUS      = 0x3A, /* Interrupt Status */
+                
+                // Accelerometer Measurements
+                ACCEL_XOUT_H = 0x3B, /* X_Accel High byte */
+                ACCEL_XOUT_L = 0x3C, /* X_Accel Low byte */
+                ACCEL_YOUT_H = 0x3D, /* Y_Accel High byte */
+                ACCEL_YOUT_L = 0x3E, /* Y_Accel Low byte */
+                ACCEL_ZOUT_H = 0x3F, /* Z_Accel High byte */
+                ACCEL_ZOUT_L = 0x40, /* Z_Accel Low byte */
+                
+                // Temperature Measurements
+                TEMP_OUT_H = 0x41, /* Temp High Byte */
+                TEMP_OUT_L = 0x42, /* Temp Low Byte */
+                
+                // Gyroscope Measurements
+                GYRO_XOUT_H = 0x43, /* X_GYRO High byte */
+                GYRO_XOUT_L = 0x44, /* X_GYRO Low byte */
+                GYRO_YOUT_H = 0x45, /* Y_GYRO High byte */
+                GYRO_YOUT_L = 0x46, /* Y_GYRO Low byte */
+                GYRO_ZOUT_H = 0x47, /* Z_GYRO High byte */
+                GYRO_ZOUT_L = 0x48, /* Z_GYRO Low byte */
+                
+                // Additional Options/Configurations
+                SIGNAL_PATH_RESET = 0x68, /* Signal Path Reset */
+                ACCEL_INTEL_CTRL  = 0x69, /* Accel Intelligence Control */
+                USER_CTRL         = 0x6A, /* User Control */
+                
+                // Power Management
+                PWR_MGMT_1 = 0x6B, /* Power Management 1 */
+                PWR_MGMT_2 = 0x6C, /* Power Management 2 */
+                
+                // FIFO Commands
+                FIFO_COUNTH = 0x72, /* High FIFO count byte */
+                FIFO_COUNTL = 0x73, /* LOW FIFO count byte */
+                FIFO_R_W    = 0x74, /* FIFO buffer Read/Write 8 */
+                
+                // WHO AM I
+                WHO_AM_I = 0x75, /* Device Information Register */
+                
+                // ACCEL Offset Reg
+                XA_OFFSET_H = 0x77, /* X_Accel High byte offset calculation */
+                XA_OFFSET_L = 0x78, /* X_Accel Low byte offset calculation */
+                YA_OFFSET_H = 0x7A, /* Y_Accel High byte offset calculation */
+                YA_OFFSET_L = 0x7B, /* Y_Accel Low byte offset calculation */
+                ZA_OFFSET_H = 0x7D, /* Z_Accel High byte offset calculation */
+                ZA_OFFSET_L = 0x7E, /* Z_Accel Low byte offset calculation */
+            };
 
             //-------------------------------------------
             // Self-Test R/W
