@@ -101,7 +101,7 @@ void IMU::init() {
  * @return        none
  */
 void IMU::writeReg(Address addr, uint8_t data) {
-    uint8_t packet[2] = {addr | IMU_WRITE, data};
+    uint8_t packet[2] = {static_cast<uint8_t>(addr) | IMU_WRITE, data};
 
     HAL_GPIO_WritePin(MPU_NSS_GPIO_Port, MPU_NSS_Pin, GPIO_PIN_RESET);
     HAL_SPI_Transmit(&hspi4, packet, 2, HAL_MAX_DELAY);
@@ -117,7 +117,7 @@ void IMU::writeReg(Address addr, uint8_t data) {
  */
 void IMU::readReg(Address addr, uint8_t* data) {
     uint8_t rx_data[2] = {0xFF, 0xFF};
-    uint8_t packet[2]  = {addr | IMU_READ, 0x00};
+    uint8_t packet[2]  = {static_cast<uint8_t>(addr) | IMU_READ, 0x00};
 
     HAL_GPIO_WritePin(MPU_NSS_GPIO_Port, MPU_NSS_Pin, GPIO_PIN_RESET);
     HAL_SPI_TransmitReceive(&hspi4, packet, rx_data, 2, HAL_MAX_DELAY);
@@ -141,7 +141,7 @@ void IMU::readBurst(Address addr, uint8_t* data, uint16_t length) {
     for (int i = 0; i < length + 1; i++) {
         rx_data[i] = 0xAA;
         if (i == 0)
-            packet[i] = addr | IMU_READ;
+            packet[i] = static_cast<uint8_t>(addr) | IMU_READ;
         else
             packet[i] = 0x00;
     }
@@ -170,7 +170,7 @@ void IMU::readSlowly(Address* addrs, uint8_t* data, uint16_t length) {
     uint8_t packet[2]  = {0xFF, 0x00};
 
     for (int i = 0; i < length; i++) {
-        packet[0] = addrs[i] | IMU_READ;
+        packet[0] = static_cast<uint8_t>(addrs[i]) | IMU_READ;
         HAL_GPIO_WritePin(MPU_NSS_GPIO_Port, MPU_NSS_Pin, GPIO_PIN_RESET);
         HAL_SPI_TransmitReceive(&hspi4, packet, rx_data, 2, HAL_MAX_DELAY);
         HAL_GPIO_WritePin(MPU_NSS_GPIO_Port, MPU_NSS_Pin, GPIO_PIN_SET);
@@ -192,7 +192,7 @@ void IMU::readFifo(uint8_t* data, uint16_t length) {
     for (int i = 0; i < length + 1; i++) {
         rx_data[i] = 0xFE;
         if (i == 0)
-            packet[i] = FIFO_R_W | IMU_READ;
+            packet[i] = static_cast<uint8_t>(Address::FIFO_R_W) | IMU_READ;
         else
             packet[i] = 0x00;
     }
