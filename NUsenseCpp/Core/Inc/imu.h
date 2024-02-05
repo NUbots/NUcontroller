@@ -191,10 +191,10 @@ namespace NUsense {
         const uint8_t GYRO_CONFIG_Y_SELF_TEST = BIT_6;
         const uint8_t GYRO_CONFIG_Z_SELF_TEST = BIT_5;
         // 4-3
-        const uint8_t GYRO_CONFIG_FS_SEL_250DPS  = 0x00;
+        const uint8_t GYRO_CONFIG_FS_SEL_250DPS  = BLANK;
         const uint8_t GYRO_CONFIG_FS_SEL_500DPS  = BIT_3;
         const uint8_t GYRO_CONFIG_FS_SEL_1000DPS = BIT_4;
-        const uint8_t GYRO_CONFIG_FS_SEL_2000DPS = 0x18;
+        const uint8_t GYRO_CONFIG_FS_SEL_2000DPS = BIT_3 | BIT_4;
         // 1-0
         // Refer to IMU data-sheet
 
@@ -210,10 +210,10 @@ namespace NUsense {
         const uint8_t ACCEL_CONFIG1_Y_SELF_TEST = BIT_6;
         const uint8_t ACCEL_CONFIG1_Z_SELF_TEST = BIT_5;
         // 4-3
-        const uint8_t ACCEL_CONFIG1_FS_SEL_2G  = 0x00;
+        const uint8_t ACCEL_CONFIG1_FS_SEL_2G  = BLANK;
         const uint8_t ACCEL_CONFIG1_FS_SEL_4G  = BIT_3;
         const uint8_t ACCEL_CONFIG1_FS_SEL_8G  = BIT_4;
-        const uint8_t ACCEL_CONFIG1_FS_SEL_16G = 0x18;
+        const uint8_t ACCEL_CONFIG1_FS_SEL_16G = BIT_3 | BIT_4;
 
         //-------------------------------------------
         // ACCEL Configuration2 R/W
@@ -224,18 +224,18 @@ namespace NUsense {
          * 2-0: Accelerometer low pass filter setting.
          */
         // 7-6
-        const uint8_t ACCEL_CONFIG2_FIFO_SIZE_512B = 0x00;
+        const uint8_t ACCEL_CONFIG2_FIFO_SIZE_512B = BLANK;
         const uint8_t ACCEL_CONFIG2_FIFO_SIZE_1KB  = BIT_6;
         const uint8_t ACCEL_CONFIG2_FIFO_SIZE_2KB  = BIT_7;
-        const uint8_t ACCEL_CONFIG2_FIFO_SIZE_4KB  = 0xC0;
+        const uint8_t ACCEL_CONFIG2_FIFO_SIZE_4KB  = BIT_6 | BIT_7;
         // 5-4
-        const uint8_t ACCEL_CONFIG2_DEC2_CFG_4SAMPLES  = 0x00;
+        const uint8_t ACCEL_CONFIG2_DEC2_CFG_4SAMPLES  = BLANK;
         const uint8_t ACCEL_CONFIG2_DEC2_CFG_8SAMPLES  = BIT_4;
         const uint8_t ACCEL_CONFIG2_DEC2_CFG_16SAMPLES = BIT_5;
-        const uint8_t ACCEL_CONFIG2_DEC2_CFG_32SAMPLES = 0x30;
+        const uint8_t ACCEL_CONFIG2_DEC2_CFG_32SAMPLES = BIT_4 | BIT_5;
         // 3
         const uint8_t ACCEL_CONFIG2_ACCEL_FCHOICE_B_TRUE  = BIT_3;
-        const uint8_t ACCEL_CONFIG2_ACCEL_FCHOICE_B_FALSE = 0x00;
+        const uint8_t ACCEL_CONFIG2_ACCEL_FCHOICE_B_FALSE = BLANK;
         // 2-0
         // Refer to data-sheet page 41
 
@@ -339,7 +339,7 @@ namespace NUsense {
          * 0: Data ready interrupt enable
          */
         // 7-5
-        const uint8_t INT_ENABLE_WOM_EN = 0xE0;
+        const uint8_t INT_ENABLE_WOM_EN = BIT_5 | BIT_6 | BIT_7;
         // 4
         const uint8_t INT_ENABLE_FIFO_OFLOW_EN = BIT_4;
         // 2
@@ -463,7 +463,7 @@ namespace NUsense {
         // 3
         const uint8_t PWR_MGMT_1_TEMP_DIS = BIT_3;
         // 2-0
-        const uint8_t PWR_MGMT_1_CLKSEL_20MHZ = 0x00;
+        const uint8_t PWR_MGMT_1_CLKSEL_20MHZ = BLANK;
         const uint8_t PWR_MGMT_1_CLKSEL_AUTO  = BIT_0;
         const uint8_t PWR_MGMT_1_CLKSEL_OFF   = 0x07;
 
