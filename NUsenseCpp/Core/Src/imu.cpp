@@ -33,59 +33,59 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef* hspi) {
 void IMU::init() {
     // Select the first PLL as the clock and do a soft reset.
     // This may fix the problem of the power-up sequence in Section-4.19 of the IMU's datasheet.
-    // writeReg(PWR_MGMT_1,     PWR_MGMT_1_CLKSEL_AUTO);
-    writeReg(PWR_MGMT_1, PWR_MGMT_1_DEVICE_RESET | PWR_MGMT_1_CLKSEL_AUTO);
+    // writeReg(Address::PWR_MGMT_1,     PWR_MGMT_1_CLKSEL_AUTO);
+    writeReg(Address::PWR_MGMT_1, PWR_MGMT_1_DEVICE_RESET | PWR_MGMT_1_CLKSEL_AUTO);
     HAL_Delay(1);
-    writeReg(PWR_MGMT_1, PWR_MGMT_1_CLKSEL_AUTO);
+    writeReg(Address::PWR_MGMT_1, PWR_MGMT_1_CLKSEL_AUTO);
 
     // Make sure that we are in SPI-mode.
-    writeReg(USER_CTRL, USER_CTRL_I2C_IF_DIS | USER_CTRL_DMP_RST | USER_CTRL_FIFO_EN | USER_CTRL_SIG_COND_RST);
+    writeReg(Address::USER_CTRL, USER_CTRL_I2C_IF_DIS | USER_CTRL_DMP_RST | USER_CTRL_FIFO_EN | USER_CTRL_SIG_COND_RST);
 
     // Turn on all sensors.
-    writeReg(PWR_MGMT_2, 0x00);
+    writeReg(Address::PWR_MGMT_2, 0x00);
 
     // Set the full-scale for the gyroscope.
-    writeReg(GYRO_CONFIG, GYRO_CONFIG_FS_SEL_CHOSEN);
+    writeReg(Address::GYRO_CONFIG, GYRO_CONFIG_FS_SEL_CHOSEN);
 
     // Set the full-scale for the accelerometer.
-    writeReg(ACCEL_CONFIG, ACCEL_CONFIG1_FS_SEL_CHOSEN);
+    writeReg(Address::ACCEL_CONFIG, ACCEL_CONFIG1_FS_SEL_CHOSEN);
 
     // Set the accelerometer's LPF to 218 Hz and the lowest number of samples.
-    writeReg(ACCEL_CONFIG2, ACCEL_CONFIG2_DEC2_CFG_4SAMPLES | ACCEL_CONFIG2_ACCEL_FCHOICE_B_FALSE | 0x00);
+    writeReg(Address::ACCEL_CONFIG2, ACCEL_CONFIG2_DEC2_CFG_4SAMPLES | ACCEL_CONFIG2_ACCEL_FCHOICE_B_FALSE | 0x00);
 
     // Set the gyroscope's LPF to 250 Hz.
-    writeReg(CONFIG, CONFIG_FIFO_MODE_OVERFLOW_WAIT);
+    writeReg(Address::CONFIG, CONFIG_FIFO_MODE_OVERFLOW_WAIT);
 
     // Set the sample-rate to 1 kHz.
-    writeReg(SMPLRT_DIV, 0x00);
+    writeReg(Address::SMPLRT_DIV, 0x00);
 
     // Set the offset for gyroscope's x-axis to 90/4 = 22.
-    writeReg(XG_OFFS_USRH, 0x00);
-    writeReg(XG_OFFS_USRL, 0x16);
+    writeReg(Address::XG_OFFS_USRH, 0x00);
+    writeReg(Address::XG_OFFS_USRL, 0x16);
 
     // Set the offset for gyroscope's y-axis to -406/4 = -101.
-    writeReg(YG_OFFS_USRH, 0xFF);
-    writeReg(YG_OFFS_USRL, 0x9B);
+    writeReg(Address::YG_OFFS_USRH, 0xFF);
+    writeReg(Address::YG_OFFS_USRL, 0x9B);
 
     // Set the offset for gyroscope's z-axis to -61/4 = -15.
-    writeReg(ZG_OFFS_USRH, 0xFF);
-    writeReg(ZG_OFFS_USRL, 0xF1);
+    writeReg(Address::ZG_OFFS_USRH, 0xFF);
+    writeReg(Address::ZG_OFFS_USRL, 0xF1);
     /*
     // Set the offset for accelerometer's x-axis to 0, for now.
-    writeReg(XA_OFFSET_H,     0x00);
-    writeReg(XA_OFFSET_L,     0x02);
+    writeReg(Address::XA_OFFSET_H,     0x00);
+    writeReg(Address::XA_OFFSET_L,     0x02);
 
     // Set the offset for accelerometer's y-axis to 0, for now.
-    writeReg(YA_OFFSET_H,     0x00);
-    writeReg(YA_OFFSET_L,     0x02);
+    writeReg(Address::YA_OFFSET_H,     0x00);
+    writeReg(Address::YA_OFFSET_L,     0x02);
 
     // Set the offset for accelerometer's z-axis to 0, for now.
-    writeReg(ZA_OFFSET_H,     0x00);
-    writeReg(ZA_OFFSET_L,     0x02);
+    writeReg(Address::ZA_OFFSET_H,     0x00);
+    writeReg(Address::ZA_OFFSET_L,     0x02);
     */
 
     // Write all sensors' values in the FIFO.
-    writeReg(FIFO_EN,            // FIFO_EN_TEMP_EN
+    writeReg(Address::FIFO_EN,   // FIFO_EN_TEMP_EN
              FIFO_EN_XG_FIFO_EN  //|
                                  // FIFO_EN_YG_FIFO_EN |
                                  // FIFO_EN_ZG_FIFO_EN |
@@ -100,7 +100,7 @@ void IMU::init() {
  * @param        the byte to be sent,
  * @return        none
  */
-void IMU::writeReg(uint8_t addr, uint8_t data) {
+void IMU::writeReg(Address addr, uint8_t data) {
     uint8_t packet[2] = {addr | IMU_WRITE, data};
 
     HAL_GPIO_WritePin(MPU_NSS_GPIO_Port, MPU_NSS_Pin, GPIO_PIN_RESET);
@@ -115,7 +115,7 @@ void IMU::writeReg(uint8_t addr, uint8_t data) {
  * @param        a pointer to the byte to be read,
  * @return        none
  */
-void IMU::readReg(uint8_t addr, uint8_t* data) {
+void IMU::readReg(Address addr, uint8_t* data) {
     uint8_t rx_data[2] = {0xFF, 0xFF};
     uint8_t packet[2]  = {addr | IMU_READ, 0x00};
 
@@ -134,14 +134,14 @@ void IMU::readReg(uint8_t addr, uint8_t* data) {
  * @param        the length, i.e. the number of registers to be read,
  * @return        none
  */
-void IMU::readBurst(uint8_t addrs, uint8_t* data, uint16_t length) {
+void IMU::readBurst(Address addr, uint8_t* data, uint16_t length) {
     uint8_t packet[length + 1];
     uint8_t rx_data[length + 1];
 
     for (int i = 0; i < length + 1; i++) {
         rx_data[i] = 0xAA;
         if (i == 0)
-            packet[i] = addrs | IMU_READ;
+            packet[i] = addr | IMU_READ;
         else
             packet[i] = 0x00;
     }
@@ -165,7 +165,7 @@ void IMU::readBurst(uint8_t addrs, uint8_t* data, uint16_t length) {
  * @param        the length, i.e. the number of registers to be read,
  * @return        none
  */
-void IMU::readSlowly(uint8_t* addrs, uint8_t* data, uint16_t length) {
+void IMU::readSlowly(Address* addrs, uint8_t* data, uint16_t length) {
     uint8_t rx_data[2] = {0xFF, 0xFF};
     uint8_t packet[2]  = {0xFF, 0x00};
 
@@ -201,9 +201,9 @@ void IMU::readFifo(uint8_t* data, uint16_t length) {
     HAL_SPI_TransmitReceive(&hspi4, packet, rx_data, length + 1, HAL_MAX_DELAY);
     HAL_GPIO_WritePin(MPU_NSS_GPIO_Port, MPU_NSS_Pin, GPIO_PIN_SET);
 
-    readReg(USER_CTRL, &rx_data[0]);
+    readReg(Address::USER_CTRL, &rx_data[0]);
     rx_data[0] |= USER_CTRL_FIFO_RST;
-    writeReg(USER_CTRL, rx_data[0]);
+    writeReg(Address::USER_CTRL, rx_data[0]);
 
     for (int i = 0; i < length; i++)
         data[i] = rx_data[i + 1];

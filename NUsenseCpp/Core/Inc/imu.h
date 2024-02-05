@@ -597,7 +597,7 @@ namespace NUsense {
          * @param        the byte to be sent,
          * @return        none
          */
-        void writeReg(uint8_t addr, uint8_t data);
+        void writeReg(Address addr, uint8_t data);
 
         /*
          * @brief        reads a byte from a register.
@@ -606,7 +606,7 @@ namespace NUsense {
          * @param        a pointer to the byte to be read,
          * @return        none
          */
-        void readReg(uint8_t addr, uint8_t* data);
+        void readReg(Address addr, uint8_t* data);
 
         /*
          * @brief        reads multiple consecutive registers in a burst.
@@ -617,7 +617,7 @@ namespace NUsense {
          * @param        the length, i.e. the number of registers to be read,
          * @return        none
          */
-        void readBurst(uint8_t addrs, uint8_t* data, uint16_t length);
+        void readBurst(Address addr, uint8_t* data, uint16_t length);
 
         /*
          * @brief        reads multiple registers in turns as a temporary solution.
@@ -627,7 +627,7 @@ namespace NUsense {
          * @param        the length, i.e. the number of registers to be read,
          * @return        none
          */
-        void readSlowly(uint8_t* addrs, uint8_t* data, uint16_t length);
+        void readSlowly(Address* addrs, uint8_t* data, uint16_t length);
 
         /*
          * @brief        reads the fifo.
