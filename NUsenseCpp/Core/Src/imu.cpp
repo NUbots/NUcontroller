@@ -25,10 +25,10 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef* hspi) {
 }
 
 /*
- * @brief        begins the IMU for simple polling.
+ * @brief   begins the IMU for simple polling.
  * @note
- * @param        none
- * @return        none
+ * @param   none
+ * @return  none
  */
 void IMU::init() {
     // Select the first PLL as the clock and do a soft reset.
@@ -94,11 +94,11 @@ void IMU::init() {
 }
 
 /*
- * @brief        writes a byte to a register.
- * @note        uses polling, should only be used for beginning.
- * @param        the register's address,
- * @param        the byte to be sent,
- * @return        none
+ * @brief   writes a byte to a register.
+ * @note    uses polling, should only be used for beginning.
+ * @param   the register's address,
+ * @param   the byte to be sent,
+ * @return  none
  */
 void IMU::writeReg(Address addr, uint8_t data) {
     uint8_t packet[2] = {static_cast<uint8_t>(addr) | IMU_WRITE, data};
@@ -109,11 +109,11 @@ void IMU::writeReg(Address addr, uint8_t data) {
 }
 
 /*
- * @brief        reads a byte from a register.
- * @note        uses polling, should only be used for testing and debugging.
- * @param        the register's address,
- * @param        a pointer to the byte to be read,
- * @return        none
+ * @brief   reads a byte from a register.
+ * @note    uses polling, should only be used for testing and debugging.
+ * @param   the register's address,
+ * @param   a pointer to the byte to be read,
+ * @return  none
  */
 void IMU::readReg(Address addr, uint8_t* data) {
     uint8_t rx_data[2] = {0xFF, 0xFF};
@@ -127,12 +127,12 @@ void IMU::readReg(Address addr, uint8_t* data) {
 }
 
 /*
- * @brief        reads multiple consecutive registers in a burst.
- * @note        Use this as a temporary replacement of the FIFO.
- * @param        the address of the first register to be read,
- * @param        an array of the bytes to be read,
- * @param        the length, i.e. the number of registers to be read,
- * @return        none
+ * @brief   reads multiple consecutive registers in a burst.
+ * @note    Use this as a temporary replacement of the FIFO.
+ * @param   the address of the first register to be read,
+ * @param   an array of the bytes to be read,
+ * @param   the length, i.e. the number of registers to be read,
+ * @return  none
  */
 void IMU::readBurst(Address addr, uint8_t* data, uint16_t length) {
     uint8_t packet[length + 1];
@@ -158,12 +158,12 @@ void IMU::readBurst(Address addr, uint8_t* data, uint16_t length) {
 }
 
 /*
- * @brief        reads multiple registers in turns as a temporary solution.
- * @note        Yes, it is slow and inefficient, but it works. This is intended as a naive back-up.
- * @param        an array of the registers' addresses in order to be read,
- * @param        an array of the bytes to be read, the first of which is padding,
- * @param        the length, i.e. the number of registers to be read,
- * @return        none
+ * @brief   reads multiple registers in turns as a temporary solution.
+ * @note    Yes, it is slow and inefficient, but it works. This is intended as a naive back-up.
+ * @param   an array of the registers' addresses in order to be read,
+ * @param   an array of the bytes to be read, the first of which is padding,
+ * @param   the length, i.e. the number of registers to be read,
+ * @return  none
  */
 void IMU::readSlowly(Address* addrs, uint8_t* data, uint16_t length) {
     uint8_t rx_data[2] = {0xFF, 0xFF};
@@ -179,11 +179,11 @@ void IMU::readSlowly(Address* addrs, uint8_t* data, uint16_t length) {
 }
 
 /*
- * @brief        reads the fifo.
- * @note        Does not work yet.
- * @param        an array of the bytes to be read, the first of which is padding,
- * @param        the length, i.e. the number of registers to be read,
- * @return        none
+ * @brief   reads the fifo.
+ * @note    Does not work yet.
+ * @param   an array of the bytes to be read, the first of which is padding,
+ * @param   the length, i.e. the number of registers to be read,
+ * @return  none
  */
 void IMU::readFifo(uint8_t* data, uint16_t length) {
     uint8_t packet[length + 1];
@@ -210,11 +210,11 @@ void IMU::readFifo(uint8_t* data, uint16_t length) {
 }
 
 /*
- * @brief        converts raw integers into floating decimals.
- * @note        accelerometer values are in g's, and gyroscope values are in dps.
- * @param        the raw data to be converted from,
- * @param        the converted data,
- * @return        none
+ * @brief   converts raw integers into floating decimals.
+ * @note    accelerometer values are in g's, and gyroscope values are in dps.
+ * @param   the raw data to be converted from,
+ * @param   the converted data,
+ * @return  none
  */
 void IMU::convertRawData(IMU::raw_data* raw_data, IMU::converted_data* converted_data) {
     /*
@@ -239,10 +239,10 @@ void IMU::convertRawData(IMU::raw_data* raw_data, IMU::converted_data* converted
 }
 
 /*
- * @brief        checks for the interrupt-flags for the receiving to be done.
- * @param        none,
- * @retval        #true if the receiving was done, i.e. something has been received,
- * @retval        #false if nothing has not been received yet,
+ * @brief   checks for the interrupt-flags for the receiving to be done.
+ * @param   none,
+ * @retval  #true if the receiving was done, i.e. something has been received,
+ * @retval  #false if nothing has not been received yet,
  */
 bool IMU::checkForReceive() {
     if (spi_int_flags & SPI4_RX) {
@@ -254,10 +254,10 @@ bool IMU::checkForReceive() {
 }
 
 /*
- * @brief        checks for the interrupt-flags for the transmitting to be done.
- * @param        none,
- * @retval        #true if the transmitting was done,
- * @retval        #false if not everything has been transmitted yet,
+ * @brief   checks for the interrupt-flags for the transmitting to be done.
+ * @param   none,
+ * @retval  #true if the transmitting was done,
+ * @retval  #false if not everything has been transmitted yet,
  */
 bool IMU::checkForTransmit() {
     if (spi_int_flags & SPI4_TX) {
@@ -269,11 +269,11 @@ bool IMU::checkForTransmit() {
 }
 
 /*
- * @brief        used for blocking to get the next byte from the IMU.
- * @note        may not be needed strictly.
- * @param        the data to be sent,
- * @param        the number of bytes,
- * @return        none
+ * @brief   used for blocking to get the next byte from the IMU.
+ * @note    may not be needed strictly.
+ * @param   the data to be sent,
+ * @param   the number of bytes,
+ * @return  none
  */
 void IMU::transmitReceive_IT(uint8_t* tx_data, uint8_t* rx_data, uint16_t length) {
     HAL_GPIO_WritePin(MPU_NSS_GPIO_Port, MPU_NSS_Pin, GPIO_PIN_RESET);
@@ -281,10 +281,10 @@ void IMU::transmitReceive_IT(uint8_t* tx_data, uint8_t* rx_data, uint16_t length
 }
 
 /*
- * @brief        used for blocking to get the next byte from the IMU.
- * @note        may not be needed strictly.
- * @param        the data
- * @return        none
+ * @brief   used for blocking to get the next byte from the IMU.
+ * @note    may not be needed strictly.
+ * @param   the data
+ * @return  none
  */
 void IMU::blockingTransmit(uint8_t* data, uint16_t length) {
     HAL_SPI_Transmit(&hspi4, data, length, HAL_MAX_DELAY);

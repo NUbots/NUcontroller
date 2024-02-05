@@ -169,10 +169,10 @@ namespace NUsense {
         //-------------------------------------------
         // Configuration R/W
         /*
-         * 7: Always set to 0
-         * 6: When set to ‘1’, when the FIFO is full, additional writes will not be written to FIFO.
-         *     When set to ‘0’, when the FIFO is full, additional writes will be written to the FIFO,
-         *     replacing the oldest data.
+         * 7:   Always set to 0
+         * 6:   When set to ‘1’, when the FIFO is full, additional writes will not be written to FIFO.
+         *      When set to ‘0’, when the FIFO is full, additional writes will be written to the FIFO,
+         *      replacing the oldest data.
          * 5-3: Enables the FSYNC pin data to be sampled (Pin is held at 0 by NUfsr design).
          * 2-0: Digital Low Pas Filter Config: Refer to data sheet page 39
          */
@@ -184,7 +184,7 @@ namespace NUsense {
         /*
          * 7-5: Gyro self-test
          * 4-3: Gyro Full Scale select
-         * 2: RESERVED
+         * 2:   RESERVED
          * 1-0: FCHOICE_B
          */
         // 7-5
@@ -221,7 +221,7 @@ namespace NUsense {
         /*
          * 7-6: FIFO Size
          * 5-4: Averaging filter settings for Low Power Accelerometer mode:
-         * 3: FCHOICE_B: Used to bypass DLPF.
+         * 3:   FCHOICE_B: Used to bypass DLPF.
          * 2-0: Accelerometer low pass filter setting.
          */
         // 7-6
@@ -243,10 +243,10 @@ namespace NUsense {
         //-------------------------------------------
         // Low power mode config R/W
         /*
-         * 7: When set to ‘1’ low-power gyroscope mode is enabled. Default
-         *    setting is ‘0’
+         * 7:   When set to ‘1’ low-power gyroscope mode is enabled. Default
+         *      setting is ‘0’
          * 6-4: Averaging filter configuration for low-power gyroscope mode.
-         *  Default setting is ‘000’. Refer to data-sheet page 42
+         *      Default setting is ‘000’. Refer to data-sheet page 42
          * 3-0: RESERVED
          */
         // 7
@@ -261,21 +261,21 @@ namespace NUsense {
         //-------------------------------------------
         // FIFO Enable R/W
         /*
-         * 7:     1 – Write TEMP_OUT_H and TEMP_OUT_L to the FIFO at the sample rate; If
-         *         enabled, buffering of data occurs even if data path is in standby.
-         *         0 – Function is disabled
-         * 6:     1 – Write GYRO_XOUT_H and GYRO_XOUT_L to the FIFO at the sample rate; If
-         *         enabled, buffering of data occurs even if data path is in standby.
-         *         0 – Function is disabled
+         * 7:   1 – Write TEMP_OUT_H and TEMP_OUT_L to the FIFO at the sample rate; If
+         *          enabled, buffering of data occurs even if data path is in standby.
+         *      0 – Function is disabled
+         * 6:   1 – Write GYRO_XOUT_H and GYRO_XOUT_L to the FIFO at the sample rate; If
+         *          enabled, buffering of data occurs even if data path is in standby.
+         *      0 – Function is disabled
          * 5:   1 – Write GYRO_YOUT_H and GYRO_YOUT_L to the FIFO at the sample rate; If
-         *         enabled, buffering of data occurs even if data path is in standby.
-         *         0 – Function is disabled
-         * 4:     1 – Write GYRO_ZOUT_H and GYRO_ZOUT_L to the FIFO at the sample rate; If
-         *         enabled, buffering of data occurs even if data path is in standby.
-         *         0 – function is disabled
-         * 3:     1 – Write ACCEL_XOUT_H, ACCEL_XOUT_L, ACCEL_YOUT_H, ACCEL_YOUT_L,
-         *         ACCEL_ZOUT_H, and ACCEL_ZOUT_L to the FIFO at the sample rate;
-         *         0 – Function is disabled
+         *          enabled, buffering of data occurs even if data path is in standby.
+         *      0 – Function is disabled
+         * 4:   1 – Write GYRO_ZOUT_H and GYRO_ZOUT_L to the FIFO at the sample rate; If
+         *          enabled, buffering of data occurs even if data path is in standby.
+         *      0 – function is disabled
+         * 3:   1 – Write ACCEL_XOUT_H, ACCEL_XOUT_L, ACCEL_YOUT_H, ACCEL_YOUT_L,
+         *          ACCEL_ZOUT_H, and ACCEL_ZOUT_L to the FIFO at the sample rate;
+         *      0 – Function is disabled
          * 2-0: RESERVED
          */
         // 7
@@ -299,19 +299,19 @@ namespace NUsense {
         //-------------------------------------------
         // – INT/DRDY PIN / BYPASS ENABLE CONFIGURATION R/W
         /*
-         * 7: 1 – The logic level for INT/DRDY pin is active low.
-         *       0 – The logic level for INT/DRDY pin is active high.
-         * 6: 1 – INT/DRDY pin is configured as open drain.
-         *       0 – INT/DRDY pin is configured as push-pull.
-         * 5: 1 – INT/DRDY pin level held until interrupt status is cleared.
-         *       0 – INT/DRDY pin indicates interrupt pulse’s width is 50us.
-         * 4: 1 – Interrupt status is cleared if any read operation is performed.
-         *       0 – Interrupt status is cleared only by reading INT_STATUS register
-         * 3: 1 – The logic level for the FSYNC pin as an interrupt is active low.
-         *       0 – The logic level for the FSYNC pin as an interrupt is active high.
-         * 2: 1 – The FSYNC pin will trigger an interrupt when it transitionsto the level
-         *       specified by FSYNC_INT_LEVEL.
-         *       0 – The FSYNC pin is disabled from causing an interrupt.
+         * 7:   1 – The logic level for INT/DRDY pin is active low.
+         *      0 – The logic level for INT/DRDY pin is active high.
+         * 6:   1 – INT/DRDY pin is configured as open drain.
+         *      0 – INT/DRDY pin is configured as push-pull.
+         * 5:   1 – INT/DRDY pin level held until interrupt status is cleared.
+         *      0 – INT/DRDY pin indicates interrupt pulse’s width is 50us.
+         * 4:   1 – Interrupt status is cleared if any read operation is performed.
+         *      0 – Interrupt status is cleared only by reading INT_STATUS register
+         * 3:   1 – The logic level for the FSYNC pin as an interrupt is active low.
+         *      0 – The logic level for the FSYNC pin as an interrupt is active high.
+         * 2:   1 – The FSYNC pin will trigger an interrupt when it transitionsto the level
+         *          specified by FSYNC_INT_LEVEL.
+         *      0 – The FSYNC pin is disabled from causing an interrupt.
          * 1-0: Reserved
          */
         // 7
@@ -332,12 +332,12 @@ namespace NUsense {
         /*
          * 7-5: 111 – Enable WoM interrupt on accelerometer.
          *         000 – Disable WoM interrupt on accelerometer.
-         * 4: 1 – Enables a FIFO buffer overflow to generate an interrupt.
-         *       0 – Function is disabled.
-         * 3: RESERVED
-         * 2: Gyroscope Drive System Ready interrupt enable
-         * 1: DMP interrupt enable
-         * 0: Data ready interrupt enable
+         * 4:   1 – Enables a FIFO buffer overflow to generate an interrupt.
+         *      0 – Function is disabled.
+         * 3:   RESERVED
+         * 2:   Gyroscope Drive System Ready interrupt enable
+         * 1:   DMP interrupt enable
+         * 0:   Data ready interrupt enable
          */
         // 7-5
         const uint8_t INT_ENABLE_WOM_EN = BIT_5 | BIT_6 | BIT_7;
@@ -361,15 +361,15 @@ namespace NUsense {
         // INTERRUPT STATUS R to clear
         /*
          * 7-5: Accelerometer WoM interrupt status. Cleared on Read.
-         *         111 – WoM interrupt on accelerometer
+         *      111 – WoM interrupt on accelerometer
          *
-         * 4:This bit automatically sets to 1 when a FIFO buffer overflow has been
+         * 4:   This bit automatically sets to 1 when a FIFO buffer overflow has been
          *      generated. The bit clears to 0 after the register has been read.
-         * 3: RESERVED
-         * 2: Gyroscope Drive System Ready interrupt
-         * 1: DMP interrupt
-         * 0: This bit automatically sets to 1 when a Data Ready interrupt is generated. The
-         *    bit clears to 0 after the register has been read.
+         * 3:   RESERVED
+         * 2:   Gyroscope Drive System Ready interrupt
+         * 1:   DMP interrupt
+         * 0:   This bit automatically sets to 1 when a Data Ready interrupt is generated. The
+         *      bit clears to 0 after the register has been read.
          *
          */
 
@@ -386,10 +386,10 @@ namespace NUsense {
         // SIGNAL PATH RESET R/W
         /*
          * 7-2: Reserved
-         * 1: Reset accel digital signal path. Note: Sensor registers are not cleared. Use
-         *       SIG_COND_RST to clear sensor registers.
-         * 2: Reset temp digital signal path. Note: Sensor registers are not cleared. Use
-         *       SIG_COND_RST to clear sensor registers.
+         * 1:   Reset accel digital signal path. Note: Sensor registers are not cleared. Use
+         *      SIG_COND_RST to clear sensor registers.
+         * 2:   Reset temp digital signal path. Note: Sensor registers are not cleared. Use
+         *      SIG_COND_RST to clear sensor registers.
          */
         // 1
         const uint8_t SIGNAL_PATH_RESET_ACCEL_RST = BIT_1;
@@ -399,9 +399,9 @@ namespace NUsense {
         //-------------------------------------------
         // ACCELEROMETER INTELLIGENCE CONTROL R/W
         /*
-         * 7: This bit enables the Wake-on-Motion detection logic
-         * 6: 0 – Do not use
-         *       1 – Compare the current sample with the previous sample
+         * 7:   This bit enables the Wake-on-Motion detection logic
+         * 6:   0 – Do not use
+         *      1 – Compare the current sample with the previous sample
          * 5-0: RESERVED
          */
         // 7
@@ -414,16 +414,16 @@ namespace NUsense {
         /*
          * 7: Enable DMP.
          * 6: 1 – Enable FIFO operation mode.
-         *       0 – Disable FIFO access from serial interface. To disable FIFO writes by DMA, use
-         *       FIFO_EN register. To disable possible FIFO writes from DMP, disable the DMP.
+         *    0 – Disable FIFO access from serial interface. To disable FIFO writes by DMA, use
+         *        FIFO_EN register. To disable possible FIFO writes from DMP, disable the DMP.
          * 5: RESERVED
          * 4: 1 – Disable I2C Slave module and put the serial interface in SPI mode only.
          * 3: Reset DMP.
          * 2: 1 – Reset FIFO module. Reset is asynchronous. This bit auto clears after one clock
-         *       cycle of the internal 20MHz clock.
+         *        cycle of the internal 20MHz clock.
          * 1: RESERVED
          * 0: 1 – Reset all gyro digital signal path, accel digital signal path, and temp digital signal
-         *       path. This bit also clears all the sensor registers.
+         *        path. This bit also clears all the sensor registers.
          */
         // 7
         const uint8_t USER_CTRL_DMP_EN = BIT_7;
@@ -441,16 +441,16 @@ namespace NUsense {
         //-------------------------------------------
         // POWER MANAGEMENT1 R/W
         /*
-         * 7: 1 – Reset the internal registers and restores the default settings. The bit
-         *       automatically clears to 0 once the reset is done.
-         * 6: 1 – The chip is set to sleep mode.
-         *       Note: The default value is 1; the chip comes up in Sleep mode
-         * 5: When set to 1, and SLEEP and STANDBY are not set to 1, the chip will cycle between
-         *    sleep and taking a single accelerometer sample at a rate determined by
-         *       SMPLRT_DIV
-         * 4: When set, the gyro drive and pll circuitry are enabled, but the sense paths are
-         *       disabled. This is a low power mode that allows quick enabling of the gyros.
-         * 3: When set to 1, this bit disables the temperature sensor.
+         * 7:   1 – Reset the internal registers and restores the default settings. The bit
+         *          automatically clears to 0 once the reset is done.
+         * 6:   1 – The chip is set to sleep mode.
+         *          Note: The default value is 1; the chip comes up in Sleep mode
+         * 5:   When set to 1, and SLEEP and STANDBY are not set to 1, the chip will cycle between
+         *      sleep and taking a single accelerometer sample at a rate determined by
+         *      SMPLRT_DIV
+         * 4:   When set, the gyro drive and pll circuitry are enabled, but the sense paths are
+         *      disabled. This is a low power mode that allows quick enabling of the gyros.
+         * 3:   When set to 1, this bit disables the temperature sensor.
          * 2-0: Clock Select
          */
         // 7
@@ -474,17 +474,17 @@ namespace NUsense {
          * 7: 1 – Enable FIFO in low-power accelerometer mode. Default setting is 0.
          * 6: 1 - Disable DMP execution in low-power accelerometer mode. Default setting is 0.
          * 5: 1 – X accelerometer is disabled
-         *       0 – X accelerometer is on
+         *    0 – X accelerometer is on
          * 4: 1 – Y accelerometer is disabled
-         *       0 – Y accelerometer is on
+         *    0 – Y accelerometer is on
          * 3: 1 – Z accelerometer is disabled
-         *       0 – Z accelerometer is on
+         *    0 – Z accelerometer is on
          * 2: 1 – X gyro is disabled
-         *       0 – X gyro is on
+         *    0 – X gyro is on
          * 1: 1 – Y gyro is disabled
-         *       0 – Y gyro is on
+         *    0 – Y gyro is on
          * 0: 1 – Z gyro is disabled
-         *       0 – Z gyro is on
+         *    0 – Z gyro is on
          */
         // 7
         const uint8_t PWR_MGMT_2_FIFO_LP_EN = BIT_7;
@@ -504,7 +504,7 @@ namespace NUsense {
         const uint8_t PWR_MGMT_2_STBY_ZG = BIT_0;
 
         //-------------------------------------------
-        // FIFO COUNT REGISTERS R
+        // FIFO COUNT REGISTERS
         /*
          * 7-5: RESERVED
          * 4-0: High Bits [12:8], count indicates the number of written bytes in the FIFO.
@@ -521,7 +521,7 @@ namespace NUsense {
          */
 
         //-------------------------------------------
-        // WHO AM I R
+        // WHO AM I
         /*
          * 7-0: Register to indicate to user which device is being accessed.
          */
@@ -583,100 +583,100 @@ namespace NUsense {
         //-----------------------------------------------------------------------------
 
         /*
-         * @brief        begins the IMU for simple polling.
+         * @brief   begins the IMU for simple polling.
          * @note
-         * @param        none
-         * @return        none
+         * @param   none
+         * @return  none
          */
         void init();
 
         /*
-         * @brief        writes a byte to a register.
-         * @note        uses polling, should only be used for beginning.
-         * @param        the register's address,
-         * @param        the byte to be sent,
-         * @return        none
+         * @brief   writes a byte to a register.
+         * @note    uses polling, should only be used for beginning.
+         * @param   the register's address,
+         * @param   the byte to be sent,
+         * @return  none
          */
         void writeReg(Address addr, uint8_t data);
 
         /*
-         * @brief        reads a byte from a register.
-         * @note        uses polling, should only be used for testing and debugging.
-         * @param        the register's address,
-         * @param        a pointer to the byte to be read,
-         * @return        none
+         * @brief   reads a byte from a register.
+         * @note    uses polling, should only be used for testing and debugging.
+         * @param   the register's address,
+         * @param   a pointer to the byte to be read,
+         * @return  none
          */
         void readReg(Address addr, uint8_t* data);
 
         /*
-         * @brief        reads multiple consecutive registers in a burst.
-         * @note        Use this as a temporary replacement of the FIFO.
+         * @brief   reads multiple consecutive registers in a burst.
+         * @note    Use this as a temporary replacement of the FIFO.
          *                 This uses DMA.
-         * @param        the address of the first register to be read,
-         * @param        an array of the bytes to be read,
-         * @param        the length, i.e. the number of registers to be read,
-         * @return        none
+         * @param   the address of the first register to be read,
+         * @param   an array of the bytes to be read,
+         * @param   the length, i.e. the number of registers to be read,
+         * @return  none
          */
         void readBurst(Address addr, uint8_t* data, uint16_t length);
 
         /*
-         * @brief        reads multiple registers in turns as a temporary solution.
-         * @note        Yes, it is slow and inefficient, but it works. This is intended as a naive back-up.
-         * @param        an array of the registers' addresses in order to be read,
-         * @param        an array of the bytes to be read, the first of which is padding,
-         * @param        the length, i.e. the number of registers to be read,
-         * @return        none
+         * @brief   reads multiple registers in turns as a temporary solution.
+         * @note    Yes, it is slow and inefficient, but it works. This is intended as a naive back-up.
+         * @param   an array of the registers' addresses in order to be read,
+         * @param   an array of the bytes to be read, the first of which is padding,
+         * @param   the length, i.e. the number of registers to be read,
+         * @return  none
          */
         void readSlowly(Address* addrs, uint8_t* data, uint16_t length);
 
         /*
-         * @brief        reads the fifo.
-         * @note        Does not work yet.
-         * @param        an array of the bytes to be read, the first of which is padding,
-         * @param        the length, i.e. the number of registers to be read,
-         * @return        none
+         * @brief   reads the fifo.
+         * @note    Does not work yet.
+         * @param   an array of the bytes to be read, the first of which is padding,
+         * @param   the length, i.e. the number of registers to be read,
+         * @return  none
          */
         void readFifo(uint8_t* data, uint16_t length);
 
         /*
-         * @brief        converts raw integers into floating decimals.
-         * @note        accelerometer values are in g's, and gyroscope values are in dps.
-         * @param        the raw data to be converted from,
-         * @param        the converted data,
-         * @return        none
+         * @brief   converts raw integers into floating decimals.
+         * @note    accelerometer values are in g's, and gyroscope values are in dps.
+         * @param   the raw data to be converted from,
+         * @param   the converted data,
+         * @return  none
          */
         void convertRawData(IMU::raw_data* raw_data, IMU::converted_data* converted_data);
 
         /*
-         * @brief        checks for the interrupt-flags for the receiving to be done.
-         * @param        none,
-         * @retval        #true if the receiving was done, i.e. something has been received,
-         * @retval        #false if nothing has not been received yet,
+         * @brief   checks for the interrupt-flags for the receiving to be done.
+         * @param   none,
+         * @retval  #true if the receiving was done, i.e. something has been received,
+         * @retval  #false if nothing has not been received yet,
          */
         bool checkForReceive();
 
         /*
-         * @brief        checks for the interrupt-flags for the transmitting to be done.
-         * @param        none,
-         * @retval        #true if the transmitting was done,
-         * @retval        #false if not everything has been transmitted yet,
+         * @brief   checks for the interrupt-flags for the transmitting to be done.
+         * @param   none,
+         * @retval  #true if the transmitting was done,
+         * @retval  #false if not everything has been transmitted yet,
          */
         bool checkForTransmit();
 
         /*
-         * @brief        used for blocking to get the next byte from the IMU.
-         * @note        may not be needed strictly.
-         * @param        the data to be sent,
-         * @param        the number of bytes,
-         * @return        none
+         * @brief   used for blocking to get the next byte from the IMU.
+         * @note    may not be needed strictly.
+         * @param   the data to be sent,
+         * @param   the number of bytes,
+         * @return  none
          */
         void transmitReceive_IT(uint8_t* tx_data, uint8_t* rx_data, uint16_t length);
 
         /*
-         * @brief        used for blocking to get the next byte from the IMU.
-         * @note        may not be needed strictly.
-         * @param        the data
-         * @return        none
+         * @brief   used for blocking to get the next byte from the IMU.
+         * @note    may not be needed strictly.
+         * @param   the data
+         * @return  none
          */
         void blockingTransmit(uint8_t* data, uint16_t length);
 
