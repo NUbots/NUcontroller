@@ -1,0 +1,9 @@
+# STM32
+.metadata/
+.settings/
+[Rr]elease/
+[Dd]ebug/
+*.launch
+.cproject
+.project
+.mxproject
