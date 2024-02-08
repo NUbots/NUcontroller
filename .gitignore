@@ -2,6 +2,9 @@
 *.slo
 *.lo
 *.o
+*.ko
+*.obj
+*.elf
 
 # Compiled Dynamic libraries
 *.so
@@ -92,11 +95,14 @@ log/*
 pyvenv.cfg
 
 # STM32
-.metadata
-.settings
-Release\
-Debug\
-.launch
+.metadata/
+.settings/
+[Rr]elease/
+[Dd]ebug/
+*.launch
+.cproject
+.project
+.mxproject
 
 # Misc
 tags
