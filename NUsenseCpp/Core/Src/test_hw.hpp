@@ -24,10 +24,14 @@
 #include "comms/ServoTarget.pb.h"
 #include "comms/pb_decode.h"
 
+#include "usbd_cdc.h" // debugging memory corruption at hUsbDeviceHS
+
 #ifndef SRC_TEST_HW_HPP_
 #define SRC_TEST_HW_HPP_
 
 extern uint8_t UserRxBufferHS[APP_RX_DATA_SIZE];
+
+extern USBD_HandleTypeDef hUsbDeviceHS;
 
 char pb_packets[RX_BUF_SIZE];
 
@@ -41,8 +45,11 @@ uint16_t pb_length = 0;
 
 uint8_t decode_count = 0;
 uint16_t rx_count = 0;
+uint16_t missing_count = 0;
 
 uint16_t remaining_length = 0;
+
+uint16_t near_id = 0;
 
 namespace test_hw {
 uint8_t calculate_checksum(uint8_t* data, uint8_t length);
@@ -57,15 +64,15 @@ uint16_t pop(uint8_t* bytes, uint16_t length, uint16_t offset = 0) {
     // Update the front to move back (higher) in the array unless there
     // is nothing left in the buffer.
     if (rx_buffer.size >= (length + offset)) {
-        if (rx_buffer.front + length >= RX_BUF_SIZE) {
+        if (((rx_buffer.front + length + offset) >= RX_BUF_SIZE) && ((rx_buffer.front + offset) < RX_BUF_SIZE)) {
             memcpy(&bytes[0], &rx_buffer.data[(rx_buffer.front + offset) % RX_BUF_SIZE], RX_BUF_SIZE - rx_buffer.front - offset);
             memcpy(&bytes[RX_BUF_SIZE - rx_buffer.front - offset], &rx_buffer.data[0], length - RX_BUF_SIZE + rx_buffer.front + offset);
         }
         else{
             memcpy(&bytes[0], &rx_buffer.data[(rx_buffer.front + offset) % RX_BUF_SIZE], length);
         }
-        rx_buffer.front = (rx_buffer.front + length + 5) % RX_BUF_SIZE;
-        rx_buffer.size -= length;
+        rx_buffer.front = (rx_buffer.front + length + offset) % RX_BUF_SIZE;
+        rx_buffer.size -= length + offset;
     }
     return length;
 }
@@ -86,19 +93,24 @@ void comms(){
 
 				pb_length = static_cast<uint16_t>(rx_buffer.data[(rx_buffer.front + 3) % RX_BUF_SIZE] << 8) | static_cast<uint16_t>(rx_buffer.data[(rx_buffer.front + 4) % RX_BUF_SIZE]);
 
+				// If the overall packet, including the header, is smaller than
+				// the current size of the buffer, then pop all of the payload.
                 if ((pb_length + 5) <= rx_buffer.size) {
-                    ponp((uint8_t*)pb_packets, pb_length, 5);
+                    pop((uint8_t*)pb_packets, pb_length, 5);
                     packet_fin = true;
                 }
+                // Else, work out what the remaining length is, that is the
+                // payload's length minus the buffer's size, excluding the
+                // five bytes of header.
                 else {
-                    remaining_length = pb_length - rx_buffer.size - 5;
+                    remaining_length = pb_length - rx_buffer.size + 5;
                     pop((uint8_t*)pb_packets, rx_buffer.size - 5, 5);
                 }
 			}
             else if ((remaining_length != 0) && (rx_buffer.size >= remaining_length)) {
             	uint16_t old_size;
             	old_size = pop((uint8_t*)&pb_packets[pb_length - remaining_length], remaining_length <= rx_buffer.size ? remaining_length : rx_buffer.size);
-                remaining_length -= old_size;
+            	remaining_length -= old_size;
                 if (remaining_length == 0)
                 	packet_fin = true;
             }
@@ -119,21 +131,16 @@ void comms(){
 
 			decoded = pb_decode(&input_stream, message_actuation_ServoTargets_fields, &targets);
 
+			// Monitor the frequency of decodings and missing targets.
 			decode_count += 1;
-            // for (size_t i = 0; i < targets.targets_count; ++i) {
-                // 
-            // }
+			if (targets.targets[0].id != near_id)
+				near_id = targets.targets[0].id;
+			near_id++;
+			if (targets.targets_count != 20)
+				missing_count++;
 
 			// After decoding, empty the pb_packets vector to avoid corruption
 			memset(&pb_packets[0], 0, RX_BUF_SIZE);
-
-			// Ring buzzer if we've decoded our message correctly
-//			if (decoded) {
-//                HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_SET);
-//    			HAL_Delay(500);
-//				HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_RESET);
-//				HAL_Delay(500);
-//			}
 		}
 	}
 
