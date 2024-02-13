@@ -13,9 +13,9 @@
     #define checkreturn __attribute__((warn_unused_result))
 #endif
 
-#include "comms/pb.h"
-#include "comms/pb_decode.h"
-#include "comms/pb_common.h"
+#include "usb/protobuf/pb.h"
+#include "usb/protobuf/pb_decode.h"
+#include "usb/protobuf/pb_common.h"
 
 /**************************************
  * Declarations internal to this file *

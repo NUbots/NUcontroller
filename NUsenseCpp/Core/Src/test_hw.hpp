@@ -20,128 +20,23 @@
 //#include "uart/rs485_c.h"
 #include "uart/RS485.h"
 
-#include <vector>
-#include "comms/ServoTarget.pb.h"
-#include "comms/pb_decode.h"
-
-#include "usbd_cdc.h" // debugging memory corruption at hUsbDeviceHS
+#include "usb/PacketHandler.hpp"
 
 #ifndef SRC_TEST_HW_HPP_
 #define SRC_TEST_HW_HPP_
-
-extern uint8_t UserRxBufferHS[APP_RX_DATA_SIZE];
-
-extern USBD_HandleTypeDef hUsbDeviceHS;
-
-char pb_packets[RX_BUF_SIZE];
-
-uint16_t pb_packet_length = 0;
-
-bool decoded = false;
-
-int copy_fin = 0;
-bool packet_fin = false;
-uint16_t pb_length = 0;
-
-uint8_t decode_count = 0;
-uint16_t rx_count = 0;
-uint16_t missing_count = 0;
-
-uint16_t remaining_length = 0;
-
-uint16_t near_id = 0;
 
 namespace test_hw {
 uint8_t calculate_checksum(uint8_t* data, uint8_t length);
 uint16_t update_crc(uint16_t crc_accum, uint8_t* data_blk_ptr, uint16_t data_blk_size);
 
-/**
- * @brief   Removes one byte from the front of the queue.
- * @note    This is a helper function; it is not meant to encapsulate anything.
- * @return  the byte to be removed,
- */
-uint16_t pop(uint8_t* bytes, uint16_t length, uint16_t offset = 0) {
-    // Update the front to move back (higher) in the array unless there
-    // is nothing left in the buffer.
-    if (rx_buffer.size >= (length + offset)) {
-        if (((rx_buffer.front + length + offset) >= RX_BUF_SIZE) && ((rx_buffer.front + offset) < RX_BUF_SIZE)) {
-            memcpy(&bytes[0], &rx_buffer.data[(rx_buffer.front + offset) % RX_BUF_SIZE], RX_BUF_SIZE - rx_buffer.front - offset);
-            memcpy(&bytes[RX_BUF_SIZE - rx_buffer.front - offset], &rx_buffer.data[0], length - RX_BUF_SIZE + rx_buffer.front + offset);
-        }
-        else{
-            memcpy(&bytes[0], &rx_buffer.data[(rx_buffer.front + offset) % RX_BUF_SIZE], length);
-        }
-        rx_buffer.front = (rx_buffer.front + length + offset) % RX_BUF_SIZE;
-        rx_buffer.size -= length + offset;
-    }
-    return length;
-}
-
 #ifdef TEST_COMMS
 // Test communication with the NUC
 void comms(){
 
+    usb::PacketHandler nuc;
+
 	while (1){
-		if (rx_flag) {
-			// Reset rx_flag - this flag is turned on by the USB receive call back and turned off here
-			rx_flag = 0;
-			rx_count += 1;
-			// Check if we have a header and if we do extract our lengths and pb bytes
-			if (    (rx_buffer.data[rx_buffer.front] == (char)0xE2)
-                &&  (rx_buffer.data[(rx_buffer.front + 1) % RX_BUF_SIZE] == (char)0x98)
-                &&  (rx_buffer.data[(rx_buffer.front + 2) % RX_BUF_SIZE] == (char)0xA2)) {
-
-				pb_length = static_cast<uint16_t>(rx_buffer.data[(rx_buffer.front + 3) % RX_BUF_SIZE] << 8) | static_cast<uint16_t>(rx_buffer.data[(rx_buffer.front + 4) % RX_BUF_SIZE]);
-
-				// If the overall packet, including the header, is smaller than
-				// the current size of the buffer, then pop all of the payload.
-                if ((pb_length + 5) <= rx_buffer.size) {
-                    pop((uint8_t*)pb_packets, pb_length, 5);
-                    packet_fin = true;
-                }
-                // Else, work out what the remaining length is, that is the
-                // payload's length minus the buffer's size, excluding the
-                // five bytes of header.
-                else {
-                    remaining_length = pb_length - rx_buffer.size + 5;
-                    pop((uint8_t*)pb_packets, rx_buffer.size - 5, 5);
-                }
-			}
-            else if ((remaining_length != 0) && (rx_buffer.size >= remaining_length)) {
-            	uint16_t old_size;
-            	old_size = pop((uint8_t*)&pb_packets[pb_length - remaining_length], remaining_length <= rx_buffer.size ? remaining_length : rx_buffer.size);
-            	remaining_length -= old_size;
-                if (remaining_length == 0)
-                	packet_fin = true;
-            }
-            else if (rx_buffer.size != 0) {
-                // Update index accessor after receiving a packet, making sure to wrap around in case it exceeds the buffer's length
-                rx_buffer.front = (rx_buffer.front + 1) % RX_BUF_SIZE;
-                rx_buffer.size--;
-            }
-
-		}
-
-		if (packet_fin) {
-			packet_fin = 0;
-
-			// Decoding time
-			pb_istream_t input_stream = pb_istream_from_buffer(reinterpret_cast<const pb_byte_t*>(&pb_packets[0]), pb_length);
-			message_actuation_ServoTargets targets = message_actuation_ServoTargets_init_zero;
-
-			decoded = pb_decode(&input_stream, message_actuation_ServoTargets_fields, &targets);
-
-			// Monitor the frequency of decodings and missing targets.
-			decode_count += 1;
-			if (targets.targets[0].id != near_id)
-				near_id = targets.targets[0].id;
-			near_id++;
-			if (targets.targets_count != 20)
-				missing_count++;
-
-			// After decoding, empty the pb_packets vector to avoid corruption
-			memset(&pb_packets[0], 0, RX_BUF_SIZE);
-		}
+		nuc.handle();
 	}
 
 }

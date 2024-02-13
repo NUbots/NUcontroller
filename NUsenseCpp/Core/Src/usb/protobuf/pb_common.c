@@ -3,7 +3,7 @@
  * 2014 Petteri Aimonen <jpa@kapsi.fi>
  */
 
-#include "comms/pb_common.h"
+#include "usb/protobuf/pb_common.h"
 
 static bool load_descriptor_values(pb_field_iter_t *iter)
 {

@@ -109,8 +109,8 @@ struct RingBuffer
 extern USBD_CDC_ItfTypeDef USBD_Interface_fops_HS;
 
 /* USER CODE BEGIN EXPORTED_VARIABLES */
-extern struct RingBuffer rx_buffer;
-extern uint8_t rx_flag;
+extern volatile struct RingBuffer rx_buffer;
+extern volatile uint8_t rx_flag;
 /* USER CODE END EXPORTED_VARIABLES */
 
 /**
