@@ -21,9 +21,6 @@
 #define SET_SIGNAL_5() SPARE5_GPIO_Port->BSRR = SPARE5_Pin;
 #define RESET_SIGNAL_5() SPARE5_GPIO_Port->BSRR = (uint32_t) SPARE5_Pin << 16U;
 
-#define SET_SIGNAL_6() SPARE6_GPIO_Port->BSRR = SPARE6_Pin;
-#define RESET_SIGNAL_6() SPARE6_GPIO_Port->BSRR = (uint32_t) SPARE6_Pin << 16U;
-
 #else
 
 #define SET_SIGNAL_1() ;
@@ -40,9 +37,6 @@
 
 #define SET_SIGNAL_5() ;
 #define RESET_SIGNAL_5() ;
-
-#define SET_SIGNAL_6() ;
-#define RESET_SIGNAL_6() ;
 
 #endif
 

@@ -26,6 +26,6 @@
 
 //#define TEST_MOTOR 2
 
-#define TEST_COMMS
+//#define TEST_COMMS
 
 #endif /* INC_SETTINGS_H_ */

@@ -79,5 +79,23 @@ namespace platform::NUsense {
 
             RESET_SIGNAL_1();
         }
+
+        // Handle the incoming protobuf messages from the nuc.
+        SET_SIGNAL_3();
+        if (nuc.handle_incoming()) {
+            // For every new target, update the state if it is a servo.
+            message_actuation_ServoTargets* new_targets = nuc.get_targets();
+            for (int i = 0; i < new_targets->targets_count; i++) {
+                auto new_target = new_targets->targets[i];
+                if (new_target.id < NUMBER_OF_DEVICES) {
+                    servo_states[new_target.id].position_p_gain  = new_target.gain;
+                    servo_states[new_target.id].goal_position    = new_target.position;
+                    servo_states[new_target.id].torque_enabled   = (new_target.torque != 0);
+                    // Set the dirty-flag so that the Dynamixel stream writes to the servo.
+                    servo_states[new_target.id].dirty            = true;
+                }
+            }
+        }
+        RESET_SIGNAL_3();
     }
 } // namespace platform::NUsense

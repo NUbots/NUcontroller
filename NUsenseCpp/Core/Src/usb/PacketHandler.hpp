@@ -24,6 +24,7 @@ namespace usb {
 
     /**
      * @brief   Handles the USB protobuf packets.
+     * @note    Any better name than 'PacketHandler' is welcome.
      */
     class PacketHandler {
     public:
@@ -42,10 +43,10 @@ namespace usb {
         }
 
         /**
-         * @brief   Handle outgoing bytes from the ring-buffer, parse any packet, and decode it.
+         * @brief   Handles outgoing bytes from the ring-buffer, parses any packet, and decodes it.
          * @return  whether the packet has been decoded, 
          */
-        bool handle() {
+        bool handle_incoming() {
 
         	if (rx_flag) {
         		// Reset rx_flag - this flag is turned on by the USB receive call back and turned

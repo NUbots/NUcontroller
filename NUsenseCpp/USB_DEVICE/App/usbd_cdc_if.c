@@ -32,7 +32,6 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
 /* USER CODE END PV */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -50,7 +49,6 @@
   */
 
 /* USER CODE BEGIN PRIVATE_TYPES */
-
 /* USER CODE END PRIVATE_TYPES */
 
 /**
@@ -294,6 +292,8 @@ static int8_t CDC_Receive_HS(uint8_t* Buf, uint32_t *Len)
   rx_flag = 1;
 
   //HAL_GPIO_WritePin(SPARE1_GPIO_Port, SPARE1_Pin, GPIO_PIN_RESET);
+
+  USBD_CDC_ReceivePacket(&hUsbDeviceHS);
 
   return (USBD_OK);
   /* USER CODE END 11 */

@@ -7,6 +7,7 @@
 #include "../../dynamixel/PacketHandler.hpp"
 #include <array>
 #include "../../dynamixel/Dynamixel.hpp"
+#include "../../usb/PacketHandler.hpp"
 
 namespace platform::NUsense {
 
@@ -41,6 +42,10 @@ namespace platform::NUsense {
         /// @note   This is to keep track what the original instruction was for so that one can 
         ///         tell what the next one is.
         std::array<StatusState, NUMBER_OF_DEVICES> status_states;
+
+        /// @brief  This is the packet-handler for protobuf messages.
+        /// @note   Any better name than 'nuc' is welcome.
+        usb::PacketHandler nuc;
 
     public:
 
@@ -98,7 +103,8 @@ namespace platform::NUsense {
                 dynamixel::PacketHandler(ports[3]),
                 dynamixel::PacketHandler(ports[4]),
                 dynamixel::PacketHandler(ports[5])
-            })
+            }),
+            nuc()
         {
             // Begin at the beginning of the chains.
             chain_indices.fill(0);
