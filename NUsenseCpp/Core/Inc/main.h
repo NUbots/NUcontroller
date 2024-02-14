@@ -96,7 +96,6 @@ void Error_Handler(void);
 #define BUZZER_SIG_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

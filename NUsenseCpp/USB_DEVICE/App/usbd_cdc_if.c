@@ -22,6 +22,7 @@
 #include "usbd_cdc_if.h"
 
 /* USER CODE BEGIN INCLUDE */
+//#include "main.h" // for debugging on GPIO pins
 
 /* USER CODE END INCLUDE */
 
@@ -95,7 +96,8 @@ uint8_t UserRxBufferHS[APP_RX_DATA_SIZE];
 uint8_t UserTxBufferHS[APP_TX_DATA_SIZE];
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
-
+volatile struct RingBuffer rx_buffer;
+volatile uint8_t rx_flag = 0;
 /* USER CODE END PRIVATE_VARIABLES */
 
 /**
@@ -265,7 +267,34 @@ static int8_t CDC_Receive_HS(uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 11 */
   USBD_CDC_SetRxBuffer(&hUsbDeviceHS, &Buf[0]);
-  USBD_CDC_ReceivePacket(&hUsbDeviceHS);
+
+  // Move the back backwards (higher) in the array unless there is no more room left.
+  if (rx_buffer.size < RX_BUF_SIZE) {
+      // If the max buffer size is exceeded, wrap around using 2 memcpy calls
+      if (rx_buffer.back + *Len > RX_BUF_SIZE) {
+          memcpy(&rx_buffer.data[rx_buffer.back], &Buf[0], RX_BUF_SIZE - rx_buffer.back);
+          memcpy(&rx_buffer.data[0], &Buf[RX_BUF_SIZE - rx_buffer.back], rx_buffer.back + *Len - RX_BUF_SIZE);
+      }
+      // If not then 1 memcpy call should suffice
+      else {
+          memcpy(&rx_buffer.data[rx_buffer.back], &Buf[0], *Len);
+      }
+
+      rx_buffer.back = (rx_buffer.back + *Len) % RX_BUF_SIZE;
+      if ((rx_buffer.size + *Len) >= RX_BUF_SIZE) {
+    	  rx_buffer.size = RX_BUF_SIZE;
+    	  rx_buffer.front = rx_buffer.back;
+      }
+      else {
+    	  rx_buffer.size += *Len;
+      }
+  }
+
+  // Tell the USB stack we're ready to receive more data
+  rx_flag = 1;
+
+  //HAL_GPIO_WritePin(SPARE1_GPIO_Port, SPARE1_Pin, GPIO_PIN_RESET);
+
   return (USBD_OK);
   /* USER CODE END 11 */
 }

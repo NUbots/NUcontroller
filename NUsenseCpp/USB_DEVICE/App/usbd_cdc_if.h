@@ -51,7 +51,7 @@
 #define APP_RX_DATA_SIZE  2048
 #define APP_TX_DATA_SIZE  2048
 /* USER CODE BEGIN EXPORTED_DEFINES */
-
+#define RX_BUF_SIZE 2048U
 /* USER CODE END EXPORTED_DEFINES */
 
 /**
@@ -64,7 +64,22 @@
   */
 
 /* USER CODE BEGIN EXPORTED_TYPES */
-
+/// @brief  a ring buffer for the received data
+struct RingBuffer
+{
+    /// @brief  the data of the buffer:
+    uint8_t data[RX_BUF_SIZE];
+    /// @brief  the front of the 'queue' where bytes are read or popped,
+    /// @note   This is inclusive of the first byte.
+    /// @note   "I have been waiting for so long; I am nearly at the front of the queue."
+    volatile uint16_t front;
+    /// @brief  the back of the 'queue' where bytes are added or pushed,
+    /// @note   This is exclusive of the last byte.
+    /// @note   "That rude man just cut in line; he should go at the back of the queue."
+    volatile uint16_t back;
+    /// @brief  the number of bytes in the ring-buffer,
+    volatile uint16_t size;
+};
 /* USER CODE END EXPORTED_TYPES */
 
 /**
@@ -93,7 +108,8 @@
 extern USBD_CDC_ItfTypeDef USBD_Interface_fops_HS;
 
 /* USER CODE BEGIN EXPORTED_VARIABLES */
-
+extern volatile struct RingBuffer rx_buffer;
+extern volatile uint8_t rx_flag;
 /* USER CODE END EXPORTED_VARIABLES */
 
 /**

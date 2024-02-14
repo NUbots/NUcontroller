@@ -8,23 +8,39 @@
 #include "stm32h7xx_hal.h"
 
 #include "settings.h"
+#include "main.h"
 #include "usbd_cdc_if.h"
 #include "imu.h"
-
-#include "dynamixel/Devices.hpp"
+#include "main.h"
+#include <algorithm>
+//#include "dynamixel/Devices.hpp"
 #include "dynamixel/Packetiser.hpp"
-#include "dynamixel/Packet.hpp"
+//#include "dynamixel/Packet.hpp"
 #include "uart/Port.hpp"
-#include "uart/rs485_c.h"
+//#include "uart/rs485_c.h"
 #include "uart/RS485.h"
+
+#include "usb/PacketHandler.hpp"
 
 #ifndef SRC_TEST_HW_HPP_
 #define SRC_TEST_HW_HPP_
 
 namespace test_hw {
-
 uint8_t calculate_checksum(uint8_t* data, uint8_t length);
 uint16_t update_crc(uint16_t crc_accum, uint8_t* data_blk_ptr, uint16_t data_blk_size);
+
+#ifdef TEST_COMMS
+// Test communication with the NUC
+void comms(){
+
+    usb::PacketHandler nuc;
+
+	while (1){
+		nuc.handle();
+	}
+
+}
+#endif
 
 #ifdef TEST_UART
 void uart() {
