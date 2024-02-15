@@ -10,12 +10,12 @@
 #include "stm32h7xx_hal.h"
 #include "usbd_cdc_if.h"
 
-#include "dynamixel/Devices.hpp"
-#include "dynamixel/Packetiser.hpp"
-#include "dynamixel/Packet.hpp"
-#include "uart/Port.hpp"
-#include "uart/rs485_c.h"
-#include "uart/RS485.h"
+// #include "dynamixel/Devices.hpp"
+// #include "dynamixel/Packetiser.hpp"
+// #include "dynamixel/Packet.hpp"
+// #include "uart/Port.hpp"
+// #include "uart/rs485_c.h"
+// #include "uart/RS485.h"
 
 #ifndef SRC_TEST_HW_HPP_
     #define SRC_TEST_HW_HPP_
