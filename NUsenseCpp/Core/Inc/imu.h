@@ -547,19 +547,22 @@ namespace NUsense {
         //-----------------------------------------------------------------------------
         // Structures
         //-----------------------------------------------------------------------------
-
+        struct big_endian_u16 {
+            int8_t h;
+            int8_t l;
+        };
         struct raw_data {
             uint8_t pad;
             struct {
-                int16_t x;
-                int16_t y;
-                int16_t z;
+                big_endian_u16 x;
+                big_endian_u16 y;
+                big_endian_u16 z;
             } accelerometer;
-            int16_t temperature;
+            big_endian_u16 temperature;
             struct {
-                int16_t x;
-                int16_t y;
-                int16_t z;
+                big_endian_u16 x;
+                big_endian_u16 y;
+                big_endian_u16 z;
             } gyroscope;
         };
 

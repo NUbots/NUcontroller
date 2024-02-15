@@ -77,6 +77,9 @@ namespace test_hw {
 
         imu.init();
 
+        uint8_t byte = 0;
+        imu.readBurst(NUsense::IMU::Address::WHO_AM_I, &byte, 1);
+
         while (1) {
             // NU_IMU_ReadSlowly(addresses, (uint8_t*)&raw_data, 16);
             // NU_IMU_ReadFifo(rx, 14);
@@ -85,13 +88,7 @@ namespace test_hw {
 
             imu.readBurst(NUsense::IMU::Address::ACCEL_XOUT_H, rx, 14);
 
-            raw_data.accelerometer.x = ((uint16_t) rx[0] << 8) | rx[1];
-            raw_data.accelerometer.y = ((uint16_t) rx[2] << 8) | rx[3];
-            raw_data.accelerometer.z = ((uint16_t) rx[4] << 8) | rx[5];
-            raw_data.temperature     = ((uint16_t) rx[6] << 8) | rx[7];
-            raw_data.gyroscope.x     = ((uint16_t) rx[8] << 8) | rx[9];
-            raw_data.gyroscope.y     = ((uint16_t) rx[10] << 8) | rx[11];
-            raw_data.gyroscope.z     = ((uint16_t) rx[12] << 8) | rx[13];
+            raw_data = *(reinterpret_cast<NUsense::IMU::raw_data*>(rx));
 
             imu.convertRawData(&raw_data, &converted_data);
 
