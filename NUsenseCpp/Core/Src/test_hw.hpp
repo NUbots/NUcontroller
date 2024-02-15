@@ -66,15 +66,16 @@ namespace test_hw {
 
     #ifdef TEST_IMU
     void imu() {
-        int16_t acc;
-        uint16_t count;
-        uint8_t flags;
         uint8_t rx[14];
-        struct NU_IMU_raw_data raw_data;
-        struct NU_IMU_converted_data converted_data;
+
+        NUsense::IMU imu{};
+
+        NUsense::IMU::raw_data raw_data;
+        NUsense::IMU::converted_data converted_data;
+
         char str[256];
 
-        NU_IMU_Init();
+        imu.init();
 
         while (1) {
             // NU_IMU_ReadSlowly(addresses, (uint8_t*)&raw_data, 16);
@@ -82,7 +83,7 @@ namespace test_hw {
             // NU_IMU_ReadFifo(rx, 4);
             // NU_IMU_ReadBurst(ACCEL_XOUT_H, rx, 14);
 
-            NU_IMU_ReadBurst(ACCEL_XOUT_H, rx, 14);
+            imu.readBurst(NUsense::IMU::Address::ACCEL_XOUT_H, rx, 14);
 
             raw_data.accelerometer.x = ((uint16_t) rx[0] << 8) | rx[1];
             raw_data.accelerometer.y = ((uint16_t) rx[2] << 8) | rx[3];
@@ -92,7 +93,7 @@ namespace test_hw {
             raw_data.gyroscope.y     = ((uint16_t) rx[10] << 8) | rx[11];
             raw_data.gyroscope.z     = ((uint16_t) rx[12] << 8) | rx[13];
 
-            NU_IMU_ConvertRawData(&raw_data, &converted_data);
+            imu.convertRawData(&raw_data, &converted_data);
 
             sprintf(str,
                     "IMU:\t"
