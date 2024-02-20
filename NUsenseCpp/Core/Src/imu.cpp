@@ -223,14 +223,14 @@ void IMU::convertRawData(IMU::raw_data* raw_data, IMU::converted_data* converted
     auto& temp = raw_data->temperature;
 
     // convert from big to little endian and then scale
-    converted_data->accelerometer.x = static_cast<float>(acc.x.l | acc.x.h << 8) / ACCEL_SENSITIVITY_CHOSEN;
-    converted_data->accelerometer.y = static_cast<float>(acc.y.l | acc.y.h << 8) / ACCEL_SENSITIVITY_CHOSEN;
-    converted_data->accelerometer.z = static_cast<float>(acc.z.l | acc.z.h << 8) / ACCEL_SENSITIVITY_CHOSEN;
-    converted_data->temperature     = static_cast<float>((temp.l | temp.h << 8) - ROOM_TEMP_OFFSET) / TEMP_SENSITIVITY
+    converted_data->accelerometer.x = static_cast<float>(acc.x.l | (acc.x.h << 8)) / ACCEL_SENSITIVITY_CHOSEN;
+    converted_data->accelerometer.y = static_cast<float>(acc.y.l | (acc.y.h << 8)) / ACCEL_SENSITIVITY_CHOSEN;
+    converted_data->accelerometer.z = static_cast<float>(acc.z.l | (acc.z.h << 8)) / ACCEL_SENSITIVITY_CHOSEN;
+    converted_data->temperature     = static_cast<float>((temp.l | (temp.h << 8)) - ROOM_TEMP_OFFSET) / TEMP_SENSITIVITY
                                   + 25.0;  // from Section-11.23 from the datasheet
-    converted_data->gyroscope.x = static_cast<float>(gyro.x.l | gyro.x.h << 8) / GYRO_SENSITIVITY_CHOSEN;
-    converted_data->gyroscope.y = static_cast<float>(gyro.y.l | gyro.y.h << 8) / GYRO_SENSITIVITY_CHOSEN;
-    converted_data->gyroscope.z = static_cast<float>(gyro.z.l | gyro.z.h << 8) / GYRO_SENSITIVITY_CHOSEN;
+    converted_data->gyroscope.x = static_cast<float>(gyro.x.l | (gyro.x.h << 8)) / GYRO_SENSITIVITY_CHOSEN;
+    converted_data->gyroscope.y = static_cast<float>(gyro.y.l | (gyro.y.h << 8)) / GYRO_SENSITIVITY_CHOSEN;
+    converted_data->gyroscope.z = static_cast<float>(gyro.z.l | (gyro.z.h << 8)) / GYRO_SENSITIVITY_CHOSEN;
 }
 
 /*
