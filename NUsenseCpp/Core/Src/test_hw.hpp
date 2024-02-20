@@ -66,54 +66,84 @@ namespace test_hw {
 
     #ifdef TEST_IMU
     void imu() {
-        uint8_t rx[14];
-
+        // create our IMU instance
         NUsense::IMU imu{};
-
+        // structs to hold data
         NUsense::IMU::raw_data raw_data;
         NUsense::IMU::converted_data converted_data;
 
+        // variables for testing
+        uint8_t rx[14];
         char str[256];
+        uint8_t error = 0;
 
+        // lets start this baby
         imu.init();
 
-        uint8_t byte = 0;
-        imu.readBurst(NUsense::IMU::Address::WHO_AM_I, &byte, 1);
-
         while (1) {
-            // NU_IMU_ReadSlowly(addresses, (uint8_t*)&raw_data, 16);
-            // NU_IMU_ReadFifo(rx, 14);
-            // NU_IMU_ReadFifo(rx, 4);
-            // NU_IMU_ReadBurst(ACCEL_XOUT_H, rx, 14);
+            /* test readReg */
+            rx[0] = 0xFF;  // clear to known state
+            imu.readReg(NUsense::IMU::Address::WHO_AM_I, rx);
+            if (rx[0] != 0x98) {
+                error++;
+            }
 
+            /* test readBurst with a single readval */
+            rx[0] = 0xFF;  // clear to known state
+            imu.readBurst(NUsense::IMU::Address::WHO_AM_I, rx, 1);
+            if (rx[0] != 0x98) {
+                error++;
+            }
+
+            /* test readBurst with multiple readvals */
+            /* NOTE this one fails and im not sure why... */
+            for (int i = 0; i < 14; i++)
+                rx[i] = 0xFF;                                       // clear to known state
+            imu.readBurst(NUsense::IMU::Address::FIFO_R_W, rx, 3);  // include reg either side of WHO AM I
+            if (rx[1] != 0x98) {
+                error++;
+            }
+
+
+            /* test just acc x vals */
+            for (int i = 0; i < 14; i++)
+                rx[i] = 0xFF;  // clear to known state
+            imu.readBurst(NUsense::IMU::Address::ACCEL_XOUT_H, rx, 2);
+            uint16_t acc_x_raw = (rx[0] << 8) | rx[1];                                          // swap byte order
+            float acc_x_conv   = static_cast<float>(acc_x_raw) / imu.ACCEL_SENSITIVITY_CHOSEN;  // conversion
+            if (acc_x_conv == 0xFF) {  // ?? idk what a good failure condition is
+                error++;
+            }
+
+            /* test all sensor vals */
+            for (int i = 0; i < 14; i++)
+                rx[i] = 0xFF;  // clear to known state
             imu.readBurst(NUsense::IMU::Address::ACCEL_XOUT_H, rx, 14);
-
-            raw_data = *(reinterpret_cast<NUsense::IMU::raw_data*>(rx));
-
+            raw_data = *(reinterpret_cast<NUsense::IMU::raw_data*>(rx));  // cast raw bytes to struct
             imu.convertRawData(&raw_data, &converted_data);
 
-            sprintf(str,
-                    "IMU:\t"
-                    "ACC (g):\t%.3f\t%.3f\t%.3f\t"
-                    "TEMP (deg C):\t%.3f\t"
-                    "GYR (dps):\t%.3f\t%.3f\t%.3f\t"
-                    "Raw:\t%d\t%d\t%d\t%d\t%d\t%d\t%d\r\n",
-                    converted_data.accelerometer.x,
-                    converted_data.accelerometer.y,
-                    converted_data.accelerometer.z,
-                    converted_data.temperature,
-                    converted_data.gyroscope.x,
-                    converted_data.gyroscope.y,
-                    converted_data.gyroscope.z,
-                    raw_data.accelerometer.x,
-                    raw_data.accelerometer.y,
-                    raw_data.accelerometer.z,
-                    raw_data.temperature,
-                    raw_data.gyroscope.x,
-                    raw_data.gyroscope.y,
-                    raw_data.gyroscope.z);
+            // sprintf(str,
+            //         "IMU:\t"
+            //         "ACC (g):\t%.3f\t%.3f\t%.3f\t"
+            //         "TEMP (deg C):\t%.3f\t"
+            //         "GYR (dps):\t%.3f\t%.3f\t%.3f\t"
+            //         "Raw:\t%d\t%d\t%d\t%d\t%d\t%d\t%d\r\n",
+            //         converted_data.accelerometer.x,
+            //         converted_data.accelerometer.y,
+            //         converted_data.accelerometer.z,
+            //         converted_data.temperature,
+            //         converted_data.gyroscope.x,
+            //         converted_data.gyroscope.y,
+            //         converted_data.gyroscope.z,
+            //         raw_data.accelerometer.x,
+            //         raw_data.accelerometer.y,
+            //         raw_data.accelerometer.z,
+            //         raw_data.temperature,
+            //         raw_data.gyroscope.x,
+            //         raw_data.gyroscope.y,
+            //         raw_data.gyroscope.z);
 
-            CDC_Transmit_HS((uint8_t*) str, strlen(str));
+            // CDC_Transmit_HS((uint8_t*) str, strlen(str));
 
             HAL_Delay(100);
         }
