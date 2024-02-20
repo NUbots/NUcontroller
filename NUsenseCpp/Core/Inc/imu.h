@@ -564,7 +564,7 @@ namespace NUsense {
                 big_endian_u16 y;
                 big_endian_u16 z;
             } gyroscope;
-        };
+        } __attribute__((packed));
 
         struct converted_data {
             uint8_t ID;
