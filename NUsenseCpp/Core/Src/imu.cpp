@@ -162,7 +162,7 @@ void IMU::readBurst(Address addr, uint8_t* data, uint16_t length) {
  * @param   the converted data,
  * @return  none
  */
-void IMU::convertRawData(IMU::raw_data* raw_data, IMU::converted_data* converted_data) {
+void IMU::convertRawData(IMU::RawData* raw_data, IMU::ConvertedData* converted_data) {
 
     auto& acc  = raw_data->accelerometer;
     auto& gyro = raw_data->gyroscope;

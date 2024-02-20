@@ -551,7 +551,7 @@ namespace NUsense {
             uint8_t h;
             uint8_t l;
         };
-        struct raw_data {
+        struct RawData {
             struct {
                 big_endian_u16 x;
                 big_endian_u16 y;
@@ -565,7 +565,7 @@ namespace NUsense {
             } gyroscope;
         } __attribute__((packed));
 
-        struct converted_data {
+        struct ConvertedData {
             uint8_t ID;
             struct {
                 float x;
@@ -628,7 +628,7 @@ namespace NUsense {
          * @param   the converted data,
          * @return  none
          */
-        void convertRawData(IMU::raw_data* raw_data, IMU::converted_data* converted_data);
+        void convertRawData(IMU::RawData* raw_data, IMU::ConvertedData* converted_data);
 
 
     protected:

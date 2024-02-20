@@ -69,8 +69,8 @@ namespace test_hw {
         // create our IMU instance
         NUsense::IMU imu{};
         // structs to hold data
-        NUsense::IMU::raw_data raw_data;
-        NUsense::IMU::converted_data converted_data;
+        NUsense::IMU::RawData raw_data;
+        NUsense::IMU::ConvertedData converted_data;
 
         // variables for testing
         uint8_t rx[14];
@@ -119,7 +119,7 @@ namespace test_hw {
             for (int i = 0; i < 14; i++)
                 rx[i] = 0xFF;  // clear to known state
             imu.readBurst(NUsense::IMU::Address::ACCEL_XOUT_H, rx, 14);
-            raw_data = *(reinterpret_cast<NUsense::IMU::raw_data*>(rx));  // cast raw bytes to struct
+            raw_data = *(reinterpret_cast<NUsense::IMU::RawData*>(rx));  // cast raw bytes to struct
             imu.convertRawData(&raw_data, &converted_data);
 
             // sprintf(str,
