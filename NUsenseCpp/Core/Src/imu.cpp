@@ -148,9 +148,6 @@ void IMU::readBurst(Address addr, uint8_t* data, uint16_t length) {
 
     HAL_GPIO_WritePin(MPU_NSS_GPIO_Port, MPU_NSS_Pin, GPIO_PIN_RESET);
     HAL_SPI_TransmitReceive(&hspi4, packet, rx_data, length + 1, HAL_MAX_DELAY);
-    // HAL_SPI_Transmit_DMA(&hspi4, packet, length+1);
-    // HAL_SPI_Receive_DMA(&hspi4, rx_data, length+1);
-    // HAL_SPI_TransmitReceive_IT(&hspi4, packet, rx_data, length+1);
     HAL_GPIO_WritePin(MPU_NSS_GPIO_Port, MPU_NSS_Pin, GPIO_PIN_SET);
 
     for (int i = 0; i < length; i++)
