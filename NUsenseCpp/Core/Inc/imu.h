@@ -622,25 +622,6 @@ namespace NUsense {
         void readBurst(Address addr, uint8_t* data, uint16_t length);
 
         /*
-         * @brief   reads multiple registers in turns as a temporary solution.
-         * @note    Yes, it is slow and inefficient, but it works. This is intended as a naive back-up.
-         * @param   an array of the registers' addresses in order to be read,
-         * @param   an array of the bytes to be read, the first of which is padding,
-         * @param   the length, i.e. the number of registers to be read,
-         * @return  none
-         */
-        void readSlowly(Address* addrs, uint8_t* data, uint16_t length);
-
-        /*
-         * @brief   reads the fifo.
-         * @note    Does not work yet.
-         * @param   an array of the bytes to be read, the first of which is padding,
-         * @param   the length, i.e. the number of registers to be read,
-         * @return  none
-         */
-        void readFifo(uint8_t* data, uint16_t length);
-
-        /*
          * @brief   converts raw integers into floating decimals.
          * @note    accelerometer values are in g's, and gyroscope values are in dps.
          * @param   the raw data to be converted from,
@@ -649,44 +630,6 @@ namespace NUsense {
          */
         void convertRawData(IMU::raw_data* raw_data, IMU::converted_data* converted_data);
 
-        /*
-         * @brief   checks for the interrupt-flags for the receiving to be done.
-         * @param   none,
-         * @retval  #true if the receiving was done, i.e. something has been received,
-         * @retval  #false if nothing has not been received yet,
-         */
-        bool checkForReceive();
-
-        /*
-         * @brief   checks for the interrupt-flags for the transmitting to be done.
-         * @param   none,
-         * @retval  #true if the transmitting was done,
-         * @retval  #false if not everything has been transmitted yet,
-         */
-        bool checkForTransmit();
-
-        /*
-         * @brief   used for blocking to get the next byte from the IMU.
-         * @note    may not be needed strictly.
-         * @param   the data to be sent,
-         * @param   the number of bytes,
-         * @return  none
-         */
-        void transmitReceive_IT(uint8_t* tx_data, uint8_t* rx_data, uint16_t length);
-
-        /*
-         * @brief   used for blocking to get the next byte from the IMU.
-         * @note    may not be needed strictly.
-         * @param   the data
-         * @return  none
-         */
-        void blockingTransmit(uint8_t* data, uint16_t length);
-
-        // Legacy functions (fixed):
-
-        void transmit(uint8_t adr, uint8_t dat, int byte_size);
-
-        void transmitReceive(uint8_t adr, uint8_t dat, uint8_t* dat_return, int byte_size);
 
     protected:
     private:
