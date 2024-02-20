@@ -552,7 +552,6 @@ namespace NUsense {
             uint8_t l;
         };
         struct raw_data {
-            uint8_t pad;
             struct {
                 big_endian_u16 x;
                 big_endian_u16 y;
