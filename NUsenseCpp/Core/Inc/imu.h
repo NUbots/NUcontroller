@@ -546,8 +546,8 @@ namespace NUsense {
 
 
         // make it easily to centrally change config if we ever need to
-        Address READ_BLOCK_START = Address::ACCEL_XOUT_H;
-        uint8_t READ_BLOCK_LEN   = 14;
+        const Address READ_BLOCK_START = Address::ACCEL_XOUT_H;
+        const uint8_t READ_BLOCK_LEN   = 14;
 
         //-----------------------------------------------------------------------------
         // Structures
