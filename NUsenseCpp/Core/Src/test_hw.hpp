@@ -152,7 +152,7 @@ namespace test_hw {
                     "ACC (g):\t%.3f\t%.3f\t%.3f\t"
                     "TEMP (deg C):\t%.3f\t"
                     "GYR (dps):\t%.3f\t%.3f\t%.3f\t"
-                    "Raw:\t%d\t%d\t%d\t%d\t%d\t%d\t%d\r\n",
+                    "Raw:\t%x%x\t%x%x\t%x%x\t%x%x\t%x%x\t%x%x\t%x%x\r\n",
                     converted_data.accelerometer.x,
                     converted_data.accelerometer.y,
                     converted_data.accelerometer.z,
@@ -160,13 +160,20 @@ namespace test_hw {
                     converted_data.gyroscope.x,
                     converted_data.gyroscope.y,
                     converted_data.gyroscope.z,
-                    raw_data.accelerometer.x,
-                    raw_data.accelerometer.y,
-                    raw_data.accelerometer.z,
-                    raw_data.temperature,
-                    raw_data.gyroscope.x,
-                    raw_data.gyroscope.y,
-                    raw_data.gyroscope.z);
+                    raw_data.accelerometer.x.h,
+                    raw_data.accelerometer.x.l,
+                    raw_data.accelerometer.y.h,
+                    raw_data.accelerometer.y.l,
+                    raw_data.accelerometer.z.h,
+                    raw_data.accelerometer.z.l,
+                    raw_data.temperature.h,
+                    raw_data.temperature.l,
+                    raw_data.gyroscope.x.h,
+                    raw_data.gyroscope.x.l,
+                    raw_data.gyroscope.y.h,
+                    raw_data.gyroscope.y.l,
+                    raw_data.gyroscope.z.h,
+                    raw_data.gyroscope.z.l);
 
             CDC_Transmit_HS((uint8_t*) str, strlen(str));
 
