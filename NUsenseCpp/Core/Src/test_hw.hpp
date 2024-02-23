@@ -147,28 +147,28 @@ namespace test_hw {
             imu.readSensorValsRaw();          // get fresh data
             raw_data = imu.getLastRawData();  // read it again
 
-            // sprintf(str,
-            //         "IMU:\t"
-            //         "ACC (g):\t%.3f\t%.3f\t%.3f\t"
-            //         "TEMP (deg C):\t%.3f\t"
-            //         "GYR (dps):\t%.3f\t%.3f\t%.3f\t"
-            //         "Raw:\t%d\t%d\t%d\t%d\t%d\t%d\t%d\r\n",
-            //         converted_data.accelerometer.x,
-            //         converted_data.accelerometer.y,
-            //         converted_data.accelerometer.z,
-            //         converted_data.temperature,
-            //         converted_data.gyroscope.x,
-            //         converted_data.gyroscope.y,
-            //         converted_data.gyroscope.z,
-            //         raw_data.accelerometer.x,
-            //         raw_data.accelerometer.y,
-            //         raw_data.accelerometer.z,
-            //         raw_data.temperature,
-            //         raw_data.gyroscope.x,
-            //         raw_data.gyroscope.y,
-            //         raw_data.gyroscope.z);
+            sprintf(str,
+                    "IMU:\t"
+                    "ACC (g):\t%.3f\t%.3f\t%.3f\t"
+                    "TEMP (deg C):\t%.3f\t"
+                    "GYR (dps):\t%.3f\t%.3f\t%.3f\t"
+                    "Raw:\t%d\t%d\t%d\t%d\t%d\t%d\t%d\r\n",
+                    converted_data.accelerometer.x,
+                    converted_data.accelerometer.y,
+                    converted_data.accelerometer.z,
+                    converted_data.temperature,
+                    converted_data.gyroscope.x,
+                    converted_data.gyroscope.y,
+                    converted_data.gyroscope.z,
+                    raw_data.accelerometer.x,
+                    raw_data.accelerometer.y,
+                    raw_data.accelerometer.z,
+                    raw_data.temperature,
+                    raw_data.gyroscope.x,
+                    raw_data.gyroscope.y,
+                    raw_data.gyroscope.z);
 
-            // CDC_Transmit_HS((uint8_t*) str, strlen(str));
+            CDC_Transmit_HS((uint8_t*) str, strlen(str));
 
             HAL_Delay(100);
         }
