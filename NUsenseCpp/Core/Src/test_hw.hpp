@@ -118,9 +118,34 @@ namespace test_hw {
             /* test all sensor vals */
             for (int i = 0; i < 14; i++)
                 rx[i] = 0xFF;  // clear to known state
-            imu.readBurst(NUsense::IMU::Address::ACCEL_XOUT_H, rx, 14);
+            imu.readBurst(imu.READ_BLOCK_START, rx, imu.READ_BLOCK_LEN);
             raw_data = *(reinterpret_cast<NUsense::IMU::RawData*>(rx));  // cast raw bytes to struct
             imu.convertRawData(&raw_data, &converted_data);
+
+            /* test class form, resets form breakpoint locations */
+
+            // reset vals to be sure;
+            raw_data       = {};
+            converted_data = {};
+            // check with first raw data generation
+            raw_data = imu.getNewRawData();
+            imu.generateConvertedData();
+            converted_data = imu.getLastConvertedData();
+
+            // reset again
+            raw_data       = {};
+            converted_data = {};
+            // check with opposite of before. the vals here shouldn't align
+            raw_data       = imu.getLastRawData();
+            converted_data = imu.getNewConvertedData();
+
+            // reset one last time
+            raw_data       = {};
+            converted_data = {};
+            // check if read on demand works
+            raw_data = imu.getLastRawData();  // read data
+            imu.readSensorValsRaw();          // get fresh data
+            raw_data = imu.getLastRawData();  // read it again
 
             // sprintf(str,
             //         "IMU:\t"
