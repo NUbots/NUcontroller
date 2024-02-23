@@ -533,7 +533,7 @@ namespace NUsense {
          */
 
         //-----------------------------------------------------------------------------
-        // Chosen scales
+        // Configs
         //-----------------------------------------------------------------------------
 
         const uint16_t ACCEL_SENSITIVITY_CHOSEN   = ACCEL_SENSITIVTY_4G;
@@ -543,6 +543,11 @@ namespace NUsense {
 
         const float GYRO_SENSITIVITY_CHOSEN     = GYRO_SENSITIVITY_500DPS;
         const uint8_t GYRO_CONFIG_FS_SEL_CHOSEN = GYRO_CONFIG_FS_SEL_500DPS;
+
+
+        // make it easily to centrally change config if we ever need to
+        Address READ_BLOCK_START = Address::ACCEL_XOUT_H;
+        uint8_t READ_BLOCK_LEN   = 14;
 
         //-----------------------------------------------------------------------------
         // Structures
@@ -564,6 +569,20 @@ namespace NUsense {
                 big_endian_u16 z;
             } gyroscope;
         } __attribute__((packed));
+
+        struct CombinedData {
+            struct {
+                int16_t x;
+                int16_t y;
+                int16_t z;
+            } accelerometer;
+            int16_t temperature;
+            struct {
+                int16_t x;
+                int16_t y;
+                int16_t z;
+            } gyroscope;
+        };
 
         struct ConvertedData {
             uint8_t ID;
@@ -630,9 +649,44 @@ namespace NUsense {
          */
         void convertRawData(IMU::RawData* raw_data, IMU::ConvertedData* converted_data);
 
+        /*
+         * @brief   read all raw sensor values into internal memory on command
+         * @note    there's no way to access the data with this. it's kinda useless.
+         * @return  none
+         */
+        void readSensorValsRaw(void);
+
+        /*
+         * @brief   fill converted data based on raw data
+         * @return  none
+         */
+        void generateConvertedData(void);
+
+        /*
+         * @brief   a simple getter for the current stored raw data
+         */
+        RawData getLastRawData(void);
+
+        /*
+         * @brief   get new data, return it, donezo
+         */
+        RawData getNewRawData(void);
+
+        /*
+         * @brief   a simple getter for the current stored converted data
+         */
+        ConvertedData getLastConvertedData(void);
+
+        /*
+         * @brief   get new data, convert it, return it, donezo
+         */
+        ConvertedData getNewConvertedData(void);
 
     protected:
     private:
+        // structs to hold internal state of imu to read easily
+        RawData raw_data;
+        ConvertedData converted_data;
     };
 
     //-----------------------------------------------------------------------------

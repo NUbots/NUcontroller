@@ -168,13 +168,83 @@ void IMU::convertRawData(IMU::RawData* raw_data, IMU::ConvertedData* converted_d
     auto& gyro = raw_data->gyroscope;
     auto& temp = raw_data->temperature;
 
+    // endianness conversion to signed int first, otherwise float conversion fails
+    CombinedData combined = {.accelerometer = {.x = static_cast<int16_t>(acc.x.l | (acc.x.h << 8)),
+                                               .y = static_cast<int16_t>(acc.y.l | (acc.y.h << 8)),
+                                               .z = static_cast<int16_t>(acc.z.l | (acc.z.h << 8))},
+                             .temperature   = static_cast<int16_t>(temp.l | (temp.h << 8)),
+                             .gyroscope     = {.x = static_cast<int16_t>(gyro.x.l | (gyro.x.h << 8)),
+                                               .y = static_cast<int16_t>(gyro.y.l | (gyro.y.h << 8)),
+                                               .z = static_cast<int16_t>(gyro.z.l | (gyro.z.h << 8))}};
     // convert from big to little endian and then scale
-    converted_data->accelerometer.x = static_cast<float>(acc.x.l | (acc.x.h << 8)) / ACCEL_SENSITIVITY_CHOSEN;
-    converted_data->accelerometer.y = static_cast<float>(acc.y.l | (acc.y.h << 8)) / ACCEL_SENSITIVITY_CHOSEN;
-    converted_data->accelerometer.z = static_cast<float>(acc.z.l | (acc.z.h << 8)) / ACCEL_SENSITIVITY_CHOSEN;
-    converted_data->temperature     = static_cast<float>((temp.l | (temp.h << 8)) - ROOM_TEMP_OFFSET) / TEMP_SENSITIVITY
-                                  + 25.0;  // from Section-11.23 from the datasheet
-    converted_data->gyroscope.x = static_cast<float>(gyro.x.l | (gyro.x.h << 8)) / GYRO_SENSITIVITY_CHOSEN;
-    converted_data->gyroscope.y = static_cast<float>(gyro.y.l | (gyro.y.h << 8)) / GYRO_SENSITIVITY_CHOSEN;
-    converted_data->gyroscope.z = static_cast<float>(gyro.z.l | (gyro.z.h << 8)) / GYRO_SENSITIVITY_CHOSEN;
+    converted_data->accelerometer.x = static_cast<float>(combined.accelerometer.x) / ACCEL_SENSITIVITY_CHOSEN;
+    converted_data->accelerometer.y = static_cast<float>(combined.accelerometer.y) / ACCEL_SENSITIVITY_CHOSEN;
+    converted_data->accelerometer.z = static_cast<float>(combined.accelerometer.z) / ACCEL_SENSITIVITY_CHOSEN;
+    converted_data->gyroscope.x     = static_cast<float>(combined.gyroscope.x) / GYRO_SENSITIVITY_CHOSEN;
+    converted_data->gyroscope.y     = static_cast<float>(combined.gyroscope.y) / GYRO_SENSITIVITY_CHOSEN;
+    converted_data->gyroscope.z     = static_cast<float>(combined.gyroscope.z) / GYRO_SENSITIVITY_CHOSEN;
+    converted_data->temperature     = (static_cast<float>(combined.temperature) - ROOM_TEMP_OFFSET) / TEMP_SENSITIVITY
+                                  + 25.0;  // from Section-11.25 from the datasheet
 }
+
+
+/*
+ * @brief   read all raw sensor values into internal memory on command
+ * @note    there's no way to access the data with this. it's kinda useless.
+ * @return  none
+ */
+void IMU::readSensorValsRaw(void) {
+    // create read buffer
+    uint8_t buff[14];
+    // read raw vals into the buffer
+    readBurst(READ_BLOCK_START, buff, READ_BLOCK_LEN);
+    // cast raw vals into the internal struct
+    raw_data = *(reinterpret_cast<NUsense::IMU::RawData*>(buff));
+}
+
+/*
+ * @brief   fill converted data based on raw data
+ * @return  none
+ */
+void IMU::generateConvertedData(void) {
+    // sneaky lil one liner with private variable permissions
+    convertRawData(&raw_data, &converted_data);
+};
+
+/*
+ * @brief   a simple getter for the current stored raw data
+ */
+IMU::RawData IMU::getLastRawData(void) {
+    return raw_data;
+};
+
+/*
+ * @brief   get new data, return it, donezo
+ */
+IMU::RawData IMU::getNewRawData(void) {
+    // get new data
+    readSensorValsRaw();
+    // return it
+    return raw_data;
+    // donezo
+};
+
+/*
+ * @brief   a simple getter for the current stored converted data
+ */
+IMU::ConvertedData IMU::getLastConvertedData(void) {
+    return converted_data;
+};
+
+/*
+ * @brief   get new data, convert it, return it, donezo
+ */
+IMU::ConvertedData IMU::getNewConvertedData(void) {
+    // get new data
+    readSensorValsRaw();
+    // convert it
+    generateConvertedData();
+    // return it
+    return converted_data;
+    // donezo
+};
