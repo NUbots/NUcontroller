@@ -19,13 +19,13 @@ namespace platform::NUsense {
         	RESET_SIGNAL_1();
 
             SET_SIGNAL_1();
-
-            if (packet_handlers[i].check_sts
-                <sizeof(platform::NUsense::DynamixelServoReadData)>
-                (current_id)
-                == dynamixel::PacketHandler::SUCCESS
-            ) {
-            	RESET_SIGNAL_1();
+            dynamixel::PacketHandler::Result result = packet_handlers[i].check_sts
+                            <sizeof(platform::NUsense::DynamixelServoReadData)>
+                            (current_id);
+        	RESET_SIGNAL_1();
+            SET_SIGNAL_1();
+            // If there is a status-response waiting, then handle it.
+            if (result == dynamixel::PacketHandler::SUCCESS) {
 
                 switch (status_states[(uint8_t)current_id-1]) {
                     // After a response for the first bank of registers, send a write-instruction 
@@ -40,6 +40,10 @@ namespace platform::NUsense {
                     // After a response for the second bank of registers, send a read-instruction 
                     // for the read bank of registers.
                     case StatusState::WRITE_2_RESPONSE:
+
+                        // Reset the flag now that the two write-instructions were properly 
+                        // received.
+                        servo_states[(uint8_t)current_id-1].dirty = false;
 
                         send_servo_read_request(current_id, i);
                         status_states[(uint8_t)current_id-1] = READ_RESPONSE;
@@ -64,11 +68,10 @@ namespace platform::NUsense {
 
                         // If the servo-state is dirty, then send a write-instruction.
                         if (servo_states[(uint8_t)current_id-1].dirty) {
-                            servo_states[(uint8_t)current_id-1].dirty = false;
                             send_servo_write_1_request(current_id, i);
                             status_states[(uint8_t)current_id-1] = WRITE_1_RESPONSE;
-
                         } else {
+                            // Else, send a read-instruction.
                             send_servo_read_request(current_id, i);
                             status_states[(uint8_t)current_id-1] = READ_RESPONSE;
                         }
@@ -76,26 +79,51 @@ namespace platform::NUsense {
                         break;
                 }
             }
+            // If there was an error, then just restart the stream.
+            else if (	(result == dynamixel::PacketHandler::ERROR)
+            		|| 	(result == dynamixel::PacketHandler::CRC_ERROR)
+			) {
 
+                switch (status_states[(uint8_t)current_id-1]) {
+                    // If there was an error with the read-response, then go to the next servo 
+                    // along the chain.
+                    default:
+                    case StatusState::READ_RESPONSE:
+
+                        // Move along the chain.
+                        chain_indices[i] = (chain_indices[i] + 1) % chains[i].size();
+                        current_id = (chains[i])[chain_indices[i]];
+
+                        // If the servo-state is dirty, then send a write-instruction.
+                        if (servo_states[(uint8_t)current_id-1].dirty) {
+                            send_servo_write_1_request(current_id, i);
+                            status_states[(uint8_t)current_id-1] = WRITE_1_RESPONSE;
+                        } else {
+                            send_servo_read_request(current_id, i);
+                            status_states[(uint8_t)current_id-1] = READ_RESPONSE;
+                        }
+
+                        break;
+                }
+
+            }
             RESET_SIGNAL_1();
         }
 
         // Handle the incoming protobuf messages from the nuc.
-        SET_SIGNAL_3();
         if (nuc.handle_incoming()) {
             // For every new target, update the state if it is a servo.
             message_actuation_ServoTargets* new_targets = nuc.get_targets();
             for (int i = 0; i < new_targets->targets_count; i++) {
                 auto new_target = new_targets->targets[i];
-                if (new_target.id < NUMBER_OF_DEVICES) {
-                    servo_states[new_target.id].position_p_gain  = new_target.gain;
-                    servo_states[new_target.id].goal_position    = new_target.position;
-                    servo_states[new_target.id].torque_enabled   = (new_target.torque != 0);
+                if ((new_target.id) < NUMBER_OF_DEVICES) {
+                    servo_states[new_target.id].position_p_gain    = new_target.gain;
+                    servo_states[new_target.id].goal_position      = new_target.position;
+                    servo_states[new_target.id].torque             = new_target.torque;
                     // Set the dirty-flag so that the Dynamixel stream writes to the servo.
                     servo_states[new_target.id].dirty            = true;
                 }
             }
         }
-        RESET_SIGNAL_3();
     }
 } // namespace platform::NUsense

@@ -298,7 +298,9 @@ namespace platform::NUsense {
         // Send the first write-instruction to begin the chain-reaction on each port.
         std::vector<platform::NUsense::NUgus::ID> chain = chains[0];
         for (int i = 0; i < NUM_PORTS; i++) {
-            send_servo_write_1_request((chains[i])[chain_indices[i]], i);
+        	if (chains[i].size() != 0) {
+        		send_servo_write_1_request((chains[i])[chain_indices[i]], i);
+        	}
         }
 
     }

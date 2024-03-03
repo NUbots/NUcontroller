@@ -20,7 +20,7 @@ namespace platform::NUsense {
 
         DynamixelServoWriteDataPart1 data;
 
-        uint8_t i = (uint8_t)id;
+        uint8_t i = (uint8_t)id-1;
 
         // If our torque should be disabled then we disable our torque
         data.torque_enable =
@@ -50,7 +50,7 @@ namespace platform::NUsense {
 
         DynamixelServoWriteDataPart2 data;
 
-        uint8_t i = (uint8_t)id;
+        uint8_t i = (uint8_t)id-1;
 
         data.feedforward_1st_gain = convert::ff_gain(servo_states[i].feedforward_1st_gain);
         data.feedforward_2nd_gain = convert::ff_gain(servo_states[i].feedforward_2nd_gain);

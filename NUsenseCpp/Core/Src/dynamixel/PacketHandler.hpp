@@ -48,21 +48,23 @@ namespace dynamixel {
         template <uint16_t N>
         const Result check_sts(const platform::NUsense::NUgus::ID id) {
 
-            // Peek to see if there is a byte on the buffer yet.
-            uint16_t read_result = port.read();
-            if (read_result == NO_BYTE_READ)
-                return NONE;
-
-            SET_SIGNAL_4();
-
-            // If so, then decode it.
-            packetiser.decode(read_result);
-
-            RESET_SIGNAL_4();
-
-            // Unless the packetiser has a whole packet, return.
             if (!packetiser.is_packet_ready()) {
-                return NONE;
+                // Peek to see if there is a byte on the buffer yet.
+                uint16_t read_result = port.read();
+                if (read_result == NO_BYTE_READ)
+                    return NONE;
+
+                SET_SIGNAL_2();
+
+                // If so, then decode it.
+                packetiser.decode(read_result);
+
+                RESET_SIGNAL_2();
+
+                // Unless the packetiser has a whole packet, return.
+                if (!packetiser.is_packet_ready()) {
+                    return NONE;
+                }
             }
 
             // If so, then parse the array as a packet and add it with the rest.
@@ -86,18 +88,26 @@ namespace dynamixel {
                 if (packetiser.get_decoded_length() == 7+4+N)
                     if (sts->crc != packetiser.get_decoded_crc())
                         result = CRC_ERROR;
-                    else if (sts->error == dynamixel::CommandError::NO_ERROR)
+                    else if (((uint8_t)sts->error & 0x7F) == (uint8_t)dynamixel::CommandError::NO_ERROR)
+                        // The and-operation is a quick hack to ignore hardware-errors, i.e. 0x80,
+                        // given that the voltage to servos is often above the rated 16 V.
                         result = SUCCESS;
                     else
                         result = ERROR;
                 else
                     if (short_sts->crc != packetiser.get_decoded_crc())
                         result = CRC_ERROR;
-                    else if (short_sts->error == dynamixel::CommandError::NO_ERROR)
+                    else if (((uint8_t)short_sts->error & 0x7F) == (uint8_t)dynamixel::CommandError::NO_ERROR)
+                        // The and-operation is a quick hack to ignore hardware-errors, i.e. 0x80,
+                        // given that the voltage to servos is often above the rated 16 V.
                         result = SUCCESS;
                     else
                         result = ERROR;
             }
+
+            // If there was an error, then reset the packetiser.
+            if ((result == CRC_ERROR) || (result == ERROR))
+                packetiser.reset();
 
             return result;
         }

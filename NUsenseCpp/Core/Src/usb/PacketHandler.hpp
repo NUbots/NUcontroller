@@ -17,8 +17,8 @@
 
 //#include "main.h" // for debugging on GPIO pins
 
-#ifndef INC_COMMS_HPP_
-#define INC_COMMS_HPP_
+#ifndef USB_PACKETHANDLER_HPP
+#define USB_PACKETHANDLER_HPP
 
 namespace usb {
 
@@ -49,6 +49,7 @@ namespace usb {
         bool handle_incoming() {
 
         	if (rx_flag) {
+                SET_SIGNAL_4();
         		// Reset rx_flag - this flag is turned on by the USB receive call back and turned
                 // off here
                 rx_flag = 0;
@@ -95,10 +96,12 @@ namespace usb {
                     rx_buffer.front = (rx_buffer.front + 1) % RX_BUF_SIZE;
                     rx_buffer.size--;
                 }
+                RESET_SIGNAL_4();
 
             }
 
             if (is_packet_ready) {
+                SET_SIGNAL_4();
                 is_packet_ready = false;
 
                 // Decoding time
@@ -117,7 +120,8 @@ namespace usb {
                     missing_count++;
                 if (near_id == 100)
                 	near_id = 100;
-
+                RESET_SIGNAL_4();
+                
                 return true;
             }
 
@@ -202,6 +206,6 @@ namespace usb {
         volatile uint16_t near_id;
     };
 
-}
+} // namespace usb
 
-#endif /* INC_COMMS_HPP_ */
+#endif // USB_PACKETHANDLER_HPP

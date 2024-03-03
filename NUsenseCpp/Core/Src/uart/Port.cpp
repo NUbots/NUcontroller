@@ -59,16 +59,16 @@ namespace uart {
         //handle_rx();
     #endif
 
-        SET_SIGNAL_2();
+        SET_SIGNAL_3();
 
         // If there is no byte to read, then return 0xFFFF as a value two bytes long so that is not to 
         // be confused with a received byte.
         if (!get_available_rx()) {
-        	RESET_SIGNAL_2();
+        	RESET_SIGNAL_3();
             return 0xFFFF;
         }
 
-        RESET_SIGNAL_2();
+        RESET_SIGNAL_3();
 
         SET_SIGNAL_3();
 

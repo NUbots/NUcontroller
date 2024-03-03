@@ -61,7 +61,7 @@ namespace platform::NUsense {
             // For now, this is just a very crude way of knowing what devices are on what port 
             // without polling each port. Later we will get polling at start-up so that the 
             // devices do not have to be connected to a specific port.
-            chains({
+            /*chains({
                 std::vector<platform::NUsense::NUgus::ID>{
                         platform::NUsense::NUgus::ID::R_SHOULDER_PITCH,
                         platform::NUsense::NUgus::ID::R_SHOULDER_ROLL,
@@ -94,7 +94,41 @@ namespace platform::NUsense {
                         platform::NUsense::NUgus::ID::L_ANKLE_PITCH,
                         platform::NUsense::NUgus::ID::L_ANKLE_ROLL
                 }
-            }),
+            }),*/
+			chains({
+				std::vector<platform::NUsense::NUgus::ID>{
+						platform::NUsense::NUgus::ID::R_SHOULDER_PITCH,
+						platform::NUsense::NUgus::ID::R_SHOULDER_ROLL,
+						platform::NUsense::NUgus::ID::R_ELBOW
+				},
+				std::vector<platform::NUsense::NUgus::ID>{
+						platform::NUsense::NUgus::ID::L_SHOULDER_PITCH,
+						platform::NUsense::NUgus::ID::L_SHOULDER_ROLL,
+						platform::NUsense::NUgus::ID::L_ELBOW
+				},
+				std::vector<platform::NUsense::NUgus::ID>{
+						platform::NUsense::NUgus::ID::R_HIP_YAW,
+						platform::NUsense::NUgus::ID::R_HIP_ROLL,
+						platform::NUsense::NUgus::ID::R_HIP_PITCH,
+						platform::NUsense::NUgus::ID::R_KNEE,
+						platform::NUsense::NUgus::ID::R_ANKLE_PITCH,
+						platform::NUsense::NUgus::ID::R_ANKLE_ROLL
+				},
+				std::vector<platform::NUsense::NUgus::ID>{
+						platform::NUsense::NUgus::ID::L_HIP_YAW,
+						platform::NUsense::NUgus::ID::L_HIP_ROLL,
+						platform::NUsense::NUgus::ID::L_HIP_PITCH,
+						platform::NUsense::NUgus::ID::L_KNEE,
+						platform::NUsense::NUgus::ID::L_ANKLE_PITCH,
+						platform::NUsense::NUgus::ID::L_ANKLE_ROLL
+				},
+				std::vector<platform::NUsense::NUgus::ID>{
+						platform::NUsense::NUgus::ID::HEAD_YAW,
+						platform::NUsense::NUgus::ID::HEAD_PITCH
+				},
+				std::vector<platform::NUsense::NUgus::ID>{
+				}
+			}),
             // Make a packet-handler for each port.
             packet_handlers({
                 dynamixel::PacketHandler(ports[0]),
