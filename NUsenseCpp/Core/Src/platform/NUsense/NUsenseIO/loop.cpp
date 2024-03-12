@@ -14,15 +14,15 @@ namespace platform::NUsense {
         for (int i = 0; i < NUM_PORTS; i++) {
             // This line may be slow. The whole data-structure of chains may need to optimised as 
             // something faster than vectors.
-        	SET_SIGNAL_1();
+            SET_SIGNAL_1();
             platform::NUsense::NUgus::ID current_id = (chains[i])[chain_indices[i]];
-        	RESET_SIGNAL_1();
+            RESET_SIGNAL_1();
 
             SET_SIGNAL_1();
             dynamixel::PacketHandler::Result result = packet_handlers[i].check_sts
                             <sizeof(platform::NUsense::DynamixelServoReadData)>
                             (current_id);
-        	RESET_SIGNAL_1();
+            RESET_SIGNAL_1();
             SET_SIGNAL_1();
             // If there is a status-response waiting, then handle it.
             if (result == dynamixel::PacketHandler::SUCCESS) {
@@ -80,11 +80,13 @@ namespace platform::NUsense {
                 }
             }
             // If there was an error, then just restart the stream.
-            else if (	(result == dynamixel::PacketHandler::ERROR)
-            		|| 	(result == dynamixel::PacketHandler::CRC_ERROR)
-			) {
+            else if (   (result == dynamixel::PacketHandler::ERROR)
+                    ||  (result == dynamixel::PacketHandler::CRC_ERROR)
+                    ||  (result == dynamixel::PacketHandler::TIMEOUT)
+            ) {
 
                 switch (status_states[(uint8_t)current_id-1]) {
+
                     // If there was an error with the read-response, then go to the next servo 
                     // along the chain.
                     default:

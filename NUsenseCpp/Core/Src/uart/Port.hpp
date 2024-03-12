@@ -97,6 +97,8 @@ private:
         TX_BUSY,
         TX_DONE
     } comm_state;
+    /// @brief  the current count of the DMA buffer, i.e. the older contents of the NDTR.
+    uint16_t count = 0;
 #ifdef SEE_STATISTICS
     uint16_t old_num_bytes_tx[10];
 #endif

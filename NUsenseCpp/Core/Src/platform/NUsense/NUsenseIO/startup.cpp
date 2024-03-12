@@ -299,6 +299,7 @@ namespace platform::NUsense {
         std::vector<platform::NUsense::NUgus::ID> chain = chains[0];
         for (int i = 0; i < NUM_PORTS; i++) {
         	if (chains[i].size() != 0) {
+                packet_handlers[i].begin();
         		send_servo_write_1_request((chains[i])[chain_indices[i]], i);
         	}
         }

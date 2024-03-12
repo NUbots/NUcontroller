@@ -109,7 +109,6 @@ namespace uart {
     void Port::handle_rx() {
     #ifdef USE_DMA_RX_BUFFER
         uint16_t old_back;
-        static uint16_t count = 0;
 
         if (count == rs_link.get_receive_counter())
         	return;

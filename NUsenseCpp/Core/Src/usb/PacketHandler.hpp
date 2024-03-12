@@ -48,9 +48,8 @@ namespace usb {
          */
         bool handle_incoming() {
 
-        	if (rx_flag) {
-                SET_SIGNAL_4();
-        		// Reset rx_flag - this flag is turned on by the USB receive call back and turned
+            if (rx_flag) {
+                // Reset rx_flag - this flag is turned on by the USB receive call back and turned
                 // off here
                 rx_flag = 0;
                 rx_count += 1;
@@ -96,12 +95,10 @@ namespace usb {
                     rx_buffer.front = (rx_buffer.front + 1) % RX_BUF_SIZE;
                     rx_buffer.size--;
                 }
-                RESET_SIGNAL_4();
 
             }
 
             if (is_packet_ready) {
-                SET_SIGNAL_4();
                 is_packet_ready = false;
 
                 // Decoding time
@@ -119,8 +116,7 @@ namespace usb {
                 if (targets.targets_count != 20)
                     missing_count++;
                 if (near_id == 100)
-                	near_id = 100;
-                RESET_SIGNAL_4();
+                    near_id = 100;
                 
                 return true;
             }
@@ -159,24 +155,24 @@ namespace usb {
                         ((rx_buffer.front + length + offset)     >= RX_BUF_SIZE) 
                     &&  ((rx_buffer.front + offset)              <  RX_BUF_SIZE)
                 ) {
-                	std::copy(
-                			&rx_buffer.data[(rx_buffer.front + offset) % RX_BUF_SIZE],
-							&rx_buffer.data[RX_BUF_SIZE],
-							&bytes[0]
-                	);
-                	std::copy(
-							&rx_buffer.data[0],
-							&rx_buffer.data[length - RX_BUF_SIZE + rx_buffer.front + offset],
-							&bytes[RX_BUF_SIZE - rx_buffer.front - offset]
-					);
+                    std::copy(
+                            &rx_buffer.data[(rx_buffer.front + offset) % RX_BUF_SIZE],
+                            &rx_buffer.data[RX_BUF_SIZE],
+                            &bytes[0]
+                    );
+                    std::copy(
+                            &rx_buffer.data[0],
+                            &rx_buffer.data[length - RX_BUF_SIZE + rx_buffer.front + offset],
+                            &bytes[RX_BUF_SIZE - rx_buffer.front - offset]
+                    );
                 }
                 // Else, use one straightforward copy.
                 else{
-                	std::copy(
-                			&rx_buffer.data[(rx_buffer.front + offset) % RX_BUF_SIZE],
-							&rx_buffer.data[(rx_buffer.front + offset + length) % RX_BUF_SIZE],
-							&bytes[0]
-                	);
+                    std::copy(
+                            &rx_buffer.data[(rx_buffer.front + offset) % RX_BUF_SIZE],
+                            &rx_buffer.data[(rx_buffer.front + offset + length) % RX_BUF_SIZE],
+                            &bytes[0]
+                    );
                 }
                 // Move the front forward and decrease the size.
                 rx_buffer.front = (rx_buffer.front + length + offset) % RX_BUF_SIZE;

@@ -19,6 +19,7 @@
 #include "main.h"
 #include "dma.h"
 #include "spi.h"
+#include "tim.h"
 #include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
@@ -62,6 +63,8 @@ int main(void)
     MX_USART2_UART_Init();
     MX_USART3_UART_Init();
     MX_USART6_UART_Init();
+    MX_TIM1_Init();
+    MX_TIM4_Init();
 
 #ifdef FIRST_BUZZ
     //Confirm that the programme is running.
@@ -74,6 +77,9 @@ int main(void)
     // Set the Dynamixel power on.
     HAL_GPIO_WritePin(DXL_PWR_EN_GPIO_Port, DXL_PWR_EN_Pin, GPIO_PIN_SET);
 #endif
+
+    //HAL_TIM_Base_Start(&htim4);
+    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
 
 #ifdef RUN_MAIN 
     // Delay for a bit to give the motor time to boot up. Without this delay, I found that the 
@@ -191,6 +197,12 @@ void SystemClock_Config(void)
     {
         Error_Handler();
     }
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    //SET_SIGNAL_5();
+    //RESET_SIGNAL_5();
 }
 
 /**

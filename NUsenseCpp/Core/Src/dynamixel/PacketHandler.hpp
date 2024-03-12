@@ -2,6 +2,7 @@
 #include "Dynamixel.hpp"
 #include "Packetiser.hpp"
 #include "../platform/NUsense/NUgus.hpp"
+#include "../utility/support/MicrosecondTimer.hpp"
 
 #include "signal.h"
 
@@ -30,7 +31,8 @@ namespace dynamixel {
         PacketHandler(uart::Port& port) :
             port(port),
             packetiser(),
-            result(NONE)
+            result(NONE),
+            timeout_timer()
         {
 
         };
@@ -48,11 +50,20 @@ namespace dynamixel {
         template <uint16_t N>
         const Result check_sts(const platform::NUsense::NUgus::ID id) {
 
+            // If the packet has timed out, then return early.
+            // May be better to move this to where read_result == NO_BYTE_READ, but the handler may 
+            // get stuck indefinitely if phantom bytes are constantly coming in. Any ideas are 
+            // welcome.
+            if (timeout_timer.has_timed_out()) {
+                return TIMEOUT;
+            }
+
             if (!packetiser.is_packet_ready()) {
                 // Peek to see if there is a byte on the buffer yet.
                 uint16_t read_result = port.read();
-                if (read_result == NO_BYTE_READ)
+                if (read_result == NO_BYTE_READ) {
                     return NONE;
+                }
 
                 SET_SIGNAL_2();
 
@@ -66,6 +77,9 @@ namespace dynamixel {
                     return NONE;
                 }
             }
+
+            // Stop the timer since we have a full packet.
+            timeout_timer.stop();
 
             // If so, then parse the array as a packet and add it with the rest.
             // Parse it as both a status-packet of expected length and a short status-packet, i.e. 
@@ -121,6 +135,15 @@ namespace dynamixel {
         }
 
         /**
+         * @brief   Begins the timeout-timer.
+         * @note    This must be called in order to handle timeouts.
+         */
+        void begin() {
+            // For now, wait for at most 500 microseconds.
+            timeout_timer.begin(3000);
+        }
+
+        /**
          * @brief   Gets the status-packet.
          * @return  a reference to the decoded packet,
          */
@@ -145,13 +168,14 @@ namespace dynamixel {
         }
 
     private:
-        /// @brief    the reference to the port that will be communicated thereon,
+        /// @brief  the reference to the port that will be communicated thereon,
         uart::Port& port;
-        /// @brief    the packetiser to encode the instruction and to decode the status,
+        /// @brief  the packetiser to encode the instruction and to decode the status,
         dynamixel::Packetiser packetiser;
-        /// @brief    the result
-        /// @note     this is not needed yet.
+        /// @brief  the result
         Result result;
+        /// @brief  the timer for the packet-timeout,
+        utility::support::MicrosecondTimer timeout_timer;
     };
 
 } // namespace dynamixel

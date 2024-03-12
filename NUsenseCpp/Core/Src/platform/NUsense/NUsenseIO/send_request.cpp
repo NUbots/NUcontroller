@@ -7,6 +7,7 @@ namespace platform::NUsense {
 
     void NUsenseIO::send_servo_read_request(const NUgus::ID id, const uint8_t port_i) {
         packet_handlers[port_i].reset();
+        packet_handlers[port_i].begin();
         ports[port_i].write(
             dynamixel::ReadCommand(
                 (uint8_t)id,
@@ -36,6 +37,7 @@ namespace platform::NUsense {
 
         // Send a write-instruction for the current servo.
         packet_handlers[port_i].reset();
+        packet_handlers[port_i].begin();
         ports[port_i].write(
             dynamixel::WriteCommand<DynamixelServoWriteDataPart1>(
                 (uint8_t)id,
@@ -64,6 +66,7 @@ namespace platform::NUsense {
 
         // Send a write-instruction for the current servo.
         packet_handlers[port_i].reset();
+        packet_handlers[port_i].begin();
         ports[port_i].write(
             dynamixel::WriteCommand<DynamixelServoWriteDataPart2>(
                 (uint8_t)id,
