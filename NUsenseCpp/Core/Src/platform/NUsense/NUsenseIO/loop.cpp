@@ -31,17 +31,24 @@ namespace platform::NUsense {
                 // For now, print the read-bank for testing.
                 // Later on, this should be done somewhere else outside of
                 // this if-statement and without cout-style output.
-                std::stringstream ss;
-                ss     << "Port: " << i
-                        // For some ungodly reason, stringstream reads a
-                        // uint8_t as an ASCII character. Thus, chain_index
-                        // needs to cast to a uint16_t.
-                    << " Servo: " << ((uint16_t)chain_index)
-                    << "\t" << local_cache[(uint8_t)chain_index-1];
-                CDC_Transmit_HS((uint8_t*)ss.str().data(), ss.str().size());
+//                std::stringstream ss;
+//                ss     << "Port: " << i
+//                        // For some ungodly reason, stringstream reads a
+//                        // uint8_t as an ASCII character. Thus, chain_index
+//                        // needs to cast to a uint16_t.
+//                    << " Servo: " << ((uint16_t)chain_index)
+//                    << "\t" << local_cache[(uint8_t)chain_index-1];
+//                CDC_Transmit_HS((uint8_t*)ss.str().data(), ss.str().size());
+//
+//                // Wait for a little bit. This is purely for testing.
+//                HAL_Delay(500);
 
-                // Wait for a little bit. This is purely for testing.
-                HAL_Delay(500);
+                // Put current IMU values within the structs declared in the NUsenseIO header then encode
+                read_imu();
+                if (encode(local_cache, converted_data, tx_buf.data())){
+                	// Happiness
+                	CDC_Transmit_HS(tx_buf.data(), tx_buf.size());
+                }
 
                 // Send a read-instruction for the next servo along the chain.
                 packet_handlers[i].reset();

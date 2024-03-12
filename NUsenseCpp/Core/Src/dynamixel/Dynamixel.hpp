@@ -2,7 +2,8 @@
 #define DYNAMIXEL_DYNAMIXEL_HPP
 
 #include <cstddef>
-#include <cstdint>  
+#include <cstdint>
+#include <vector>
 
 namespace dynamixel {
     // PING          Instruction that checks whether the Packet has arrived to a device with the same ID as Packet
