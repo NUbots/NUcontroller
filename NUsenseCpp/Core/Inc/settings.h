@@ -20,7 +20,7 @@
 
 //#define TEST_USB
 
-#define TEST_IMU
+//#define TEST_IMU
 
 //#define TEST_PORT
 
