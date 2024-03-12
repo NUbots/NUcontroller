@@ -47,7 +47,16 @@ namespace platform::NUsense {
                 read_imu();
                 if (encode(local_cache, converted_data, tx_buf.data())){
                 	// Happiness
-                	CDC_Transmit_HS(tx_buf.data(), tx_buf.size());
+                	// Parse nbs packet
+                	std::vector<uint8_t> nbs_packet({0xE2, 0x98, 0xA2});
+
+                	int payload_length = tx_buf.size();
+                	std::vector<uint8_t> length_vector{static_cast<uint8_t>((payload_length >> 8) & 0xFF), static_cast<uint8_t>(payload_length & 0xFF)};
+
+					nbs_packet.insert(nbs_packet.end(), length_vector.begin(), length_vector.end());
+					nbs_packet.insert(nbs_packet.end(), tx_buf.begin(), tx_buf.end());
+
+                	CDC_Transmit_HS(nbs_packet.data(), nbs_packet.size());
                 }
 
                 // Send a read-instruction for the next servo along the chain.
