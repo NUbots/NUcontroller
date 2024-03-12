@@ -37,7 +37,7 @@
  *      imu.generateConvertedData();
  *      // get the converted data (*not* a new read)
  *      converted_data = imu.getLastConvertedData();
- * 
+ *
  *  d) Getting existing old raw data if you want that for some reason?
  *      raw_data = imu.getLastRawData();
  *
