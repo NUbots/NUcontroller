@@ -11,6 +11,39 @@
  * Ported from NUfsr to NUsense for testing.
  *
  ***********************************************************/
+
+/**
+ * IMU class usage instructions:
+ *
+ * 1. Create instance:
+ *  NUsense::IMU imu{};
+ *
+ * 2. Create structs for IMU data (you may not need raw_data)
+ *  NUsense::IMU::RawData raw_data;
+ *  NUsense::IMU::ConvertedData converted_data;
+ *
+ * 3. Start the imu:
+ *  imu.init();
+ *
+ * 4. The IMU can be read in four ways:
+ *  a) Easy and most useful way:
+ *      // read *new* data and return in converted form
+ *      converted_data = imu.getNewConvertedData();
+ *
+ *  c) Getting new data entirely manually:
+ *      // get *new* IMU data on each call
+ *      imu.getNewRawData();
+ *      // convert the data within the class
+ *      imu.generateConvertedData();
+ *      // get the converted data (*not* a new read)
+ *      converted_data = imu.getLastConvertedData();
+ * 
+ *  d) Getting existing old raw data if you want that for some reason?
+ *      raw_data = imu.getLastRawData();
+ *
+ */
+
+
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef _IMU_H_
 #define _IMU_H_
