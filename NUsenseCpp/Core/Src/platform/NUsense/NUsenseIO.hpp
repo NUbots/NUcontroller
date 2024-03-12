@@ -113,7 +113,6 @@ namespace platform::NUsense {
         bool encode(const std::array<platform::ServoState, NUMBER_OF_DEVICES>& local_cache,
                     const struct NU_IMU_converted_data& converted_data,
                     uint8_t* tx_data);
-        bool encode_callback();
     };
 
 }  // namespace platform::NUsense

@@ -21,6 +21,7 @@
 #include "uart/RS485.h"
 
 #include "usb/PacketHandler.hpp"
+#include "platform/NUsense/NUsenseIO.hpp"
 
 #ifndef SRC_TEST_HW_HPP_
 #define SRC_TEST_HW_HPP_
@@ -32,15 +33,23 @@ uint16_t update_crc(uint16_t crc_accum, uint8_t* data_blk_ptr, uint16_t data_blk
 #ifdef TEST_COMMS
 // Test communication with the NUC
 void comms(){
-
+#ifdef TEST_DECODE
     usb::PacketHandler nuc;
 
 	while (1){
 		nuc.handle();
 	}
+#endif // TEST_DECODE
+
+#ifdef TEST_ENCODE
+platform::NUsense::NUsenseIO nusense_io;
+while(1) {
+	nusense_io.loop();
+}
+#endif // TEST_ENCODE
 
 }
-#endif
+#endif // TEST_COMMS
 
 #ifdef TEST_UART
 void uart() {
