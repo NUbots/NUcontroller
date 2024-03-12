@@ -144,7 +144,7 @@ namespace test_hw {
             converted_data = {};
             // check if read on demand works
             raw_data = imu.getLastRawData();  // read data
-            imu.readSensorValsRaw();          // get fresh data
+            imu.getNewRawData();              // get fresh data
             raw_data = imu.getLastRawData();  // read it again
 
             sprintf(str,

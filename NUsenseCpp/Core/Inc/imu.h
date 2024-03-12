@@ -650,22 +650,10 @@ namespace NUsense {
         void convertRawData(IMU::RawData* raw_data, IMU::ConvertedData* converted_data);
 
         /*
-         * @brief   read all raw sensor values into internal memory on command
-         * @note    there's no way to access the data with this. it's kinda useless.
-         * @return  none
-         */
-        void readSensorValsRaw(void);
-
-        /*
          * @brief   fill converted data based on raw data
          * @return  none
          */
         void generateConvertedData(void);
-
-        /*
-         * @brief   a simple getter for the current stored raw data
-         */
-        RawData getLastRawData(void);
 
         /*
          * @brief   get new data, return it, donezo
@@ -673,14 +661,19 @@ namespace NUsense {
         RawData getNewRawData(void);
 
         /*
-         * @brief   a simple getter for the current stored converted data
-         */
-        ConvertedData getLastConvertedData(void);
-
-        /*
          * @brief   get new data, convert it, return it, donezo
          */
         ConvertedData getNewConvertedData(void);
+
+        /*
+         * @brief   a simple getter for the current stored raw data
+         */
+        RawData getLastRawData(void);
+
+        /*
+         * @brief   a simple getter for the current stored converted data
+         */
+        ConvertedData getLastConvertedData(void);
 
     protected:
     private:

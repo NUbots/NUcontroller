@@ -187,28 +187,39 @@ void IMU::convertRawData(IMU::RawData* raw_data, IMU::ConvertedData* converted_d
                                   + 25.0;  // from Section-11.25 from the datasheet
 }
 
-
 /*
- * @brief   read all raw sensor values into internal memory on command
- * @note    there's no way to access the data with this. it's kinda useless.
+ * @brief   fill converted data based on existing raw data
  * @return  none
  */
-void IMU::readSensorValsRaw(void) {
+void IMU::generateConvertedData(void) {
+    // sneaky lil one liner with private variable permissions
+    convertRawData(&raw_data, &converted_data);
+};
+
+/*
+ * @brief   get new data, return it, donezo
+ */
+IMU::RawData IMU::getNewRawData(void) {
     // create read buffer
     uint8_t buff[14];
     // read raw vals into the buffer
     readBurst(READ_BLOCK_START, buff, READ_BLOCK_LEN);
     // cast raw vals into the internal struct
     raw_data = *(reinterpret_cast<NUsense::IMU::RawData*>(buff));
-}
+    // return it the new data
+    return raw_data;
+    // donezo
+};
 
 /*
- * @brief   fill converted data based on raw data
- * @return  none
+ * @brief   get new data, convert it, return it, donezo
  */
-void IMU::generateConvertedData(void) {
-    // sneaky lil one liner with private variable permissions
+IMU::ConvertedData IMU::getNewConvertedData(void) {
+    // get and convert new data
+    getNewRawData();
     convertRawData(&raw_data, &converted_data);
+    // donezo
+    return converted_data;
 };
 
 /*
@@ -219,32 +230,8 @@ IMU::RawData IMU::getLastRawData(void) {
 };
 
 /*
- * @brief   get new data, return it, donezo
- */
-IMU::RawData IMU::getNewRawData(void) {
-    // get new data
-    readSensorValsRaw();
-    // return it
-    return raw_data;
-    // donezo
-};
-
-/*
  * @brief   a simple getter for the current stored converted data
  */
 IMU::ConvertedData IMU::getLastConvertedData(void) {
     return converted_data;
-};
-
-/*
- * @brief   get new data, convert it, return it, donezo
- */
-IMU::ConvertedData IMU::getNewConvertedData(void) {
-    // get new data
-    readSensorValsRaw();
-    // convert it
-    generateConvertedData();
-    // return it
-    return converted_data;
-    // donezo
 };
