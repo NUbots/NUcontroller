@@ -16,11 +16,9 @@ namespace uart {
 #define USE_DMA_RX_BUFFER
 #define SIMPLE_WRITE
 
-#define PORT_BUFFER_SIZE    2048
+constexpr uint16_t PORT_BUFFER_SIZE  = 2048;
 
-#define NO_BYTE_READ        0xFFFF
-
-#define NUM_PORTS           6
+constexpr uint16_t NO_BYTE_READ      = 0xFFFF;
 
 class Port {
 private:

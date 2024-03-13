@@ -61,7 +61,7 @@ namespace dynamixel {
             if (!packetiser.is_packet_ready()) {
                 // Peek to see if there is a byte on the buffer yet.
                 uint16_t read_result = port.read();
-                if (read_result == NO_BYTE_READ) {
+                if (read_result == uart::NO_BYTE_READ) {
                     return NONE;
                 }
 
