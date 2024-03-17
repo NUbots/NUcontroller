@@ -1,10 +1,3 @@
-/*
- * comms.hpp
- *
- *  Created on: 3 Dec. 2023
- *      Author: Johanne Montano
- */
-
 #include "usbd_cdc_if.h"
 #include "protobuf/ServoTarget.pb.h"
 #include "protobuf/pb_encode.h"
@@ -14,8 +7,6 @@
 
 #include <algorithm>
 #include <iterator>
-
-//#include "main.h" // for debugging on GPIO pins
 
 #ifndef USB_PACKETHANDLER_HPP
 #define USB_PACKETHANDLER_HPP

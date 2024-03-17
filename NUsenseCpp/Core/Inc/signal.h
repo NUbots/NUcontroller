@@ -6,6 +6,8 @@
 #define USE_SIGNALS
 #ifdef USE_SIGNALS
 
+/// @brief  Short functions to set and reset each of the spare pins for debugging on the 
+///         logic-analyser.
 #define SET_SIGNAL_1() SPARE1_GPIO_Port->BSRR = SPARE1_Pin;
 #define RESET_SIGNAL_1() SPARE1_GPIO_Port->BSRR = (uint32_t) SPARE1_Pin << 16U;
 

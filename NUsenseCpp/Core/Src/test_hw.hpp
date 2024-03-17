@@ -13,11 +13,8 @@
 #include "imu.h"
 #include "main.h"
 #include <algorithm>
-//#include "dynamixel/Devices.hpp"
 #include "dynamixel/Packetiser.hpp"
-//#include "dynamixel/Packet.hpp"
 #include "uart/Port.hpp"
-//#include "uart/rs485_c.h"
 #include "uart/RS485.h"
 
 #include "usb/PacketHandler.hpp"
