@@ -2,6 +2,9 @@
 *.slo
 *.lo
 *.o
+*.ko
+*.obj
+*.elf
 
 # Compiled Dynamic libraries
 *.so
@@ -96,7 +99,7 @@ pyvenv.cfg
 .settings
 Release\
 Debug\
-.launch
+*.launch
 
 # Misc
 tags
