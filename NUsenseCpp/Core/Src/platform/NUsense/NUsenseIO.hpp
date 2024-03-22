@@ -12,9 +12,10 @@
 #include "../../usb/protobuf/pb_encode.h"
 #include "../ServoState.hpp"
 #include "NUgus.hpp"
+#include "imu.h"
 
 namespace platform::NUsense {
-    constexpr uint32_t MAX_ENCODE_SIZE = 1100;
+    constexpr uint32_t MAX_ENCODE_SIZE = 1600;
 
     constexpr uint8_t NUM_PORTS = 6;
 
@@ -46,9 +47,33 @@ namespace platform::NUsense {
         ///         tell what the next one is.
         std::array<StatusState, NUMBER_OF_DEVICES> status_states;
 
-        /// @brief  This is the packet-handler for protobuf messages.
+        /// @brief  This is the packet-handler for the serialised protobuf messages sent by the NUC.
         /// @note   Any better name than 'nuc' is welcome.
         usb::PacketHandler nuc;
+
+        /// @brief  This is the nanopb generated struct which will contain all the states
+        ///         to serialise and sent to the NUC
+        message_platform_NUSense nusense_msg;
+
+        /// TODO:   DMA implementation of IMU conversion in one function
+        /// @brief  The container for decoded IMU values (float)
+        NU_IMU_converted_data converted_data;
+
+        /// @brief  The container for raw IMU values (int16_t's)
+        NU_IMU_raw_data raw_data;
+
+        /// @brief  Container for the raw data received IMU ReadBurst calls
+        uint8_t IMU_rx[14];
+
+        /// @brief  Nanopb will put the serialised bytes in this container. For some reason, the encode
+        ///         function does not work with c++ defined data structures hence we use a c array for it
+        uint8_t encoding_payload[2048];
+
+        /// @brief  Flag to catch failed usb transmits for debugging / handling
+        bool usb_tx_err = false;
+
+        /// @brief  Flag to catch failed nanopb encode calls for debugging / handling
+        bool nanopb_encoding_err = false;
 
 
     public:
@@ -94,6 +119,10 @@ namespace platform::NUsense {
             , nuc() {
             // Begin at the beginning of the chains.
             chain_indices.fill(0);
+            // Initialise our nanopb struct to init_zero
+            nusense_msg = message_platform_NUSense_init_zero;
+            // Begin IMU for polling
+            NU_IMU_Init();
         }
 
         /**
@@ -137,6 +166,11 @@ namespace platform::NUsense {
          * @param   port_i the index of the port on which to send,
          */
         void send_servo_write_2_request(const NUgus::ID id, const uint8_t port_i);
+
+        /**
+         * @brief   Sends a serialised message_platform_NUSenseData to the nuc via usb
+         */
+        bool send_servo_states();
     };
 
 }  // namespace platform::NUsense
