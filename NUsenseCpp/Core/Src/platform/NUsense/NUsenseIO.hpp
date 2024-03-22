@@ -50,15 +50,6 @@ namespace platform::NUsense {
         /// @note   Any better name than 'nuc' is welcome.
         usb::PacketHandler nuc;
 
-        enum StatusState { READ_RESPONSE = 0, WRITE_1_RESPONSE = 1, WRITE_2_RESPONSE = 2 };
-        /// @brief  These are the states of all expected statuses.
-        /// @note   This is to keep track what the original instruction was for so that one can
-        ///         tell what the next one is.
-        std::array<StatusState, NUMBER_OF_DEVICES> status_states;
-
-        /// @brief  This is the packet-handler for protobuf messages.
-        /// @note   Any better name than 'nuc' is welcome.
-        usb::PacketHandler nuc;
 
     public:
         /**
