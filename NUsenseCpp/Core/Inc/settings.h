@@ -28,7 +28,7 @@
 
 #define TEST_COMMS
 
- #define TEST_ENCODE
+#define TEST_ENCODE
 
 //#define TEST_DECODE
 

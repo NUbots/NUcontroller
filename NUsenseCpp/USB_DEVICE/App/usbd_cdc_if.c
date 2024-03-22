@@ -266,8 +266,6 @@ static int8_t CDC_Receive_HS(uint8_t* Buf, uint32_t *Len)
   /* USER CODE BEGIN 11 */
   USBD_CDC_SetRxBuffer(&hUsbDeviceHS, &Buf[0]);
 
-  rx_flag = 1;
-
   // Move the back backwards (higher) in the array unless there is no more room left.
   if (rx_buffer.size < RX_BUF_SIZE) {
       // If the max buffer size is exceeded, wrap around using 2 memcpy calls
@@ -291,9 +289,11 @@ static int8_t CDC_Receive_HS(uint8_t* Buf, uint32_t *Len)
   }
 
   // Tell the USB stack we're ready to receive more data
-  USBD_CDC_ReceivePacket(&hUsbDeviceHS);
+  rx_flag = 1;
 
   //HAL_GPIO_WritePin(SPARE1_GPIO_Port, SPARE1_Pin, GPIO_PIN_RESET);
+
+  USBD_CDC_ReceivePacket(&hUsbDeviceHS);
 
   return (USBD_OK);
   /* USER CODE END 11 */

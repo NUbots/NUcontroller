@@ -95,7 +95,11 @@ log/*
 pyvenv.cfg
 
 # STM32
-.metadata/
+.metadata
+.settings
+Release\
+Debug\
+*.launch
 
 # Misc
 tags

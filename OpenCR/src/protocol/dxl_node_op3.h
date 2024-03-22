@@ -16,11 +16,11 @@
 /// @brief The Dynamixel ID of the OpenCR for packet communication
 #define DXL_NODE_OP3_ID           200  // 0xC8
 #define DXL_NODE_OP3_MODLE_NUMBER 0x7400
-#define DXL_NODE_OP3_FW_VER       0x03
+#define DXL_NODE_OP3_FW_VER       0x04
 /// @brief The factory default Baud Rate
 /// @details Value is indexed from {9600, 57600, 115200, 1000000, 2000000, 3000000, 4000000, 4500000}
 /// @see dxl_hw_begin(baud) in ../hardware/dxl_hw.cpp
-#define DXL_NODE_OP3_BAUD         3
+#define DXL_NODE_OP3_BAUD 3
 
 
 #ifdef __cplusplus

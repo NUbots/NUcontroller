@@ -217,6 +217,9 @@ namespace dynamixel {
         const bool is_packet_ready() const {
             return packet_is_ready;
         }
+        const bool has_begun() const {
+            return (expected_length != 0);
+        }
         /**
          * @brief   Resets the state of the packetiser.
          */
