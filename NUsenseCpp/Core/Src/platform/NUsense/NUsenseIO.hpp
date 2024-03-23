@@ -8,6 +8,7 @@
 #include <array>
 #include "../../dynamixel/Dynamixel.hpp"
 #include "../../usb/PacketHandler.hpp"
+#include "../../utility/support/MillisecondTimer.hpp"
 
 namespace platform::NUsense {
 
@@ -48,6 +49,9 @@ namespace platform::NUsense {
         /// @brief  This is the packet-handler for protobuf messages.
         /// @note   Any better name than 'nuc' is welcome.
         usb::PacketHandler nuc;
+
+        /// @brief  
+        utility::support::MillisecondTimer synchronous_timer;
 
     public:
 
