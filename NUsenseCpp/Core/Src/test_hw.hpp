@@ -66,7 +66,7 @@ namespace test_hw {
 
     #ifdef TEST_IMU
     void imu() {
-        // create our IMU instance
+        // Create our IMU instance
         NUsense::IMU imu{};
         // structs to hold data
         NUsense::IMU::RawData raw_data;
