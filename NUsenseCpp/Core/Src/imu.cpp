@@ -84,13 +84,12 @@ void IMU::init() {
     writeReg(Address::ZA_OFFSET_L,     0x02);
     */
 
+    /*
+    // We don't use the FIFO at the moment, but this will be needed in the future
     // Write all sensors' values in the FIFO.
-    writeReg(Address::FIFO_EN,   // FIFO_EN_TEMP_EN
-             FIFO_EN_XG_FIFO_EN  //|
-                                 // FIFO_EN_YG_FIFO_EN |
-                                 // FIFO_EN_ZG_FIFO_EN |
-                                 // FIFO_EN_ACCEL_FIFO_EN
-    );
+    writeReg(Address::FIFO_EN,
+             FIFO_EN_TEMP_EN | FIFO_EN_XG_FIFO_EN | FIFO_EN_YG_FIFO_EN | FIFO_EN_ZG_FIFO_EN | FIFO_EN_ACCEL_FIFO_EN);
+    */
 }
 
 /*
