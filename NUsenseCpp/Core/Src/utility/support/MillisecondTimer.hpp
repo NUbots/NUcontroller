@@ -27,7 +27,7 @@ namespace utility::support {
 
         /**
          * @brief   Begins the timer.
-         * @param   timeout the timeout in microseconds, at most 65535,
+         * @param   timeout the timeout in microseconds, at most 4294967295,
          * @return  whether the timer is ready, i.e. is not currently counting,
          */
         bool begin(uint32_t timeout) {

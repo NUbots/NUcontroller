@@ -9,6 +9,7 @@
 #include "../../dynamixel/Dynamixel.hpp"
 #include "../../usb/PacketHandler.hpp"
 #include "../../utility/support/MillisecondTimer.hpp"
+#include "../../utility/support/Button.hpp"
 
 namespace platform::NUsense {
 
@@ -50,8 +51,14 @@ namespace platform::NUsense {
         /// @note   Any better name than 'nuc' is welcome.
         usb::PacketHandler nuc;
 
-        /// @brief  
-        utility::support::MillisecondTimer synchronous_timer;
+        /// @brief  This is to synchronise the data sent to the NUC as well as the buttons, etc.
+        utility::support::MillisecondTimer loop_timer;
+
+        /// @brief  The SW_MODE button,
+        utility::support::Button mode_button;
+
+        /// @brief  The SW_START button,
+        utility::support::Button start_button;
 
     public:
 
@@ -110,7 +117,10 @@ namespace platform::NUsense {
                 dynamixel::PacketHandler(ports[4]),
                 dynamixel::PacketHandler(ports[5])
             }),
-            nuc()
+            nuc(),
+            loop_timer(),
+            mode_button(GPIOC, 15),
+            start_button(GPIOH, 0)
         {
             // Begin at the beginning of the chains.
             chain_indices.fill(0);

@@ -14,16 +14,11 @@ namespace platform::NUsense {
         for (int i = 0; i < NUM_PORTS; i++) {
             // This line may be slow. The whole data-structure of chains may need to optimised as 
             // something faster than vectors.
-            SET_SIGNAL_1();
             platform::NUsense::NUgus::ID current_id = (chains[i])[chain_indices[i]];
-            RESET_SIGNAL_1();
 
-            SET_SIGNAL_1();
             dynamixel::PacketHandler::Result result = packet_handlers[i].check_sts
                             <sizeof(platform::NUsense::DynamixelServoReadData)>
                             (current_id);
-            RESET_SIGNAL_1();
-            SET_SIGNAL_1();
             // If there is a status-response waiting, then handle it.
             if (result == dynamixel::PacketHandler::SUCCESS) {
 
@@ -109,7 +104,6 @@ namespace platform::NUsense {
                 }
 
             }
-            RESET_SIGNAL_1();
         }
 
         // Handle the incoming protobuf messages from the nuc.
@@ -125,6 +119,20 @@ namespace platform::NUsense {
                     // Set the dirty-flag so that the Dynamixel stream writes to the servo.
                     servo_states[new_target.id].dirty            = true;
                 }
+            }
+        }
+
+        // Here send data to the NUC at 100 Hz.
+        if (loop_timer.has_timed_out()) {
+            // If it has timed out, then restart the timer straight away.
+            loop_timer.begin(10);
+
+            // Add the encoding and USB stuff here. 
+
+            if (mode_button.filter()) {
+                button_count++;
+                SET_SIGNAL_1();
+                RESET_SIGNAL_1();
             }
         }
     }

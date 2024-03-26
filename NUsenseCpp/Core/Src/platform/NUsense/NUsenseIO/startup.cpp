@@ -292,6 +292,9 @@ namespace platform::NUsense {
             }
         }
 
+        // Begin the 100-Hz timer.
+        loop_timer.begin(10);
+
         // Set the state of each expect status as a response to a write-instruction.
         status_states.fill(StatusState::WRITE_1_RESPONSE);
 

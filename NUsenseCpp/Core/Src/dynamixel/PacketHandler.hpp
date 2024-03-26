@@ -65,12 +65,8 @@ namespace dynamixel {
                     return NONE;
                 }
 
-                SET_SIGNAL_2();
-
                 // If so, then decode it.
                 packetiser.decode(read_result);
-
-                RESET_SIGNAL_2();
 
                 // Unless the packetiser has a whole packet, return.
                 if (!packetiser.is_packet_ready()) {

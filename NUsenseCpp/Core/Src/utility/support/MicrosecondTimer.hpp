@@ -41,9 +41,6 @@ namespace utility::support {
             if  (is_counting)
                 return false;
 
-            SET_SIGNAL_4();
-            RESET_SIGNAL_4();
-
             // Get the current tick and calculate the necessary threshold.
             uint16_t first_tick = __HAL_TIM_GET_COUNTER(htim);
             threshold = first_tick + timeout;
@@ -73,8 +70,6 @@ namespace utility::support {
                 // This is a very hacky way to ignore overflowing on the sharp edge of the
                 // saw-tooth wave.
                 if (!((count - threshold) & 0x8000)) {
-                    SET_SIGNAL_5();
-                    RESET_SIGNAL_5();
                     // Since the timer has timed out, it is no longer counting.
                     is_counting = false;
                     return true;
