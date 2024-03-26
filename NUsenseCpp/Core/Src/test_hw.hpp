@@ -111,9 +111,6 @@ namespace test_hw {
             imu.readBurst(NUsense::IMU::Address::ACCEL_XOUT_H, rx, 2);
             uint16_t acc_x_raw = (rx[0] << 8) | rx[1];                                          // swap byte order
             float acc_x_conv   = static_cast<float>(acc_x_raw) / imu.ACCEL_SENSITIVITY_CHOSEN;  // conversion
-            if (acc_x_conv == 0xFF) {  // ?? idk what a good failure condition is
-                error++;
-            }
 
             /* test all sensor vals */
             for (int i = 0; i < 14; i++)
