@@ -22,6 +22,7 @@
 #include "usbd_cdc_if.h"
 
 /* USER CODE BEGIN INCLUDE */
+//#include "main.h" // for debugging on GPIO pins
 
 /* USER CODE END INCLUDE */
 

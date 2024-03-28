@@ -14,7 +14,7 @@
 #define DXL_PWR
 //#define USING_FOOT_SENSORS
 
-#define RUN_MAIN
+//#define RUN_MAIN
 
 //#define TEST_UART 1
 
@@ -26,6 +26,10 @@
 
 //#define TEST_MOTOR 2
 
-//#define TEST_COMMS
+#define TEST_COMMS
+
+#define TEST_ENCODE
+
+//#define TEST_DECODE
 
 #endif /* INC_SETTINGS_H_ */
