@@ -130,7 +130,6 @@ namespace platform::NUsense {
             // Add the encoding and USB stuff here. 
 
             if (mode_button.filter()) {
-                button_count++;
                 SET_SIGNAL_1();
                 RESET_SIGNAL_1();
             }

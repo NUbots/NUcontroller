@@ -5,6 +5,8 @@
 
 #include <ostream>  // needed for outputting the servo-state
 
+#include "../utility/math/CircularMean.hpp"
+
 namespace platform {
 /// @see servo_states
 struct ServoState {
@@ -71,6 +73,12 @@ struct ServoState {
 
     /// @brief Whether we have initialised this servo yet
     bool initialised = false;
+
+    /// @brief the number of samples filtered so far
+    uint8_t filter_count = 0x00;
+
+    /// @brief the circular mean of the present-position,
+    utility::math::CircularMean mean_present_position;
 };
 
 /**
