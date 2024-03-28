@@ -170,7 +170,7 @@ namespace platform::NUsense {
         /**
          * @brief   Sends a serialised message_platform_NUSenseData to the nuc via usb
          */
-        bool send_servo_states();
+        bool nusense_to_nuc();
     };
 
 }  // namespace platform::NUsense

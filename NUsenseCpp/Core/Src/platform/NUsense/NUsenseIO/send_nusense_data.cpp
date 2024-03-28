@@ -1,9 +1,8 @@
 #include "../NUsenseIO.hpp"
 
 namespace platform::NUsense {
-    bool NUsenseIO::send_servo_states() {
+    bool NUsenseIO::nusense_to_nuc() {
         NU_IMU_ReadBurst(ACCEL_XOUT_H, IMU_rx, 14);
-
 
         raw_data.accelerometer.x = ((uint16_t) IMU_rx[0] << 8) | IMU_rx[1];
         raw_data.accelerometer.y = ((uint16_t) IMU_rx[2] << 8) | IMU_rx[3];

@@ -122,7 +122,7 @@ namespace platform::NUsense {
         }
 
         // Pack our servo states into a protobuf message, serialise it then send it to the nuc
-        if (!send_servo_states()) {
+        if (!nusense_to_nuc()) {
             // TODO: (JohanneMontano) Encoding failed for some reason, handle it below
         }
     }
