@@ -173,17 +173,6 @@ namespace platform::NUsense {
         uint16_t buzzer;
     } __attribute__((packed));
 
-    /// @brief  The data to read from the OpenCR device
-    struct OpenCRReadData {
-        uint8_t led;
-        uint16_t rgb_led;
-        uint16_t buzzer;
-        uint8_t button;
-        uint8_t voltage;
-        int16_t gyro[3];
-        int16_t acc[3];
-    } __attribute__((packed));
-
     /// @brief  Document addresses used for read/writing to dynamixel devices, especially where 
     ///         indirect addressing is used.
     enum class AddressBook : uint16_t {

@@ -127,7 +127,7 @@ namespace platform::NUsense {
             // If it has timed out, then restart the timer straight away.
             loop_timer.begin(10);
 
-            // Add the encoding and USB stuff here. 
+            // Add the encoding and USB stuff here.
 
             if (mode_button.filter()) {
                 SET_SIGNAL_1();
