@@ -16,11 +16,9 @@ namespace uart {
 #define USE_DMA_RX_BUFFER
 #define SIMPLE_WRITE
 
-#define PORT_BUFFER_SIZE    2048
+constexpr uint16_t PORT_BUFFER_SIZE  = 2048;
 
-#define NO_BYTE_READ        0xFFFF
-
-#define NUM_PORTS           6
+constexpr uint16_t NO_BYTE_READ      = 0xFFFF;
 
 class Port {
 private:
@@ -97,6 +95,8 @@ private:
         TX_BUSY,
         TX_DONE
     } comm_state;
+    /// @brief  the current count of the DMA buffer, i.e. the older contents of the NDTR.
+    uint16_t count = 0;
 #ifdef SEE_STATISTICS
     uint16_t old_num_bytes_tx[10];
 #endif
@@ -143,6 +143,9 @@ public:
      * @retval  #0xFFFF if there is no byte to read,
      */
     uint16_t read();
+    /**
+     * @brief    
+     */
     /**
      * @brief   Flushes all the bytes out of the rx-buffer.
      */
