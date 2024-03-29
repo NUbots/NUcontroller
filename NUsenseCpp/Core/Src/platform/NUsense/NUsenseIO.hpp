@@ -55,12 +55,12 @@ namespace platform::NUsense {
         ///         to serialise and sent to the NUC
         message_platform_NUSense nusense_msg;
 
-        /// TODO:   DMA implementation of IMU conversion in one function
-        /// @brief  The container for decoded IMU values (float)
-        NU_IMU_converted_data converted_data;
+        // @brief   The IMU instance
+        // @note    The namespacing is gross af and needs to be fixed
+        ::NUsense::IMU imu;
 
-        /// @brief  The container for raw IMU values (int16_t's)
-        NU_IMU_raw_data raw_data;
+        /// @brief  The container for decoded IMU values (float)
+        ::NUsense::IMU::ConvertedData converted_data;
 
         /// @brief  Container for the raw data received IMU ReadBurst calls
         uint8_t IMU_rx[14];
@@ -116,13 +116,14 @@ namespace platform::NUsense {
                              dynamixel::PacketHandler(ports[3]),
                              dynamixel::PacketHandler(ports[4]),
                              dynamixel::PacketHandler(ports[5])})
-            , nuc() {
+            , nuc()
+            , imu() {
             // Begin at the beginning of the chains.
             chain_indices.fill(0);
             // Initialise our nanopb struct to init_zero
             nusense_msg = message_platform_NUSense_init_zero;
             // Begin IMU for polling
-            NU_IMU_Init();
+            imu.init();
         }
 
         /**
