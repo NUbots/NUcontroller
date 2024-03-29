@@ -665,7 +665,6 @@ namespace NUsense {
         /*
          * @brief   reads multiple consecutive registers in a burst.
          * @note    Use this as a temporary replacement of the FIFO.
-         *                 This uses DMA.
          * @param   the address of the first register to be read,
          * @param   an array of the bytes to be read,
          * @param   the length, i.e. the number of registers to be read,
