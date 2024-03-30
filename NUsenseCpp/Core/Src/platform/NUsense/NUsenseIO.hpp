@@ -127,7 +127,7 @@ namespace platform::NUsense {
                              dynamixel::PacketHandler(ports[4]),
                              dynamixel::PacketHandler(ports[5])})
             , nuc()
-            , imu() {
+            , imu()
             , loop_timer()
             , mode_button(GPIOC, 15)
             , start_button(GPIOH, 0) {
