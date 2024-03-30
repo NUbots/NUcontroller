@@ -2,17 +2,22 @@
 #define PLATFORM_NUSENSE_NUSENSEIO_HPP
 
 #include <array>
+#include <stdio.h>
 
 #include "../../dynamixel/Dynamixel.hpp"
 #include "../../dynamixel/PacketHandler.hpp"
 #include "../../uart/Port.hpp"
 #include "../../usb/PacketHandler.hpp"
-#include "../../utility/support/Button.hpp"
-#include "../../utility/support/MillisecondTimer.hpp"
+#include "../../usb/protobuf/NUSenseData.pb.h"
+#include "../../usb/protobuf/pb_encode.h"
 #include "../ServoState.hpp"
 #include "NUgus.hpp"
+#include "imu.h"
+#include "../../utility/support/Button.hpp"
+#include "../../utility/support/MillisecondTimer.hpp"
 
 namespace platform::NUsense {
+    constexpr uint32_t MAX_ENCODE_SIZE = 1600;
 
     constexpr uint8_t NUM_PORTS = 6;
 
@@ -44,9 +49,33 @@ namespace platform::NUsense {
         ///         tell what the next one is.
         std::array<StatusState, NUMBER_OF_DEVICES> status_states;
 
-        /// @brief  This is the packet-handler for protobuf messages.
+        /// @brief  This is the packet-handler for the serialised protobuf messages sent by the NUC.
         /// @note   Any better name than 'nuc' is welcome.
         usb::PacketHandler nuc;
+
+        /// @brief  This is the nanopb generated struct which will contain all the states
+        ///         to serialise and sent to the NUC
+        message_platform_NUSense nusense_msg;
+
+        // @brief   The IMU instance
+        // @note    The namespacing is gross af and needs to be fixed
+        ::NUsense::IMU imu;
+
+        /// @brief  The container for decoded IMU values (float)
+        ::NUsense::IMU::ConvertedData converted_data;
+
+        /// @brief  Container for the raw data received IMU ReadBurst calls
+        uint8_t IMU_rx[14];
+
+        /// @brief  Nanopb will put the serialised bytes in this container. For some reason, the encode
+        ///         function does not work with c++ defined data structures hence we use a c array for it
+        uint8_t encoding_payload[2048];
+
+        /// @brief  Flag to catch failed usb transmits for debugging / handling
+        bool usb_tx_err = false;
+
+        /// @brief  Flag to catch failed nanopb encode calls for debugging / handling
+        bool nanopb_encoding_err = false;
 
         /// @brief  This is to synchronise the data sent to the NUC as well as the buttons, etc.
         utility::support::MillisecondTimer loop_timer;
@@ -98,11 +127,16 @@ namespace platform::NUsense {
                              dynamixel::PacketHandler(ports[4]),
                              dynamixel::PacketHandler(ports[5])})
             , nuc()
+            , imu() {
             , loop_timer()
             , mode_button(GPIOC, 15)
             , start_button(GPIOH, 0) {
             // Begin at the beginning of the chains.
             chain_indices.fill(0);
+            // Initialise our nanopb struct to init_zero
+            nusense_msg = message_platform_NUSense_init_zero;
+            // Begin IMU for polling
+            imu.init();
         }
 
         /**
@@ -146,6 +180,11 @@ namespace platform::NUsense {
          * @param   port_i the index of the port on which to send,
          */
         void send_servo_write_2_request(const NUgus::ID id, const uint8_t port_i);
+
+        /**
+         * @brief   Sends a serialised message_platform_NUSenseData to the nuc via usb
+         */
+        bool nusense_to_nuc();
     };
 
 }  // namespace platform::NUsense
