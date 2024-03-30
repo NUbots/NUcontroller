@@ -5,8 +5,8 @@
 #include <stdexcept>
 
 #include "../../dynamixel/DynamixelServo.hpp"
-//#include "dynamixel/v2/FSR.hpp"
-//#include "dynamixel/v2/OpenCR.hpp"
+// #include "dynamixel/v2/FSR.hpp"
+// #include "dynamixel/v2/OpenCR.hpp"
 
 namespace platform::NUsense {
 
@@ -65,7 +65,7 @@ namespace platform::NUsense {
             BROADCAST        = 254
         };
 
-        //OpenCR OPENCR;
+        // OpenCR OPENCR;
         MX64 R_SHOULDER_PITCH;
         MX64 L_SHOULDER_PITCH;
         MX64 R_SHOULDER_ROLL;
@@ -92,7 +92,7 @@ namespace platform::NUsense {
         /// @return A reference to the DynamixelDevice with the given ID
         constexpr dynamixel::DynamixelDevice& operator[](const ID& id) {
             switch (id) {
-                //case ID::OPENCR: return OPENCR;
+                // case ID::OPENCR: return OPENCR;
                 case ID::R_SHOULDER_PITCH: return R_SHOULDER_PITCH;
                 case ID::L_SHOULDER_PITCH: return L_SHOULDER_PITCH;
                 case ID::R_SHOULDER_ROLL: return R_SHOULDER_ROLL;
@@ -113,8 +113,9 @@ namespace platform::NUsense {
                 case ID::L_ANKLE_ROLL: return L_ANKLE_ROLL;
                 case ID::HEAD_YAW: return HEAD_YAW;
                 default:
-                case ID::HEAD_PITCH: return HEAD_PITCH;
-                //default: throw std::runtime_error("Unknown device id");
+                case ID::HEAD_PITCH:
+                    return HEAD_PITCH;
+                    // default: throw std::runtime_error("Unknown device id");
             }
         }
 
@@ -173,7 +174,7 @@ namespace platform::NUsense {
         uint16_t buzzer;
     } __attribute__((packed));
 
-    /// @brief  Document addresses used for read/writing to dynamixel devices, especially where 
+    /// @brief  Document addresses used for read/writing to dynamixel devices, especially where
     ///         indirect addressing is used.
     enum class AddressBook : uint16_t {
         SERVO_READ_ADDRESS    = uint16_t(dynamixel::DynamixelServo::Address::INDIRECT_ADDRESS_1_L),
@@ -182,7 +183,7 @@ namespace platform::NUsense {
         SERVO_WRITE_ADDRESS_2 = uint16_t(dynamixel::DynamixelServo::Address::INDIRECT_ADDRESS_29_L),
         SERVO_WRITE_1         = uint16_t(dynamixel::DynamixelServo::Address::INDIRECT_DATA_18),
         SERVO_WRITE_2         = uint16_t(dynamixel::DynamixelServo::Address::INDIRECT_DATA_29)
-        //FSR_READ              = uint16_t(FSR::Address::FSR1_L)
+        // FSR_READ              = uint16_t(FSR::Address::FSR1_L)
     };
 
 }  // namespace platform::NUsense

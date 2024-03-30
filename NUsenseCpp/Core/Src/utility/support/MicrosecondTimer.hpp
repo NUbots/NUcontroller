@@ -1,15 +1,14 @@
+#include "signal.h"
 #include "tim.h"
 
-#include "signal.h"
-
 #ifndef UTILITY_SUPPORT_MICROSECONDTIMER_HPP
-#define UTILITY_SUPPORT_MICROSECONDTIMER_HPP
+    #define UTILITY_SUPPORT_MICROSECONDTIMER_HPP
 
 namespace utility::support {
 
     /**
      * @brief   the timer in microseconds
-     * @note    The timeout may be better handled with interrupts and callbacks than polling in the 
+     * @note    The timeout may be better handled with interrupts and callbacks than polling in the
      *          executive loop, but that may mean long ISRs. We may have to see if the polling
      *          adds too much latency. Any ideas are welcome.
      */
@@ -19,17 +18,15 @@ namespace utility::support {
          * @brief    Constructs the timer.
          * @param    htim the reference to the timer to be counted,
          */
-        MicrosecondTimer(TIM_HandleTypeDef* htim = &htim4) :
-            htim(htim)
-        {
-            threshold = 0;
+        MicrosecondTimer(TIM_HandleTypeDef* htim = &htim4) : htim(htim) {
+            threshold   = 0;
             is_counting = false;
         };
         /**
          * @brief   Destructs the timer.
          * @note    nothing needs to be freed as of yet,
          */
-        virtual ~MicrosecondTimer() {};
+        virtual ~MicrosecondTimer(){};
 
         /**
          * @brief   Begins the timer.
@@ -38,12 +35,12 @@ namespace utility::support {
          */
         bool begin(uint16_t timeout) {
             // If the timer is already counting, then return false before changing anything.
-            if  (is_counting)
+            if (is_counting)
                 return false;
 
             // Get the current tick and calculate the necessary threshold.
             uint16_t first_tick = __HAL_TIM_GET_COUNTER(htim);
-            threshold = first_tick + timeout;
+            threshold           = first_tick + timeout;
             // The 16-bit overflow should handle wrapping.
 
             is_counting = true;
@@ -73,9 +70,11 @@ namespace utility::support {
                     // Since the timer has timed out, it is no longer counting.
                     is_counting = false;
                     return true;
-                } else
+                }
+                else
                     return false;
-            } else
+            }
+            else
                 return false;
         }
 
@@ -86,9 +85,8 @@ namespace utility::support {
         uint16_t threshold;
         /// @brief  whether the timer is in use,
         bool is_counting;
-
     };
 
-} // namespace utility::support
+}  // namespace utility::support
 
-#endif // UTILITY_SUPPORT_MICROSECONDTIMER_HPP
+#endif  // UTILITY_SUPPORT_MICROSECONDTIMER_HPP

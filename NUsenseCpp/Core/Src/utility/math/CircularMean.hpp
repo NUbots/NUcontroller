@@ -13,16 +13,12 @@ namespace utility::math {
         /**
          * @brief    Constructs the handler.
          */
-        CircularMean() :
-            sine_sum(0.0f),
-            cosine_sum(0.0f)
-        {
-        };
+        CircularMean() : sine_sum(0.0f), cosine_sum(0.0f){};
         /**
          * @brief   Destructs the handler.
          * @note    nothing needs to be freed as of yet,
          */
-        virtual ~CircularMean() {};
+        virtual ~CircularMean(){};
 
         /**
          * @brief   Adds the angle to the sums.
@@ -45,7 +41,7 @@ namespace utility::math {
          * @brief   Resets the sums to nought.
          */
         void reset() {
-            sine_sum = 0.0f;
+            sine_sum   = 0.0f;
             cosine_sum = 0.0f;
         }
 
@@ -54,9 +50,8 @@ namespace utility::math {
         float sine_sum;
         /// @brief  the sum of cosines,
         float cosine_sum;
-
     };
 
-} // namespace utility::math
+}  // namespace utility::math
 
-#endif // UTILITY_MATH_CIRCULARMEAN_HPP
+#endif  // UTILITY_MATH_CIRCULARMEAN_HPP

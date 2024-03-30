@@ -1,15 +1,14 @@
-#include "usbd_cdc_if.h"
-#include "protobuf/ServoTarget.pb.h"
-#include "protobuf/pb_encode.h"
-#include "protobuf/pb_decode.h"
-
-#include <cstdint>
-
 #include <algorithm>
+#include <cstdint>
 #include <iterator>
 
+#include "protobuf/ServoTarget.pb.h"
+#include "protobuf/pb_decode.h"
+#include "protobuf/pb_encode.h"
+#include "usbd_cdc_if.h"
+
 #ifndef USB_PACKETHANDLER_HPP
-#define USB_PACKETHANDLER_HPP
+    #define USB_PACKETHANDLER_HPP
 
 namespace usb {
 
@@ -22,20 +21,19 @@ namespace usb {
         /**
          * @brief   Constructs the packet-handler.
          */
-        PacketHandler() :
-            pb_length(0),
-            remaining_length(0),
-            is_packet_ready(false),
-            rx_count(0),
-            decode_count(0),
-            missing_count(0)
-        {
+        PacketHandler()
+            : pb_length(0)
+            , remaining_length(0)
+            , is_packet_ready(false)
+            , rx_count(0)
+            , decode_count(0)
+            , missing_count(0) {
             targets = message_actuation_ServoTargets_init_zero;
         }
 
         /**
          * @brief   Handles outgoing bytes from the ring-buffer, parses any packet, and decodes it.
-         * @return  whether the packet has been decoded, 
+         * @return  whether the packet has been decoded,
          */
         bool handle_incoming() {
 
@@ -45,20 +43,17 @@ namespace usb {
                 rx_flag = 0;
                 rx_count += 1;
                 // Check if we have a header and if we do extract our lengths and pb bytes
-                if (    (rx_buffer.data[rx_buffer.front] == (char)0xE2)
-                    &&  (rx_buffer.data[(rx_buffer.front + 1) % RX_BUF_SIZE] == (char)0x98)
-                    &&  (rx_buffer.data[(rx_buffer.front + 2) % RX_BUF_SIZE] == (char)0xA2)) {
+                if ((rx_buffer.data[rx_buffer.front] == (char) 0xE2)
+                    && (rx_buffer.data[(rx_buffer.front + 1) % RX_BUF_SIZE] == (char) 0x98)
+                    && (rx_buffer.data[(rx_buffer.front + 2) % RX_BUF_SIZE] == (char) 0xA2)) {
 
-                    pb_length = static_cast<uint16_t>(
-                        rx_buffer.data[(rx_buffer.front + 3) % RX_BUF_SIZE] << 8
-                    ) | static_cast<uint16_t>(
-                        rx_buffer.data[(rx_buffer.front + 4) % RX_BUF_SIZE]
-                    );
+                    pb_length = static_cast<uint16_t>(rx_buffer.data[(rx_buffer.front + 3) % RX_BUF_SIZE] << 8)
+                                | static_cast<uint16_t>(rx_buffer.data[(rx_buffer.front + 4) % RX_BUF_SIZE]);
 
                     // If the overall packet, including the header, is smaller than
                     // the current size of the buffer, then pop all of the payload.
                     if ((pb_length + 5) <= rx_buffer.size) {
-                        pop((uint8_t*)pb_packets, pb_length, 5);
+                        pop((uint8_t*) pb_packets, pb_length, 5);
                         is_packet_ready = true;
                     }
                     // Else, work out what the remaining length is, that is the
@@ -66,36 +61,31 @@ namespace usb {
                     // five bytes of header.
                     else {
                         remaining_length = pb_length - rx_buffer.size + 5;
-                        pop((uint8_t*)pb_packets, rx_buffer.size - 5, 5);
+                        pop((uint8_t*) pb_packets, rx_buffer.size - 5, 5);
                     }
-
                 }
                 else if ((remaining_length != 0) && (rx_buffer.size >= remaining_length)) {
                     uint16_t old_size;
-                    old_size = pop(
-                        (uint8_t*)&pb_packets[pb_length - remaining_length], 
-                        remaining_length <= rx_buffer.size ? remaining_length : rx_buffer.size
-                    );
+                    old_size = pop((uint8_t*) &pb_packets[pb_length - remaining_length],
+                                   remaining_length <= rx_buffer.size ? remaining_length : rx_buffer.size);
                     remaining_length -= old_size;
                     if (remaining_length == 0)
                         is_packet_ready = true;
                 }
                 else if (rx_buffer.size != 0) {
-                    // Update index accessor after receiving a packet, making sure to wrap around 
+                    // Update index accessor after receiving a packet, making sure to wrap around
                     // in case it exceeds the buffer's length
                     rx_buffer.front = (rx_buffer.front + 1) % RX_BUF_SIZE;
                     rx_buffer.size--;
                 }
-
             }
 
             if (is_packet_ready) {
                 is_packet_ready = false;
 
                 // Decoding time
-                pb_istream_t input_stream = pb_istream_from_buffer(
-                    reinterpret_cast<const pb_byte_t*>(&pb_packets[0]), pb_length
-                );
+                pb_istream_t input_stream =
+                    pb_istream_from_buffer(reinterpret_cast<const pb_byte_t*>(&pb_packets[0]), pb_length);
 
                 pb_decode(&input_stream, message_actuation_ServoTargets_fields, &targets);
 
@@ -108,12 +98,11 @@ namespace usb {
                     missing_count++;
                 if (near_id == 100)
                     near_id = 100;
-                
+
                 return true;
             }
 
             return false;
-
         }
 
         /**
@@ -126,13 +115,13 @@ namespace usb {
 
     private:
         /**
-         * @brief   Removes bytes from the ring-buffer of a given length, passing from a given 
-         *          offset. 
+         * @brief   Removes bytes from the ring-buffer of a given length, passing from a given
+         *          offset.
          * @note    This is a helper function; it is not meant to encapsulate anything.
          * @param   bytes the bytes that would be taken,
          * @param   length the number of bytes to take,
          * @param   offset the number of bytes skipped first,
-         * @note    Normally, offset would be either zero for a traditional pop, or 5 to ignore the 
+         * @note    Normally, offset would be either zero for a traditional pop, or 5 to ignore the
          *          header.
          * @return  the number of bytes removed,
          */
@@ -140,30 +129,22 @@ namespace usb {
             // Update the front to move back (higher) in the array unless there
             // is nothing left in the buffer.
             if (rx_buffer.size >= (length + offset)) {
-                // If the bytes to be popped span across No Man's Land, then use two distinct 
+                // If the bytes to be popped span across No Man's Land, then use two distinct
                 // copies.
-                if (
-                        ((rx_buffer.front + length + offset)     >= RX_BUF_SIZE) 
-                    &&  ((rx_buffer.front + offset)              <  RX_BUF_SIZE)
-                ) {
-                    std::copy(
-                            &rx_buffer.data[(rx_buffer.front + offset) % RX_BUF_SIZE],
-                            &rx_buffer.data[RX_BUF_SIZE],
-                            &bytes[0]
-                    );
-                    std::copy(
-                            &rx_buffer.data[0],
-                            &rx_buffer.data[length - RX_BUF_SIZE + rx_buffer.front + offset],
-                            &bytes[RX_BUF_SIZE - rx_buffer.front - offset]
-                    );
+                if (((rx_buffer.front + length + offset) >= RX_BUF_SIZE)
+                    && ((rx_buffer.front + offset) < RX_BUF_SIZE)) {
+                    std::copy(&rx_buffer.data[(rx_buffer.front + offset) % RX_BUF_SIZE],
+                              &rx_buffer.data[RX_BUF_SIZE],
+                              &bytes[0]);
+                    std::copy(&rx_buffer.data[0],
+                              &rx_buffer.data[length - RX_BUF_SIZE + rx_buffer.front + offset],
+                              &bytes[RX_BUF_SIZE - rx_buffer.front - offset]);
                 }
                 // Else, use one straightforward copy.
-                else{
-                    std::copy(
-                            &rx_buffer.data[(rx_buffer.front + offset) % RX_BUF_SIZE],
-                            &rx_buffer.data[(rx_buffer.front + offset + length) % RX_BUF_SIZE],
-                            &bytes[0]
-                    );
+                else {
+                    std::copy(&rx_buffer.data[(rx_buffer.front + offset) % RX_BUF_SIZE],
+                              &rx_buffer.data[(rx_buffer.front + offset + length) % RX_BUF_SIZE],
+                              &bytes[0]);
                 }
                 // Move the front forward and decrease the size.
                 rx_buffer.front = (rx_buffer.front + length + offset) % RX_BUF_SIZE;
@@ -181,18 +162,18 @@ namespace usb {
         /// @brief  whether a complete protobuf packet has been gathered to be decoded,
         bool is_packet_ready;
         message_actuation_ServoTargets targets;
-        /// @brief  debugging count for the number of received chunks of bytes, i.e. everytime when 
+        /// @brief  debugging count for the number of received chunks of bytes, i.e. everytime when
         ///         rx_flag is set and cleared,
         uint16_t rx_count;
         /// @brief  debugging count for the number of packets decoded,
         uint16_t decode_count;
         /// @brief  debugging count of packets that had missing targets, i.e. not twenty,
         uint16_t missing_count;
-        /// @brief  debugging variable of the count of true packets based on incremental ID, purely 
+        /// @brief  debugging variable of the count of true packets based on incremental ID, purely
         ///         for testing a specific version of code,
         volatile uint16_t near_id;
     };
 
-} // namespace usb
+}  // namespace usb
 
-#endif // USB_PACKETHANDLER_HPP
+#endif  // USB_PACKETHANDLER_HPP

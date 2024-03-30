@@ -26,7 +26,7 @@ namespace platform::NUsense {
         RgbLed led_6;
         /// @brief  the state of the buzzer,
         /// @note   We may later make a class that can control PWM, beeps, etc.
-        bool buzzer; 
+        bool buzzer;
         /// @brief  the state of the Dynamixel power,
         bool dxl_power = true;
         /// @brief  the supply-voltage,
@@ -34,11 +34,11 @@ namespace platform::NUsense {
     };
 
     struct RgbLed {
-        uint8_t red = 0x00;
+        uint8_t red   = 0x00;
         uint8_t green = 0x00;
-        uint8_t blue = 0x00;
+        uint8_t blue  = 0x00;
     };
 
-} // namespace platform::NUsense
+}  // namespace platform::NUsense
 
 #endif  // PLATFORM_NUSENSE_NUSENSESTATE_HPP

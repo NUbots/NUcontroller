@@ -5,7 +5,7 @@ namespace utility::support {
 
     /**
      * @brief   the timer in milliseconds
-     * @note    The timeout may be better handled with interrupts and callbacks than polling in the 
+     * @note    The timeout may be better handled with interrupts and callbacks than polling in the
      *          executive loop, but that may mean long ISRs. We may have to see if the polling
      *          adds too much latency. Any ideas are welcome.
      */
@@ -14,16 +14,15 @@ namespace utility::support {
         /**
          * @brief    Constructs the timer.
          */
-        MillisecondTimer()
-        {
-            threshold = 0;
+        MillisecondTimer() {
+            threshold   = 0;
             is_counting = false;
         };
         /**
          * @brief   Destructs the timer.
          * @note    nothing needs to be freed as of yet,
          */
-        virtual ~MillisecondTimer() {};
+        virtual ~MillisecondTimer(){};
 
         /**
          * @brief   Begins the timer.
@@ -32,12 +31,12 @@ namespace utility::support {
          */
         bool begin(uint32_t timeout) {
             // If the timer is already counting, then return false before changing anything.
-            if  (is_counting)
+            if (is_counting)
                 return false;
-            
+
             // Get the current tick and calculate the necessary threshold.
             uint32_t first_tick = HAL_GetTick();
-            threshold = first_tick + timeout;
+            threshold           = first_tick + timeout;
             // The 32-bit overflow should handle wrapping.
 
             is_counting = true;
@@ -67,9 +66,11 @@ namespace utility::support {
                     // Since the timer has timed out, it is no longer counting.
                     is_counting = false;
                     return true;
-                } else
+                }
+                else
                     return false;
-            } else
+            }
+            else
                 return false;
         }
 
@@ -78,9 +79,8 @@ namespace utility::support {
         uint32_t threshold;
         /// @brief  whether the timer is in use,
         bool is_counting;
-
     };
 
-} // namespace utility::support
+}  // namespace utility::support
 
-#endif // UTILITY_SUPPORT_MILLISECONDTIMER_HPP
+#endif  // UTILITY_SUPPORT_MILLISECONDTIMER_HPP
