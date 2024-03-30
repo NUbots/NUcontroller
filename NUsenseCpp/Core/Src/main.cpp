@@ -103,33 +103,9 @@ int main(void) {
     }
 
 #else
-    #ifdef TEST_COMMS
-    test_hw::comms();
-    #endif
-
-    #ifdef TEST_UART
-    test_hw::uart();
-    #endif
-
-    #ifdef TEST_USB
-    test_hw::usb();
-    #endif
-
     #ifdef TEST_IMU
     test_hw::imu();
     #endif
-
-    #ifdef TEST_PORT
-    test_hw::port();
-    #endif
-
-    #ifdef TEST_MOTOR
-        #if TEST_MOTOR == 1
-    test_hw::motor_v1();
-        #else
-    test_hw::motor_v2();
-        #endif  // TEST_MOTOR == 1
-    #endif      // TEST_MOTOR
 #endif          // RUN_MAIN
 }
 

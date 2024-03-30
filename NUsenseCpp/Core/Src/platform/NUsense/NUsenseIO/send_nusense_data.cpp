@@ -2,17 +2,8 @@
 
 namespace platform::NUsense {
     bool NUsenseIO::nusense_to_nuc() {
-        NU_IMU_ReadBurst(ACCEL_XOUT_H, IMU_rx, 14);
-
-        raw_data.accelerometer.x = ((uint16_t) IMU_rx[0] << 8) | IMU_rx[1];
-        raw_data.accelerometer.y = ((uint16_t) IMU_rx[2] << 8) | IMU_rx[3];
-        raw_data.accelerometer.z = ((uint16_t) IMU_rx[4] << 8) | IMU_rx[5];
-        raw_data.temperature     = ((uint16_t) IMU_rx[6] << 8) | IMU_rx[7];
-        raw_data.gyroscope.x     = ((uint16_t) IMU_rx[8] << 8) | IMU_rx[9];
-        raw_data.gyroscope.y     = ((uint16_t) IMU_rx[10] << 8) | IMU_rx[11];
-        raw_data.gyroscope.z     = ((uint16_t) IMU_rx[12] << 8) | IMU_rx[13];
-
-        NU_IMU_ConvertRawData(&raw_data, &converted_data);
+        // Get a new lot of IMU data
+        converted_data = imu.getNewConvertedData();
 
         // TODO: (JohanneMontano) Handle IMU read and conversions if it fails
         // Fill the struct with the values we converted from the IMU output

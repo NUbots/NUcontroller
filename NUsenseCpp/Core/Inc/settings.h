@@ -10,26 +10,10 @@
 #ifndef INC_SETTINGS_H_
 #define INC_SETTINGS_H_
 
-//#define FIRST_BUZZ
+// #define FIRST_BUZZ
 #define DXL_PWR
-//#define USING_FOOT_SENSORS
 
-//#define RUN_MAIN
-
-//#define TEST_UART 1
-
-//#define TEST_USB
-
-//#define TEST_IMU
-
-//#define TEST_PORT
-
-//#define TEST_MOTOR 2
-
-#define TEST_COMMS
-
-#define TEST_ENCODE
-
-//#define TEST_DECODE
+#define RUN_MAIN
+// #define TEST_IMU
 
 #endif /* INC_SETTINGS_H_ */
