@@ -57,12 +57,9 @@ namespace platform::NUsense {
         ///         to serialise and sent to the NUC
         message_platform_NUSense nusense_msg;
 
-        // @brief   The IMU instance
-        // @note    The namespacing is gross af and needs to be fixed
+        /// @brief   The IMU instance
+        /// @note    The namespacing is gross af and needs to be fixed
         ::NUsense::IMU imu;
-
-        /// @brief  The container for decoded IMU values (float)
-        ::NUsense::IMU::ConvertedData converted_data;
 
         /// @brief  Container for the raw data received IMU ReadBurst calls
         uint8_t IMU_rx[14];

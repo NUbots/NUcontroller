@@ -3,6 +3,7 @@
 namespace platform::NUsense {
     bool NUsenseIO::nusense_to_nuc() {
         // Get a new lot of IMU data
+        ::NUsense::IMU::ConvertedData converted_data;
         converted_data = imu.getNewConvertedData();
 
         // TODO: (JohanneMontano) Handle IMU read and conversions if it fails
@@ -33,18 +34,20 @@ namespace platform::NUsense {
             nusense_msg.servo_map[i].value.hardware_error = servo_states[i].hardware_error;
             nusense_msg.servo_map[i].value.torque_enabled = servo_states[i].torque_enabled;
 
-            nusense_msg.servo_map[i].value.present_pwm      = servo_states[i].present_pwm;
-            nusense_msg.servo_map[i].value.present_current  = servo_states[i].present_current;
-            nusense_msg.servo_map[i].value.present_velocity = servo_states[i].present_velocity;
-            nusense_msg.servo_map[i].value.present_position = servo_states[i].present_position;
+            nusense_msg.servo_map[i].value.present_pwm = servo_states[i].present_pwm / servo_states[i].filter_count;
+            nusense_msg.servo_map[i].value.present_current =
+                servo_states[i].present_current / servo_states[i].filter_count;
+            nusense_msg.servo_map[i].value.present_velocity =
+                servo_states[i].present_velocity / servo_states[i].filter_count;
+            nusense_msg.servo_map[i].value.present_position = servo_states[i].mean_present_position.get_mean();
 
             nusense_msg.servo_map[i].value.goal_pwm      = servo_states[i].goal_pwm;
             nusense_msg.servo_map[i].value.goal_current  = servo_states[i].goal_current;
             nusense_msg.servo_map[i].value.goal_velocity = servo_states[i].goal_velocity;
             nusense_msg.servo_map[i].value.goal_position = servo_states[i].goal_position;
 
-            nusense_msg.servo_map[i].value.voltage     = servo_states[i].voltage;
-            nusense_msg.servo_map[i].value.temperature = servo_states[i].temperature;
+            nusense_msg.servo_map[i].value.voltage     = servo_states[i].voltage / servo_states[i].filter_count;
+            nusense_msg.servo_map[i].value.temperature = servo_states[i].temperature / servo_states[i].filter_count;
         }
 
         // Once everything else is filled we send it to the NUC. Just overwrite the bytes within encoding_payload
