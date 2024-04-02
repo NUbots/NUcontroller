@@ -29,6 +29,9 @@ namespace usb {
             , decode_count(0)
             , missing_count(0) {
             targets = message_actuation_ServoTargets_init_zero;
+            rx_buffer.front = 0;
+            rx_buffer.back = 0;
+            rx_buffer.size = 0;
         }
 
         /**
@@ -37,10 +40,10 @@ namespace usb {
          */
         bool handle_incoming() {
 
-            if (rx_flag) {
+            if (rx_buffer.size != 0) {
                 // Reset rx_flag - this flag is turned on by the USB receive call back and turned
                 // off here
-                rx_flag = 0;
+                //rx_flag = 0;
                 rx_count += 1;
                 // Check if we have a header and if we do extract our lengths and pb bytes
                 if ((rx_buffer.data[rx_buffer.front] == (char) 0xE2)
@@ -72,7 +75,7 @@ namespace usb {
                     if (remaining_length == 0)
                         is_packet_ready = true;
                 }
-                else if (rx_buffer.size != 0) {
+                else {
                     // Update index accessor after receiving a packet, making sure to wrap around
                     // in case it exceeds the buffer's length
                     rx_buffer.front = (rx_buffer.front + 1) % RX_BUF_SIZE;
