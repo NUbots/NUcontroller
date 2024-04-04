@@ -26,7 +26,7 @@ namespace platform::NUsense {
         servo_states[servo_index].present_current  += convert::current(data.present_current);
         servo_states[servo_index].present_velocity += convert::velocity(data.present_velocity);  // todo: check
         // TODO: Add the proper direction and offset somehow.
-        servo_states[servo_index].present_position +=
+        servo_states[servo_index].present_position =
             convert::position(servo_index, data.present_position, {1}, {0});
         servo_states[servo_index].voltage     += convert::voltage(data.present_voltage);
         servo_states[servo_index].temperature += convert::temperature(data.present_temperature);

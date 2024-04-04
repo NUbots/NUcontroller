@@ -120,7 +120,23 @@ namespace platform::NUsense {
             // If it has timed out, then restart the timer straight away.
             loop_timer.begin(10);
 
-            // Add the encoding and USB stuff here.
+            // Encode a message and send it to the NUC.
+            if (nusense_to_nuc()) {
+                // If the message was successfully sent, then reset the averaging filter.
+                // For now, this is how we are downsampling the ~500-Hz data to 100-Hz fixed data.
+                // One day, we may get a better filter (if we can get this chip faster).
+                for (auto& servo_state : servo_states) {
+                    servo_state.filter_count     = 0.0f;
+                    servo_state.packet_error     = 0x00;
+                    servo_state.hardware_error   = 0x00;
+                    servo_state.present_pwm      = 0.0f;
+                    servo_state.present_current  = 0.0f;
+                    servo_state.present_velocity = 0.0f;
+                    servo_state.voltage          = 0.0f;
+                    servo_state.temperature      = 0.0f;
+                    servo_state.mean_present_position.reset();
+                }
+            }
 
             if (mode_button.filter()) {
                 SET_SIGNAL_1();

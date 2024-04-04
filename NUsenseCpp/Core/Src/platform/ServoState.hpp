@@ -75,7 +75,7 @@ struct ServoState {
     bool initialised = false;
 
     /// @brief the number of samples filtered so far
-    uint8_t filter_count = 0x00;
+    float filter_count = 0.0f;
 
     /// @brief the circular mean of the present-position,
     utility::math::CircularMean mean_present_position;
