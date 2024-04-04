@@ -59,7 +59,7 @@ namespace platform::NUsense {
         data.goal_current         = convert::current(servo_states[i].goal_current);
         data.goal_velocity        = convert::velocity(servo_states[i].goal_velocity);
         data.profile_acceleration = convert::ff_gain(servo_states[i].profile_acceleration);
-        data.profile_velocity     = convert::profile_velocity(servo_states[i].profile_velocity);
+        data.profile_velocity     = convert::profile_velocity(1000.0f);
         data.goal_position =
             convert::position(i, servo_states[i].goal_position, {1}, {0});
 

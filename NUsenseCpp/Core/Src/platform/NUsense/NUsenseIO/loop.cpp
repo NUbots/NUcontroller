@@ -134,6 +134,7 @@ namespace platform::NUsense {
                     servo_state.present_velocity = 0.0f;
                     servo_state.voltage          = 0.0f;
                     servo_state.temperature      = 0.0f;
+                    servo_state.mean_present_position.reset();
                 }
             }
 
