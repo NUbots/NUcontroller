@@ -112,9 +112,10 @@ namespace platform::NUsense {
             for (int i = 0; i < new_targets->targets_count; i++) {
                 auto new_target = new_targets->targets[i];
                 if ((new_target.id) < NUMBER_OF_DEVICES) {
-                    servo_states[new_target.id].position_p_gain = new_target.gain;
-                    servo_states[new_target.id].goal_position   = new_target.position;
-                    servo_states[new_target.id].torque          = new_target.torque;
+                    servo_states[new_target.id].profile_velocity = new_target.time;
+                    servo_states[new_target.id].position_p_gain  = new_target.gain;
+                    servo_states[new_target.id].goal_position    = new_target.position;
+                    servo_states[new_target.id].torque           = new_target.torque;
                     // Set the dirty-flag so that the Dynamixel stream writes to the servo.
                     servo_states[new_target.id].dirty = true;
                 }
