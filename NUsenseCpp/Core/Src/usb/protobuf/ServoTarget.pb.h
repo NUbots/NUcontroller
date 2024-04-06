@@ -4,7 +4,7 @@
 #ifndef PB_MESSAGE_ACTUATION_SERVOTARGET_PB_H_INCLUDED
 #define PB_MESSAGE_ACTUATION_SERVOTARGET_PB_H_INCLUDED
 #include "pb.h"
-#include "timestamp.pb.h"
+#include "duration.pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.
@@ -16,7 +16,7 @@
 typedef struct _message_actuation_ServoTarget {
     /* / When the target was created */
     bool has_time;
-    google_protobuf_Timestamp time;
+    google_protobuf_Duration time;
     /* / The ID of the servo being controlled */
     uint32_t id;
     /* / The position value of the destination. 0 to 4,095 (0xFFF) is available.
@@ -42,9 +42,9 @@ extern "C" {
 #endif
 
 /* Initializer values for message structs */
-#define message_actuation_ServoTarget_init_default {false, google_protobuf_Timestamp_init_default, 0, 0, 0, 0}
+#define message_actuation_ServoTarget_init_default {false, google_protobuf_Duration_init_default, 0, 0, 0, 0}
 #define message_actuation_ServoTargets_init_default {0, {message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default}}
-#define message_actuation_ServoTarget_init_zero  {false, google_protobuf_Timestamp_init_zero, 0, 0, 0, 0}
+#define message_actuation_ServoTarget_init_zero  {false, google_protobuf_Duration_init_zero, 0, 0, 0, 0}
 #define message_actuation_ServoTargets_init_zero {0, {message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -64,7 +64,7 @@ X(a, STATIC,   SINGULAR, FLOAT,    gain,              4) \
 X(a, STATIC,   SINGULAR, FLOAT,    torque,            5)
 #define message_actuation_ServoTarget_CALLBACK NULL
 #define message_actuation_ServoTarget_DEFAULT NULL
-#define message_actuation_ServoTarget_time_MSGTYPE google_protobuf_Timestamp
+#define message_actuation_ServoTarget_time_MSGTYPE google_protobuf_Duration
 
 #define message_actuation_ServoTargets_FIELDLIST(X, a) \
 X(a, STATIC,   REPEATED, MESSAGE,  targets,           1)
