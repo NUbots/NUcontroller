@@ -13,6 +13,8 @@
 #include "../ServoState.hpp"
 #include "NUgus.hpp"
 #include "imu.h"
+#include "../../utility/support/Button.hpp"
+#include "../../utility/support/MillisecondTimer.hpp"
 
 namespace platform::NUsense {
     constexpr uint32_t MAX_ENCODE_SIZE = 1600;
@@ -75,6 +77,14 @@ namespace platform::NUsense {
         /// @brief  Flag to catch failed nanopb encode calls for debugging / handling
         bool nanopb_encoding_err = false;
 
+        /// @brief  This is to synchronise the data sent to the NUC as well as the buttons, etc.
+        utility::support::MillisecondTimer loop_timer;
+
+        /// @brief  The SW_MODE button,
+        utility::support::Button mode_button;
+
+        /// @brief  The SW_START button,
+        utility::support::Button start_button;
 
     public:
         /**
@@ -117,7 +127,10 @@ namespace platform::NUsense {
                              dynamixel::PacketHandler(ports[4]),
                              dynamixel::PacketHandler(ports[5])})
             , nuc()
-            , imu() {
+            , imu()
+            , loop_timer()
+            , mode_button(GPIOC, 15)
+            , start_button(GPIOH, 0) {
             // Begin at the beginning of the chains.
             chain_indices.fill(0);
             // Initialise our nanopb struct to init_zero

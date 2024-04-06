@@ -1,12 +1,12 @@
-#ifndef DYNAMIXEL_PACKETHANDLER_HPP
-#define DYNAMIXEL_PACKETHANDLER_HPP
-
 #include "../platform/NUsense/NUgus.hpp"
 #include "../uart/Port.hpp"
 #include "../utility/support/MicrosecondTimer.hpp"
 #include "Dynamixel.hpp"
 #include "Packetiser.hpp"
 #include "signal.h"
+
+#ifndef DYNAMIXEL_PACKETHANDLER_HPP
+    #define DYNAMIXEL_PACKETHANDLER_HPP
 
 namespace dynamixel {
 
@@ -57,12 +57,8 @@ namespace dynamixel {
                     return NONE;
                 }
 
-                SET_SIGNAL_2();
-
                 // If so, then decode it.
                 packetiser.decode(read_result);
-
-                RESET_SIGNAL_2();
 
                 // Unless the packetiser has a whole packet, return.
                 if (!packetiser.is_packet_ready()) {

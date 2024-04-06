@@ -13,15 +13,10 @@ namespace platform::NUsense {
         for (int i = 0; i < NUM_PORTS; i++) {
             // This line may be slow. The whole data-structure of chains may need to optimised as
             // something faster than vectors.
-            SET_SIGNAL_1();
             platform::NUsense::NUgus::ID current_id = (chains[i])[chain_indices[i]];
-            RESET_SIGNAL_1();
 
-            SET_SIGNAL_1();
             dynamixel::PacketHandler::Result result =
                 packet_handlers[i].check_sts<sizeof(platform::NUsense::DynamixelServoReadData)>(current_id);
-            RESET_SIGNAL_1();
-            SET_SIGNAL_1();
             // If there is a status-response waiting, then handle it.
             if (result == dynamixel::PacketHandler::SUCCESS) {
 
@@ -102,7 +97,6 @@ namespace platform::NUsense {
                         break;
                 }
             }
-            RESET_SIGNAL_1();
         }
 
         // Handle the incoming protobuf messages from the nuc.
@@ -122,9 +116,33 @@ namespace platform::NUsense {
             }
         }
 
-        // Pack our servo states into a protobuf message, serialise it then send it to the nuc
-        if (!nusense_to_nuc()) {
-            // TODO: (JohanneMontano) Encoding failed for some reason, handle it below
+        // Here send data to the NUC at 100 Hz.
+        if (loop_timer.has_timed_out()) {
+            // If it has timed out, then restart the timer straight away.
+            loop_timer.begin(10);
+
+            // Encode a message and send it to the NUC.
+            if (nusense_to_nuc()) {
+                // If the message was successfully sent, then reset the averaging filter.
+                // For now, this is how we are downsampling the ~500-Hz data to 100-Hz fixed data.
+                // One day, we may get a better filter (if we can get this chip faster).
+                for (auto& servo_state : servo_states) {
+                    servo_state.filter_count     = 0.0f;
+                    servo_state.packet_error     = 0x00;
+                    servo_state.hardware_error   = 0x00;
+                    servo_state.present_pwm      = 0.0f;
+                    servo_state.present_current  = 0.0f;
+                    servo_state.present_velocity = 0.0f;
+                    servo_state.voltage          = 0.0f;
+                    servo_state.temperature      = 0.0f;
+                    servo_state.mean_present_position.reset();
+                }
+            }
+
+            if (mode_button.filter()) {
+                SET_SIGNAL_1();
+                RESET_SIGNAL_1();
+            }
         }
     }
 }  // namespace platform::NUsense
