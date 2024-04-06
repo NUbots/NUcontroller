@@ -3,6 +3,7 @@
 #include "../NUsenseIO.hpp"
 #include "signal.h"
 #include "usbd_cdc_if.h"
+#include <chrono>
 
 namespace platform::NUsense {
 
@@ -107,8 +108,7 @@ namespace platform::NUsense {
                 auto new_target = new_targets->targets[i];
                 if ((new_target.id) < NUMBER_OF_DEVICES) {
                     servo_states[new_target.id].profile_velocity =
-                        (new_target.time.seconds() * 1000) + (new_target.time.nanos() / 1e6);
-                    servo_states[new_target.id].profile_velocity = new_target.time;
+                        (float(new_target.time.seconds) * 1000) + (float(new_target.time.nanos) / 1e6);
                     servo_states[new_target.id].position_p_gain  = new_target.gain;
                     servo_states[new_target.id].goal_position    = new_target.position;
                     servo_states[new_target.id].torque           = new_target.torque;
