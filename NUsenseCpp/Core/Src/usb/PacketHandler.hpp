@@ -1,6 +1,3 @@
-#ifndef USB_PACKETHANDLER_HPP
-#define USB_PACKETHANDLER_HPP
-
 #include <algorithm>
 #include <cstdint>
 #include <iterator>
@@ -9,6 +6,9 @@
 #include "protobuf/pb_decode.h"
 #include "protobuf/pb_encode.h"
 #include "usbd_cdc_if.h"
+
+#ifndef USB_PACKETHANDLER_HPP
+    #define USB_PACKETHANDLER_HPP
 
 namespace usb {
 

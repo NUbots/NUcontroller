@@ -78,8 +78,10 @@ int main(void) {
     HAL_GPIO_WritePin(DXL_PWR_EN_GPIO_Port, DXL_PWR_EN_Pin, GPIO_PIN_SET);
 #endif
 
-    // HAL_TIM_Base_Start(&htim4);
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
+
+    // Enable the clock for GPIOH.
+    RCC->AHB4ENR |= (0b1 << (7));
 
 #ifdef RUN_MAIN
     // Delay for a bit to give the motor time to boot up. Without this delay, I found that the
@@ -172,10 +174,7 @@ void SystemClock_Config(void) {
     }
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim) {
-    // SET_SIGNAL_5();
-    // RESET_SIGNAL_5();
-}
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim) {}
 
 /**
  * @brief  This function is executed in case of error occurrence.
