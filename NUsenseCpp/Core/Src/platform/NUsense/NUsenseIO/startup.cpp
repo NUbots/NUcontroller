@@ -123,6 +123,40 @@ namespace platform::NUsense {
             }
         }
 
+        // For each port, write for all servos the profile-velocity to be 1 s.
+        for (int i = 0; i < NUM_PORTS; i++) {
+
+            // Re-use the same packet-hanlder for each port.
+            dynamixel::PacketHandler packet_handler(ports[i]);
+
+            for (const auto& id : chains[i]) {
+                // Send the write-instruction again if there is something wrong 
+                // with the returned status.
+                do {
+                    // Reset the packet-handler before a new interaction has begun.
+                    packet_handler.reset();
+
+                    // Send the write-instruction.
+                    ports[i].write(
+                        dynamixel::WriteCommand<uint32_t>(
+                            (uint8_t)id,
+                            (uint16_t)dynamixel::DynamixelServo::Address::PROFILE_VELOCITY_L,
+                            1000
+                        )
+                    );
+
+                    // Wait for the status to be received and decoded.
+                    while (
+                        packet_handler.check_sts<0>(id) 
+                        == dynamixel::PacketHandler::Result::NONE
+                    );
+                } while (
+                    packet_handler.get_result() 
+                    != dynamixel::PacketHandler::Result::SUCCESS
+                );
+            }
+        }
+
         /*
         * ~~~ ~~~ ~~~ Set-up of the Indirect Registers ~~~ ~~~ ~~~
         * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -293,7 +327,7 @@ namespace platform::NUsense {
         }
 
         // Begin the 100-Hz timer.
-        loop_timer.begin(10);
+        loop_timer.begin(50);
 
         // Set the state of each expect status as a response to a write-instruction.
         status_states.fill(StatusState::WRITE_1_RESPONSE);
