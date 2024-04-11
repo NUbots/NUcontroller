@@ -10,11 +10,11 @@
 #include "../../usb/PacketHandler.hpp"
 #include "../../usb/protobuf/NUSenseData.pb.h"
 #include "../../usb/protobuf/pb_encode.h"
+#include "../../utility/support/Button.hpp"
+#include "../../utility/support/MillisecondTimer.hpp"
 #include "../ServoState.hpp"
 #include "NUgus.hpp"
 #include "imu.h"
-#include "../../utility/support/Button.hpp"
-#include "../../utility/support/MillisecondTimer.hpp"
 
 namespace platform::NUsense {
     constexpr uint32_t MAX_ENCODE_SIZE = 1600;
@@ -43,11 +43,15 @@ namespace platform::NUsense {
         ///         request is up thereto.
         std::array<uint8_t, NUM_PORTS> chain_indices;
 
-        enum StatusState { READ_RESPONSE = 0, WRITE_1_RESPONSE = 1, WRITE_2_RESPONSE = 2 };
+        enum StatusState { READ_RESPONSE = 0, WRITE_1_RESPONSE = 1, WRITE_2_RESPONSE = 2, WRITE_1_COOLDOWN = 3 };
         /// @brief  These are the states of all expected statuses.
         /// @note   This is to keep track what the original instruction was for so that one can
         ///         tell what the next one is.
         std::array<StatusState, NUMBER_OF_DEVICES> status_states;
+
+        /// @brief  Each timer is to cooldown the two write-instructions when the torque has just
+        ///         been enabled.
+        std::array<utility::support::MicrosecondTimer, NUM_PORTS> torque_cooldown_timers;
 
         /// @brief  This is the packet-handler for the serialised protobuf messages sent by the NUC.
         /// @note   Any better name than 'nuc' is welcome.
@@ -94,7 +98,7 @@ namespace platform::NUsense {
             // For now, this is just a very crude way of knowing what devices are on what port
             // without polling each port. Later we will get polling at start-up so that the
             // devices do not have to be connected to a specific port.
-             chains({std::vector<platform::NUsense::NUgus::ID>{platform::NUsense::NUgus::ID::R_SHOULDER_PITCH,
+            chains({std::vector<platform::NUsense::NUgus::ID>{platform::NUsense::NUgus::ID::R_SHOULDER_PITCH,
                                                               platform::NUsense::NUgus::ID::R_SHOULDER_ROLL,
                                                               platform::NUsense::NUgus::ID::R_ELBOW},
                     std::vector<platform::NUsense::NUgus::ID>{platform::NUsense::NUgus::ID::L_SHOULDER_PITCH,
