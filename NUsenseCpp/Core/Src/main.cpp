@@ -108,6 +108,8 @@ int main(void) {
     #ifdef TEST_IMU
     test_hw::imu();
     #endif
+#ifdef TEST_STREAMREACTOR
+    test_hw::stream_reactor();
 #endif          // RUN_MAIN
 }
 
