@@ -10,7 +10,7 @@
 #endif
 
 /* Struct definitions */
-/* Message mainly for NUsense <-> NUC communication. NUsense will encode this message via nanopb after it queries all
+/* Message mainly for NUSense <-> NUC communication. NUSense will encode this message via nanopb after it queries all
  servo states and send it to the NUC. */
 typedef struct _message_platform_Servo {
     /* / The ID of the servo */
