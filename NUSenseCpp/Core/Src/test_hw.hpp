@@ -18,10 +18,10 @@ namespace test_hw {
 #ifdef TEST_IMU
     void imu() {
         // Create our IMU instance
-        NUsense::IMU imu{};
+        NUSense::IMU imu{};
         // structs to hold data
-        NUsense::IMU::RawData raw_data;
-        NUsense::IMU::ConvertedData converted_data;
+        NUSense::IMU::RawData raw_data;
+        NUSense::IMU::ConvertedData converted_data;
 
         // variables for testing
         uint8_t rx[14];
@@ -34,14 +34,14 @@ namespace test_hw {
         while (1) {
             /* test readReg */
             rx[0] = 0xFF;  // clear to known state
-            imu.readReg(NUsense::IMU::Address::WHO_AM_I, rx);
+            imu.readReg(NUSense::IMU::Address::WHO_AM_I, rx);
             if (rx[0] != 0x98) {
                 error++;
             }
 
             /* test readBurst with a single readval */
             rx[0] = 0xFF;  // clear to known state
-            imu.readBurst(NUsense::IMU::Address::WHO_AM_I, rx, 1);
+            imu.readBurst(NUSense::IMU::Address::WHO_AM_I, rx, 1);
             if (rx[0] != 0x98) {
                 error++;
             }
@@ -50,7 +50,7 @@ namespace test_hw {
             /* NOTE this one fails and im not sure why... */
             for (int i = 0; i < 14; i++)
                 rx[i] = 0xFF;                                       // clear to known state
-            imu.readBurst(NUsense::IMU::Address::FIFO_R_W, rx, 3);  // include reg either side of WHO AM I
+            imu.readBurst(NUSense::IMU::Address::FIFO_R_W, rx, 3);  // include reg either side of WHO AM I
             if (rx[1] != 0x98) {
                 error++;
             }
@@ -59,7 +59,7 @@ namespace test_hw {
             /* test just acc x vals */
             for (int i = 0; i < 14; i++)
                 rx[i] = 0xFF;  // clear to known state
-            imu.readBurst(NUsense::IMU::Address::ACCEL_XOUT_H, rx, 2);
+            imu.readBurst(NUSense::IMU::Address::ACCEL_XOUT_H, rx, 2);
             uint16_t acc_x_raw = (rx[0] << 8) | rx[1];                                          // swap byte order
             float acc_x_conv   = static_cast<float>(acc_x_raw) / imu.ACCEL_SENSITIVITY_CHOSEN;  // conversion
 
@@ -67,7 +67,7 @@ namespace test_hw {
             for (int i = 0; i < 14; i++)
                 rx[i] = 0xFF;  // clear to known state
             imu.readBurst(imu.READ_BLOCK_START, rx, imu.READ_BLOCK_LEN);
-            raw_data = *(reinterpret_cast<NUsense::IMU::RawData*>(rx));  // cast raw bytes to struct
+            raw_data = *(reinterpret_cast<NUSense::IMU::RawData*>(rx));  // cast raw bytes to struct
             imu.convertRawData(&raw_data, &converted_data);
 
             /* test class form, resets form breakpoint locations */
