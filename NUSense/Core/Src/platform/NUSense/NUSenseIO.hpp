@@ -18,8 +18,7 @@
 
 namespace platform::NUSense {
     constexpr uint32_t MAX_ENCODE_SIZE = 1600;
-
-    constexpr uint8_t NUM_PORTS = 6;
+    constexpr uint8_t NUM_PORTS        = 6;
 
     class NUSenseIO {
     private:
@@ -81,10 +80,10 @@ namespace platform::NUSense {
         /// @brief  This is to synchronise the data sent to the NUC as well as the buttons, etc.
         utility::support::MillisecondTimer loop_timer{};
 
-        /// @brief  The SW_MODE button,
+        /// @brief  The SW_MODE button
         utility::support::Button mode_button{};
 
-        /// @brief  The SW_START button,
+        /// @brief  The SW_START button
         utility::support::Button start_button{};
 
     public:

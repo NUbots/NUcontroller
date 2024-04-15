@@ -155,9 +155,9 @@ namespace uart {
 
     void Port::flush_tx() {
         // Wait until there are no bytes transmitting.
-        // while (!num_bytes_tx)
-        while (comm_state == TX_BUSY)
+        while (comm_state == TX_BUSY) {
             check_tx();
+        }
     }
 
     uint8_t Port::begin_tx() {
@@ -173,8 +173,9 @@ namespace uart {
             num_bytes_tx = 0;
             comm_state   = TX_DONE;
         }
-        else
+        else {
             comm_state = TX_BUSY;
+        }
     #else
         // Only send from the front to the end of the actual array.
         // This is less efficient than using a C++ queue.
@@ -186,13 +187,16 @@ namespace uart {
             num_bytes_tx = 0;
             comm_state   = TX_DONE;
         }
-        else
+        else {
             comm_state = TX_BUSY;
+        }
     #endif
 
     #ifdef SEE_STATISTICS
-        for (int i = 0; i < 10 - 1; i++)
+        for (int i = 0; i < 10 - 1; i++) {
             old_num_bytes_tx[i] = old_num_bytes_tx[i + 1];
+        }
+
         old_num_bytes_tx[9] = num_bytes_tx;
     #endif
 
@@ -204,10 +208,12 @@ namespace uart {
         // Remove the bytes that were just transmitted from the front of the buffer.
         tx_buffer.erase(tx_buffer.begin(), tx_buffer.begin() + num_bytes_tx);
         // Send any remaining bytes.
-        if (tx_buffer.size() != 0)
+        if (tx_buffer.size() != 0) {
             begin_tx();
-        else
+        }
+        else {
             num_bytes_tx = 0;
+        }
     #else
         // Move the front further backwards.
         tx_buffer.front = (tx_buffer.front + num_bytes_tx) % PORT_BUFFER_SIZE;
@@ -216,23 +222,26 @@ namespace uart {
         // Update the number of bytes to be transmitted.
         num_bytes_tx = 0;
         // Send any remaining bytes.
-        if (tx_buffer.size)
+        if (tx_buffer.size) {
             begin_tx();
+        }
         // If not, then set to done.
-        else
+        else {
             comm_state = TX_DONE;
+        }
     #endif
     }
 #endif
 
     void Port::check_tx() {
         // If the transmission has been done, then handle it.
-        if (rs_link.get_transmit_flag())
+        if (rs_link.get_transmit_flag()) {
 #ifndef SIMPLE_WRITE
             handle_tx();
 #else
             comm_state = TX_DONE;
 #endif
+        }
     }
 
 }  // namespace uart

@@ -92,7 +92,6 @@ namespace platform::NUSense {
         /// @return A reference to the DynamixelDevice with the given ID
         constexpr dynamixel::DynamixelDevice& operator[](const ID& id) {
             switch (id) {
-                // case ID::OPENCR: return OPENCR;
                 case ID::R_SHOULDER_PITCH: return R_SHOULDER_PITCH;
                 case ID::L_SHOULDER_PITCH: return L_SHOULDER_PITCH;
                 case ID::R_SHOULDER_ROLL: return R_SHOULDER_ROLL;
@@ -112,10 +111,8 @@ namespace platform::NUSense {
                 case ID::R_ANKLE_ROLL: return R_ANKLE_ROLL;
                 case ID::L_ANKLE_ROLL: return L_ANKLE_ROLL;
                 case ID::HEAD_YAW: return HEAD_YAW;
-                default:
-                case ID::HEAD_PITCH:
-                    return HEAD_PITCH;
-                    // default: throw std::runtime_error("Unknown device id");
+                case ID::HEAD_PITCH: return HEAD_PITCH;
+                default: throw std::runtime_error("Unknown device id");
             }
         }
 

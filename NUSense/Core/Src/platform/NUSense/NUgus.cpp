@@ -3,9 +3,7 @@
 namespace platform::NUSense {
 
     NUgus::NUgus()
-        : /*OPENCR(uint8_t(ID::OPENCR))
-        ,*/
-        R_SHOULDER_PITCH(uint8_t(ID::R_SHOULDER_PITCH))
+        : R_SHOULDER_PITCH(uint8_t(ID::R_SHOULDER_PITCH))
         , L_SHOULDER_PITCH(uint8_t(ID::L_SHOULDER_PITCH))
         , R_SHOULDER_ROLL(uint8_t(ID::R_SHOULDER_ROLL))
         , L_SHOULDER_ROLL(uint8_t(ID::L_SHOULDER_ROLL))

@@ -50,9 +50,9 @@ formatters["clang-format"] = {
     "format": [["clang-format", "-i", "-style=file", "{path}"]],
     "include": ["*.cpp", "*.hpp", "*.proto"],
     "exclude": [
-        "NUSenseCpp/Drivers/*",
-        "NUSenseCpp/USB_DEVICE/*",
-        "NUSenseCpp/Middlewares/*",
+        "NUSense/Drivers/*",
+        "NUSense/USB_DEVICE/*",
+        "NUSense/Middlewares/*",
     ],
 }
 formatters["isort"] = {
