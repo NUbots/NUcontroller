@@ -5,22 +5,23 @@
  * Addendum:
  * Clayton Carlon
  * 9/9/2022
- * Ported from NUfsr to NUsense for testing.
+ * Ported from NUfsr to NUSense for testing.
  */
 
 #include "imu.h"
+
 #include <cmath>
 
 static volatile uint8_t spi_int_flags;
 
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef* hspi) {
     if (hspi == &hspi4)
-        spi_int_flags |= NUsense::SPI4_RX;
+        spi_int_flags |= NUSense::SPI4_RX;
 }
 
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef* hspi) {
     if (hspi == &hspi4)
-        spi_int_flags |= NUsense::SPI4_TX;
+        spi_int_flags |= NUSense::SPI4_TX;
 }
 
 /*
@@ -29,7 +30,7 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef* hspi) {
  * @param   none
  * @return  none
  */
-void NUsense::IMU::init() {
+void NUSense::IMU::init() {
     // Select the first PLL as the clock and do a soft reset.
     // This may fix the problem of the power-up sequence in Section-4.19 of the IMU's datasheet.
     // writeReg(Address::PWR_MGMT_1,     PWR_MGMT_1_CLKSEL_AUTO);
@@ -98,7 +99,7 @@ void NUsense::IMU::init() {
  * @param   the byte to be sent,
  * @return  none
  */
-void NUsense::IMU::writeReg(Address addr, uint8_t data) {
+void NUSense::IMU::writeReg(Address addr, uint8_t data) {
     uint8_t packet[2] = {static_cast<uint8_t>(addr) | IMU_WRITE, data};
 
     HAL_GPIO_WritePin(MPU_NSS_GPIO_Port, MPU_NSS_Pin, GPIO_PIN_RESET);
@@ -113,7 +114,7 @@ void NUsense::IMU::writeReg(Address addr, uint8_t data) {
  * @param   a pointer to the byte to be read,
  * @return  none
  */
-void NUsense::IMU::readReg(Address addr, uint8_t* data) {
+void NUSense::IMU::readReg(Address addr, uint8_t* data) {
     uint8_t rx_data[2] = {0xFF, 0xFF};
     uint8_t packet[2]  = {static_cast<uint8_t>(addr) | IMU_READ, 0x00};
 
@@ -132,7 +133,7 @@ void NUsense::IMU::readReg(Address addr, uint8_t* data) {
  * @param   the length, i.e. the number of registers to be read,
  * @return  none
  */
-void NUsense::IMU::readBurst(Address addr, uint8_t* data, uint16_t length) {
+void NUSense::IMU::readBurst(Address addr, uint8_t* data, uint16_t length) {
     uint8_t packet[length + 1];
     uint8_t rx_data[length + 1];
 
@@ -160,7 +161,7 @@ void NUsense::IMU::readBurst(Address addr, uint8_t* data, uint16_t length) {
  * @param   the converted data,
  * @return  none
  */
-void NUsense::IMU::convertRawData(IMU::RawData* raw_data, IMU::ConvertedData* converted_data) {
+void NUSense::IMU::convertRawData(IMU::RawData* raw_data, IMU::ConvertedData* converted_data) {
 
     auto& acc  = raw_data->accelerometer;
     auto& gyro = raw_data->gyroscope;
@@ -189,7 +190,7 @@ void NUsense::IMU::convertRawData(IMU::RawData* raw_data, IMU::ConvertedData* co
  * @brief   fill converted data based on existing raw data
  * @return  none
  */
-void NUsense::IMU::generateConvertedData(void) {
+void NUSense::IMU::generateConvertedData(void) {
     // sneaky lil one liner with private variable permissions
     convertRawData(&raw_data, &converted_data);
 };
@@ -197,13 +198,13 @@ void NUsense::IMU::generateConvertedData(void) {
 /*
  * @brief   get new data, return it, donezo
  */
-NUsense::IMU::RawData NUsense::IMU::getNewRawData(void) {
+NUSense::IMU::RawData NUSense::IMU::getNewRawData(void) {
     // create read buffer
     uint8_t buff[14];
     // read raw vals into the buffer
     readBurst(READ_BLOCK_START, buff, READ_BLOCK_LEN);
     // cast raw vals into the internal struct
-    raw_data = *(reinterpret_cast<NUsense::IMU::RawData*>(buff));
+    raw_data = *(reinterpret_cast<NUSense::IMU::RawData*>(buff));
     // return it the new data
     return raw_data;
     // donezo
@@ -212,7 +213,7 @@ NUsense::IMU::RawData NUsense::IMU::getNewRawData(void) {
 /*
  * @brief   get new data, convert it, return it, donezo
  */
-NUsense::IMU::ConvertedData NUsense::IMU::getNewConvertedData(void) {
+NUSense::IMU::ConvertedData NUSense::IMU::getNewConvertedData(void) {
     // get and convert new data
     getNewRawData();
     convertRawData(&raw_data, &converted_data);
@@ -223,13 +224,13 @@ NUsense::IMU::ConvertedData NUsense::IMU::getNewConvertedData(void) {
 /*
  * @brief   a simple getter for the current stored raw data
  */
-NUsense::IMU::RawData NUsense::IMU::getLastRawData(void) {
+NUSense::IMU::RawData NUSense::IMU::getLastRawData(void) {
     return raw_data;
 };
 
 /*
  * @brief   a simple getter for the current stored converted data
  */
-NUsense::IMU::ConvertedData NUsense::IMU::getLastConvertedData(void) {
+NUSense::IMU::ConvertedData NUSense::IMU::getLastConvertedData(void) {
     return converted_data;
 };

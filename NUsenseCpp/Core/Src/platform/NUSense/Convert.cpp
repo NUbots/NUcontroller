@@ -5,11 +5,11 @@
 #include "../../utility/math/angle.hpp"
 #include "../../utility/math/comparison.hpp"
 
-namespace platform::NUsense {
+namespace platform::NUSense {
 
     namespace convert {
 
-        /// TODO: Refit these for NUsense's IMU.
+        /// TODO: Refit these for NUSense's IMU.
 
         float gyro(int16_t raw) {
             // Range: -32768 - +32767 = -2000dps - +2000dps
@@ -178,9 +178,7 @@ namespace platform::NUsense {
             return int16_t(utility::math::clamp(-1941, int(current / 0.00336f), 1941));
         }
 
-        /**
-         * Controller gain = Ram table gain / 128
-         */
+        // Controller gain = Ram table gain / 128
         float p_gain(uint16_t p_gain) {
             return float(p_gain / 128.0f);
         }
@@ -189,9 +187,8 @@ namespace platform::NUsense {
             return uint16_t(p_gain * 128.0f);
         }
 
-        /**
-         * Controller gain = Ram table gain / 65536
-         */
+
+        // Controller gain = Ram table gain / 65536
         float i_gain(uint16_t i_gain) {
             return i_gain / 65536.0f;
         }
@@ -200,9 +197,8 @@ namespace platform::NUsense {
             return uint16_t(i_gain * 65536.0f);
         }
 
-        /**
-         * Controller gain = Ram table gain / 16
-         */
+
+        // Controller gain = Ram table gain / 16
         float d_gain(uint16_t d_gain) {
             return d_gain / 16.0f;
         }
@@ -222,4 +218,4 @@ namespace platform::NUsense {
 
     }  // namespace convert
 
-}  // namespace platform::NUsense
+}  // namespace platform::NUSense

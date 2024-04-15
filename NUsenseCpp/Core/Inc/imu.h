@@ -8,7 +8,7 @@
  * Addendum:
  * Clayton Carlon
  * 9/9/2022
- * Ported from NUfsr to NUsense for testing.
+ * Ported from NUfsr to NUSense for testing.
  *
  ***********************************************************/
 
@@ -16,11 +16,11 @@
  * IMU class usage instructions:
  *
  * 1. Create instance:
- *  NUsense::IMU imu{};
+ *  NUSense::IMU imu{};
  *
  * 2. Create structs for IMU data (you may not need raw_data)
- *  NUsense::IMU::RawData raw_data;
- *  NUsense::IMU::ConvertedData converted_data;
+ *  NUSense::IMU::RawData raw_data;
+ *  NUSense::IMU::ConvertedData converted_data;
  *
  * 3. Start the imu:
  *  imu.init();
@@ -56,7 +56,7 @@
 #include "spi.h"
 
 
-namespace NUsense {
+namespace NUSense {
 
     //---------------Constants----------------//
     // Masks for the flags for each SPI interface, in this case only one:
@@ -721,6 +721,6 @@ namespace NUsense {
     extern uint8_t SPI_flag;
     extern uint8_t INT_flag;
 
-}  // namespace NUsense
+}  // namespace NUSense
 
 #endif  //_IMU_H_

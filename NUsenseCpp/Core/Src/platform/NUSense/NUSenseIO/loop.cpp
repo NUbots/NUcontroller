@@ -2,23 +2,23 @@
 #include <chrono>
 #include <sstream>
 
-#include "../NUsenseIO.hpp"
+#include "../NUSenseIO.hpp"
 #include "signal.h"
 #include "usbd_cdc_if.h"
 
-namespace platform::NUsense {
+namespace platform::NUSense {
 
-    void NUsenseIO::loop() {
+    void NUSenseIO::loop() {
         // For each port, check whether the expected status has been
         // successfully received. If so, then handle it and send the next read-
         // instruction.
         for (int i = 0; i < NUM_PORTS; i++) {
             // This line may be slow. The whole data-structure of chains may need to optimised as
             // something faster than vectors.
-            platform::NUsense::NUgus::ID current_id = (chains[i])[chain_indices[i]];
+            platform::NUSense::NUgus::ID current_id = (chains[i])[chain_indices[i]];
 
             dynamixel::PacketHandler::Result result =
-                packet_handlers[i].check_sts<sizeof(platform::NUsense::DynamixelServoReadData)>(current_id);
+                packet_handlers[i].check_sts<sizeof(platform::NUSense::DynamixelServoReadData)>(current_id);
             // If there is a status-response waiting, then handle it.
             if (result == dynamixel::PacketHandler::SUCCESS) {
 
@@ -62,7 +62,7 @@ namespace platform::NUsense {
                     case StatusState::READ_RESPONSE:
                         process_servo_data(
                             *reinterpret_cast<const dynamixel::StatusReturnCommand<sizeof(
-                                platform::NUsense::DynamixelServoReadData)>*>(packet_handlers[i].get_sts_packet()));
+                                platform::NUSense::DynamixelServoReadData)>*>(packet_handlers[i].get_sts_packet()));
 
                         // Move along the chain.
                         chain_indices[i] = (chain_indices[i] + 1) % chains[i].size();
@@ -85,30 +85,21 @@ namespace platform::NUsense {
             // If there was an error, then just restart the stream.
             else if ((result == dynamixel::PacketHandler::ERROR) || (result == dynamixel::PacketHandler::CRC_ERROR)
                      || (result == dynamixel::PacketHandler::TIMEOUT)) {
+                // Move along the chain.
+                chain_indices[i] = (chain_indices[i] + 1) % chains[i].size();
+                current_id       = (chains[i])[chain_indices[i]];
 
-                switch (status_states[(uint8_t) current_id - 1]) {
-
-                    // If there was an error with the read-response, then go to the next servo
-                    // along the chain.
-                    default:
-                    case StatusState::READ_RESPONSE:
-
-                        // Move along the chain.
-                        chain_indices[i] = (chain_indices[i] + 1) % chains[i].size();
-                        current_id       = (chains[i])[chain_indices[i]];
-
-                        // If the servo-state is dirty, then send a write-instruction.
-                        if (servo_states[(uint8_t) current_id - 1].dirty) {
-                            send_servo_write_1_request(current_id, i);
-                            status_states[(uint8_t) current_id - 1] = WRITE_1_RESPONSE;
-                        }
-                        else {
-                            send_servo_read_request(current_id, i);
-                            status_states[(uint8_t) current_id - 1] = READ_RESPONSE;
-                        }
-
-                        break;
+                // If the servo-state is dirty, then send a write-instruction.
+                if (servo_states[(uint8_t) current_id - 1].dirty) {
+                    send_servo_write_1_request(current_id, i);
+                    status_states[(uint8_t) current_id - 1] = WRITE_1_RESPONSE;
                 }
+                else {
+                    send_servo_read_request(current_id, i);
+                    status_states[(uint8_t) current_id - 1] = READ_RESPONSE;
+                }
+
+                break;
             }
 
             // If we are cooling down, then see whether the timer has timed out. If so, then send
@@ -168,4 +159,4 @@ namespace platform::NUsense {
             }
         }
     }
-}  // namespace platform::NUsense
+}  // namespace platform::NUSense

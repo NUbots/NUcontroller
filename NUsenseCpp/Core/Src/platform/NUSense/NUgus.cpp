@@ -1,10 +1,11 @@
 #include "NUgus.hpp"
 
-namespace platform::NUsense {
+namespace platform::NUSense {
 
     NUgus::NUgus()
         : /*OPENCR(uint8_t(ID::OPENCR))
-        ,*/ R_SHOULDER_PITCH(uint8_t(ID::R_SHOULDER_PITCH))
+        ,*/
+        R_SHOULDER_PITCH(uint8_t(ID::R_SHOULDER_PITCH))
         , L_SHOULDER_PITCH(uint8_t(ID::L_SHOULDER_PITCH))
         , R_SHOULDER_ROLL(uint8_t(ID::R_SHOULDER_ROLL))
         , L_SHOULDER_ROLL(uint8_t(ID::L_SHOULDER_ROLL))
@@ -25,4 +26,4 @@ namespace platform::NUsense {
         , HEAD_YAW(uint8_t(ID::HEAD_YAW))
         , HEAD_PITCH(uint8_t(ID::HEAD_PITCH)) {}
 
-}  // namespace platform::NUsense
+}  // namespace platform::NUSense

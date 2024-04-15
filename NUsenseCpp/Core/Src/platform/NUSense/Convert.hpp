@@ -4,7 +4,7 @@
 #include <array>
 #include <stdexcept>
 
-namespace platform::NUsense {
+namespace platform::NUSense {
 
     namespace convert {
         /// @brief Converts a gyroscope reading from the dynamixel to the radian value
@@ -146,6 +146,6 @@ namespace platform::NUsense {
 
     }  // namespace convert
 
-}  // namespace platform::NUsense
+}  // namespace platform::NUSense
 
 #endif  // PLATFORM_NUSENSE_CONVERT_HPP

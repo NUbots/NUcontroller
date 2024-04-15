@@ -1,4 +1,4 @@
-#include "../platform/NUsense/NUgus.hpp"
+#include "../platform/NUSense/NUgus.hpp"
 #include "../uart/Port.hpp"
 #include "../utility/support/MicrosecondTimer.hpp"
 #include "Dynamixel.hpp"
@@ -40,7 +40,7 @@ namespace dynamixel {
          *            #SUCCESS if all the expected packets have been decoded,
          */
         template <uint16_t N>
-        const Result check_sts(const platform::NUsense::NUgus::ID id) {
+        const Result check_sts(const platform::NUSense::NUgus::ID id) {
 
             // If the packet has timed out, then return early.
             // May be better to move this to where read_result == NO_BYTE_READ, but the handler may

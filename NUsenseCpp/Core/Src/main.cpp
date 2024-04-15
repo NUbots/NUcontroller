@@ -26,7 +26,7 @@
 #include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
-#include "platform/NUsense/NUsenseIO.hpp"
+#include "platform/NUSense/NUSenseIO.hpp"
 #include "settings.h"
 #include "test_hw.hpp"
 
@@ -90,8 +90,8 @@ int main(void) {
     // have something to do with the RS485 transceivers instead.
     HAL_Delay(1000);
 
-    /// @brief the instance for running most of the NUsense code.
-    platform::NUsense::NUsenseIO nusenseIO;
+    /// @brief the instance for running most of the NUSense code.
+    platform::NUSense::NUSenseIO nusenseIO;
 
     nusenseIO.startup();
 

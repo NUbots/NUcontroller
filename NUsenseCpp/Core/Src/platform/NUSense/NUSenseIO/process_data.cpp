@@ -1,12 +1,9 @@
-#include "../NUsenseIO.hpp"
-
 #include "../Convert.hpp"
+#include "../NUSenseIO.hpp"
 
-namespace platform::NUsense {
+namespace platform::NUSense {
 
-    void NUsenseIO::process_servo_data(
-        const dynamixel::StatusReturnCommand<sizeof(DynamixelServoReadData)> packet
-    ) {
+    void NUSenseIO::process_servo_data(const dynamixel::StatusReturnCommand<sizeof(DynamixelServoReadData)> packet) {
         const DynamixelServoReadData data = *(reinterpret_cast<const DynamixelServoReadData*>(packet.data.data()));
 
         // IDs are 1..20 so need to be converted for the servo_states index
@@ -16,24 +13,24 @@ namespace platform::NUsense {
 
         // Although they're stored in the servo state here, packet errors are combined and processed all at once as
         // subcontroller errors in the RawSensors message
-        servo_states[servo_index].packet_error &= (uint8_t)packet.error;
+        servo_states[servo_index].packet_error &= (uint8_t) packet.error;
 
         // Servo error status from control table, NOT dynamixel status packet error.
         servo_states[servo_index].hardware_error &= data.hardware_error_status;
 
-        servo_states[servo_index].present_pwm      += convert::PWM(data.present_pwm);
-        servo_states[servo_index].present_current  += convert::current(data.present_current);
+        servo_states[servo_index].present_pwm += convert::PWM(data.present_pwm);
+        servo_states[servo_index].present_current += convert::current(data.present_current);
         servo_states[servo_index].present_velocity += convert::velocity(data.present_velocity);  // todo: check
         // TODO: Add the proper direction and offset somehow.
-        servo_states[servo_index].present_position =
-            convert::position(servo_index, data.present_position, {1}, {0});
-        servo_states[servo_index].voltage     += convert::voltage(data.present_voltage);
+        servo_states[servo_index].present_position = convert::position(servo_index, data.present_position, {1}, {0});
+        servo_states[servo_index].voltage += convert::voltage(data.present_voltage);
         servo_states[servo_index].temperature += convert::temperature(data.present_temperature);
 
         servo_states[servo_index].mean_present_position.add(servo_states[servo_index].present_position);
 
         servo_states[servo_index].filter_count++;
 
+        // TODO: Implement buzzer for NUSense
         // Buzz if any servo is hot, use the boolean flag to turn the buzzer off once the servo is no longer hot
         // A servo is defined to be hot if the detected temperature exceeds the maximum tolerance in the configuration
         /*bool any_servo_hot = false;
@@ -57,4 +54,4 @@ namespace platform::NUsense {
         }
     }
 
-}  // namespace platform::NUsense
+}  // namespace platform::NUSense

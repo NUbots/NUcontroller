@@ -1,9 +1,9 @@
-#include "../NUsenseIO.hpp"
+#include "../NUSenseIO.hpp"
 
-namespace platform::NUsense {
-    bool NUsenseIO::nusense_to_nuc() {
+namespace platform::NUSense {
+    bool NUSenseIO::nusense_to_nuc() {
         // Get a new lot of IMU data
-        ::NUsense::IMU::ConvertedData converted_data;
+        ::NUSense::IMU::ConvertedData converted_data;
         converted_data = imu.getNewConvertedData();
 
         // TODO: (JohanneMontano) Handle IMU read and conversions if it fails
@@ -87,4 +87,4 @@ namespace platform::NUsense {
 
         return true;
     }
-}  // namespace platform::NUsense
+}  // namespace platform::NUSense

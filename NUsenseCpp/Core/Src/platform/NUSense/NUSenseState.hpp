@@ -1,11 +1,11 @@
 #ifndef PLATFORM_NUSENSE_NUSENSESTATE_HPP
 #define PLATFORM_NUSENSE_NUSENSESTATE_HPP
 
-namespace platform::NUsense {
+namespace platform::NUSense {
 
     /// @brief  The state of the hardware on the board.
     /// @note   May be used later on for IO, etc.
-    struct NUsenseState {
+    struct NUSenseState {
         /// @brief  the model-number, i.e. the revision of the PCB,
         uint8_t model = 0x00;
         /// @brief  the firmware-version,
@@ -39,6 +39,6 @@ namespace platform::NUsense {
         uint8_t blue  = 0x00;
     };
 
-}  // namespace platform::NUsense
+}  // namespace platform::NUSense
 
 #endif  // PLATFORM_NUSENSE_NUSENSESTATE_HPP
