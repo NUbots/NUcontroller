@@ -65,6 +65,6 @@ namespace dynamixel {
         const uint16_t crc;
     } __attribute__((packed));  // Make it so that the compiler reads this struct "as is" (no padding bytes)
 
-}  // namespace dynamixel::v2
+}  // namespace dynamixel
 
 #endif  // DYNAMIXEL_BULKWRITE_HPP

@@ -50,6 +50,6 @@ namespace dynamixel {
     // Check that this struct is not cache aligned
     static_assert(sizeof(FactoryResetCommand) == 11, "The compiler is adding padding to this struct, Bad compiler!");
 
-}  // namespace dynamixel::v2
+}  // namespace dynamixel
 
 #endif  // DYNAMIXEL_FACTORYRESET_HPP

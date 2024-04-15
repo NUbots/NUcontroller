@@ -26,6 +26,7 @@
 # SOFTWARE.
 #
 
+import argparse
 import datetime
 import multiprocessing
 import os
@@ -37,7 +38,6 @@ from fnmatch import fnmatch
 from functools import partial
 from subprocess import DEVNULL, PIPE, STDOUT, CalledProcessError
 from subprocess import run as sp_run
-import argparse
 
 import pygit2
 
@@ -48,8 +48,12 @@ formatters = OrderedDict()
 
 formatters["clang-format"] = {
     "format": [["clang-format", "-i", "-style=file", "{path}"]],
-    "include": ["*.h", "*.c", "*.cc", "*.cxx", "*.cpp", "*.hpp", "*.ipp", "*.frag", "*.glsl", "*.vert", "*.proto"],
-    "exclude": [],
+    "include": ["*.cpp", "*.hpp", "*.proto"],
+    "exclude": [
+        "NUSenseCpp/Drivers/*",
+        "NUSenseCpp/USB_DEVICE/*",
+        "NUSenseCpp/Middlewares/*",
+    ],
 }
 formatters["isort"] = {
     "format": [["isort", "--quiet", "{path}"]],
@@ -63,8 +67,8 @@ formatters["black"] = {
 }
 formatters["prettier"] = {
     "format": [["prettier", "--write", "{path}"]],
-    "include": ["*.js", "*.jsx", "*.ts", "*.tsx", "*.json", "*.css", "*.scss", "*.html", "*.md", "*.yaml", "*.yml"],
-    "exclude": ["*.min.*"],
+    "include": ["*.md", "*.yaml", "*.yml"],
+    "exclude": [],
 }
 
 # Format or check the file
@@ -85,7 +89,12 @@ def _do_format(path, verbose, check=True):
 
         # If we don't have a formatter then skip this file
         if len(formatter) == 0:
-            return f"Skipping {path} as it does not match any of the formatters\n" if verbose >= 1 else "", True
+            return (
+                f"Skipping {path} as it does not match any of the formatters\n"
+                if verbose >= 1
+                else "",
+                True,
+            )
 
         text = f"Formatting {path} with {', '.join(formatter_names)}\n"
 
@@ -114,7 +123,9 @@ def _do_format(path, verbose, check=True):
 
         if check:
             # Run the diff command
-            cmd = sp_run(["colordiff", "--color=yes", "--unified", path, output_path], **run_args)
+            cmd = sp_run(
+                ["colordiff", "--color=yes", "--unified", path, output_path], **run_args
+            )
         else:
             # Check if the file has changed and if so replace the original using python
             with open(path, "rb") as f:
@@ -128,13 +139,20 @@ def _do_format(path, verbose, check=True):
 
     return text, success
 
+
 def run(verbose, check, format_all, globs):
     # Use git to get all of the files that are committed to the repository or just the ones that are different to main
     if format_all:
-        files = sp_run(["git", "ls-files"], stdout=PIPE, check=True).stdout.decode("utf-8").splitlines()
+        files = (
+            sp_run(["git", "ls-files"], stdout=PIPE, check=True)
+            .stdout.decode("utf-8")
+            .splitlines()
+        )
     else:
         files = (
-            sp_run(["git", "diff", "--name-only", "origin/main"], stdout=PIPE, check=True)
+            sp_run(
+                ["git", "diff", "--name-only", "origin/main"], stdout=PIPE, check=True
+            )
             .stdout.decode("utf-8")
             .splitlines()
         )
@@ -155,7 +173,9 @@ def run(verbose, check, format_all, globs):
 
     success = True
     with multiprocessing.Pool(multiprocessing.cpu_count()) as pool:
-        for r, s in pool.imap_unordered(partial(_do_format, verbose=verbose, check=check), files):
+        for r, s in pool.imap_unordered(
+            partial(_do_format, verbose=verbose, check=check), files
+        ):
             sys.stdout.write(r)
             success = success and s
 

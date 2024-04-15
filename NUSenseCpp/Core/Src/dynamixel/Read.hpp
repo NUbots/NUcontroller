@@ -49,6 +49,6 @@ namespace dynamixel {
     // Check that this struct is not cache aligned
     static_assert(sizeof(ReadCommand) == 14, "The compiler is adding padding to this struct, Bad compiler!");
 
-}  // namespace dynamixel::v2
+}  // namespace dynamixel
 
 #endif  // DYNAMIXEL_READ_HPP

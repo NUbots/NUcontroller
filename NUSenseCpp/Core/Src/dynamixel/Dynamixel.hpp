@@ -64,7 +64,7 @@ namespace dynamixel {
             0x8231, 0x8213, 0x0216, 0x021C, 0x8219, 0x0208, 0x820D, 0x8207, 0x0202};
 
         std::size_t packet_len = sizeof(T) - sizeof(packet->crc);
-        const uint8_t* p  = reinterpret_cast<const uint8_t*>(packet);
+        const uint8_t* p       = reinterpret_cast<const uint8_t*>(packet);
 
         for (std::size_t j = 0; j < packet_len; j++) {
             uint16_t i = uint16_t(((crc_accum >> 8) ^ p[j]) & 0xFF);

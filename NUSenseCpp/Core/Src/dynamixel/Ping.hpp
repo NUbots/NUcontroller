@@ -18,11 +18,7 @@ namespace dynamixel {
      */
     struct PingCommand {
         explicit PingCommand(uint8_t id)
-            : magic(0x00FDFFFF)
-            , id(id)
-            , length(3)
-            , instruction(Instruction::PING)
-            , crc(calculate_crc(this)) {}
+            : magic(0x00FDFFFF), id(id), length(3), instruction(Instruction::PING), crc(calculate_crc(this)) {}
 
         /// Magic number that heads up every packet
         const uint32_t magic;
@@ -38,6 +34,6 @@ namespace dynamixel {
     // Check that this struct is not cache aligned
     static_assert(sizeof(PingCommand) == 10, "The compiler is adding padding to this struct, Bad compiler!");
 
-}  // namespace dynamixel::v2
+}  // namespace dynamixel
 
 #endif  // DYNAMIXEL_PING_HPP

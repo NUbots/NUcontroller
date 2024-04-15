@@ -72,9 +72,10 @@ namespace platform {
             case Value::L_ANKLE_ROLL: return "L_ANKLE_ROLL";
             case Value::HEAD_YAW: return "HEAD_YAW";
             default:
-            case Value::HEAD_PITCH: return "HEAD_PITCH";
-            //case Value::NUMBER_OF_SERVOS:
-            //default: throw std::runtime_error("enum ServoID's value is corrupt, unknown value stored");
+            case Value::HEAD_PITCH:
+                return "HEAD_PITCH";
+                // case Value::NUMBER_OF_SERVOS:
+                // default: throw std::runtime_error("enum ServoID's value is corrupt, unknown value stored");
         }
     }
 

@@ -74,12 +74,7 @@ namespace dynamixel {
     struct StatusReturnCommand<0> {
 
         StatusReturnCommand(uint8_t id, const CommandError& error, uint16_t crc)
-            : magic(0x00FDFFFF)
-            , id(id)
-            , length(4)
-            , instruction(Instruction::STATUS_RETURN)
-            , error(error)
-            , crc(crc) {}
+            : magic(0x00FDFFFF), id(id), length(4), instruction(Instruction::STATUS_RETURN), error(error), crc(crc) {}
 
         /// Magic number that heads up every packet
         const uint32_t magic;
