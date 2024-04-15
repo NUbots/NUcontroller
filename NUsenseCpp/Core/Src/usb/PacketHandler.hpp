@@ -12,38 +12,21 @@
 
 namespace usb {
 
-    /**
-     * @brief   Handles the USB protobuf packets.
-     * @note    Any better name than 'PacketHandler' is welcome.
-     */
+    /// @brief   Handles the USB protobuf packets.
     class PacketHandler {
     public:
-        /**
-         * @brief   Constructs the packet-handler.
-         */
-        PacketHandler()
-            : pb_length(0)
-            , remaining_length(0)
-            , is_packet_ready(false)
-            , rx_count(0)
-            , decode_count(0)
-            , missing_count(0) {
-            targets = message_actuation_ServoTargets_init_zero;
+        /// @brief   Constructs the packet handler.
+        PacketHandler() {
             rx_buffer.front = 0;
-            rx_buffer.back = 0;
-            rx_buffer.size = 0;
+            rx_buffer.back  = 0;
+            rx_buffer.size  = 0;
         }
 
-        /**
-         * @brief   Handles outgoing bytes from the ring-buffer, parses any packet, and decodes it.
-         * @return  whether the packet has been decoded,
-         */
+        /// @brief   Handles outgoing bytes from the ring-buffer, parses any packet, and decodes it.
+        /// @return  Whether the packet has been decoded.
         bool handle_incoming() {
 
             if (rx_buffer.size != 0) {
-                // Reset rx_flag - this flag is turned on by the USB receive call back and turned
-                // off here
-                //rx_flag = 0;
                 rx_count += 1;
                 // Check if we have a header and if we do extract our lengths and pb bytes
                 if ((rx_buffer.data[rx_buffer.front] == (char) 0xE2)
@@ -86,32 +69,25 @@ namespace usb {
             if (is_packet_ready) {
                 is_packet_ready = false;
 
-                // Decoding time
+                // Decoding the protobuf packet
                 pb_istream_t input_stream =
                     pb_istream_from_buffer(reinterpret_cast<const pb_byte_t*>(&pb_packets[0]), pb_length);
-
                 pb_decode(&input_stream, message_actuation_ServoTargets_fields, &targets);
 
                 // Monitor the frequency of decodings and missing targets.
                 decode_count += 1;
-                if (targets.targets[0].id != near_id)
-                    near_id = targets.targets[0].id;
-                near_id++;
-                if (targets.targets_count != 20)
-                    missing_count++;
-                if (near_id == 100)
-                    near_id = 100;
+                near_id       = near_id == targets.targets[0].id ? near_id + 1 : targets.targets[0].id + 1;
+                missing_count = targets.targets_count == 20 ? missing_count : missing_count + 1;
 
+                // Packet has been decoded!
                 return true;
             }
 
             return false;
         }
 
-        /**
-         * @brief   Gets the targets of the last decoded packet.
-         * @return  the reference to the targets,
-         */
+        /// @brief   Gets the targets of the last decoded packet.
+        /// @return  The pointer to the targets.
         message_actuation_ServoTargets* get_targets() {
             return &targets;
         }
@@ -156,25 +132,16 @@ namespace usb {
             return length;
         }
         /// @brief  the buffer for the protobuf payload to be decoded,
-        char pb_packets[RX_BUF_SIZE];
+        char pb_packets[RX_BUF_SIZE]{};
         /// @brief  the length of the protobuf packet,
-        uint16_t pb_length;
+        uint16_t pb_length = 0;
         /// @brief  the remaining length of the protobuf packet to be gathered by the lower-level
         ///         firmware, namely CDC_Receive_HS.
-        uint16_t remaining_length;
+        uint16_t remaining_length = 0;
         /// @brief  whether a complete protobuf packet has been gathered to be decoded,
-        bool is_packet_ready;
-        message_actuation_ServoTargets targets;
-        /// @brief  debugging count for the number of received chunks of bytes, i.e. everytime when
-        ///         rx_flag is set and cleared,
-        uint16_t rx_count;
-        /// @brief  debugging count for the number of packets decoded,
-        uint16_t decode_count;
-        /// @brief  debugging count of packets that had missing targets, i.e. not twenty,
-        uint16_t missing_count;
-        /// @brief  debugging variable of the count of true packets based on incremental ID, purely
-        ///         for testing a specific version of code,
-        volatile uint16_t near_id;
+        bool is_packet_ready = false;
+        /// @brief The servo targets to send to the servos
+        message_actuation_ServoTargets targets = message_actuation_ServoTargets_init_zero;
     };
 
 }  // namespace usb
