@@ -24,10 +24,7 @@ namespace usb {
         PacketHandler()
             : pb_length(0)
             , remaining_length(0)
-            , is_packet_ready(false)
-            , rx_count(0)
-            , decode_count(0)
-            , missing_count(0) {
+            , is_packet_ready(false) {
             targets = message_actuation_ServoTargets_init_zero;
             rx_buffer.front = 0;
             rx_buffer.back = 0;
@@ -41,10 +38,6 @@ namespace usb {
         bool handle_incoming() {
 
             if (rx_buffer.size != 0) {
-                // Reset rx_flag - this flag is turned on by the USB receive call back and turned
-                // off here
-                //rx_flag = 0;
-                rx_count += 1;
                 // Check if we have a header and if we do extract our lengths and pb bytes
                 if ((rx_buffer.data[rx_buffer.front] == (char) 0xE2)
                     && (rx_buffer.data[(rx_buffer.front + 1) % RX_BUF_SIZE] == (char) 0x98)
@@ -67,7 +60,7 @@ namespace usb {
                         pop((uint8_t*) pb_packets, rx_buffer.size - 5, 5);
                     }
                 }
-                else if ((remaining_length != 0) && (rx_buffer.size >= remaining_length)) {
+                else if (remaining_length != 0) {
                     uint16_t old_size;
                     old_size = pop((uint8_t*) &pb_packets[pb_length - remaining_length],
                                    remaining_length <= rx_buffer.size ? remaining_length : rx_buffer.size);
@@ -91,16 +84,6 @@ namespace usb {
                     pb_istream_from_buffer(reinterpret_cast<const pb_byte_t*>(&pb_packets[0]), pb_length);
 
                 pb_decode(&input_stream, message_actuation_ServoTargets_fields, &targets);
-
-                // Monitor the frequency of decodings and missing targets.
-                decode_count += 1;
-                if (targets.targets[0].id != near_id)
-                    near_id = targets.targets[0].id;
-                near_id++;
-                if (targets.targets_count != 20)
-                    missing_count++;
-                if (near_id == 100)
-                    near_id = 100;
 
                 return true;
             }
@@ -165,16 +148,6 @@ namespace usb {
         /// @brief  whether a complete protobuf packet has been gathered to be decoded,
         bool is_packet_ready;
         message_actuation_ServoTargets targets;
-        /// @brief  debugging count for the number of received chunks of bytes, i.e. everytime when
-        ///         rx_flag is set and cleared,
-        uint16_t rx_count;
-        /// @brief  debugging count for the number of packets decoded,
-        uint16_t decode_count;
-        /// @brief  debugging count of packets that had missing targets, i.e. not twenty,
-        uint16_t missing_count;
-        /// @brief  debugging variable of the count of true packets based on incremental ID, purely
-        ///         for testing a specific version of code,
-        volatile uint16_t near_id;
     };
 
 }  // namespace usb

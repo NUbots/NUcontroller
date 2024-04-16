@@ -94,7 +94,6 @@ uint8_t UserTxBufferHS[APP_TX_DATA_SIZE];
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
 volatile struct RingBuffer rx_buffer;
-volatile uint8_t rx_flag = 0;
 /* USER CODE END PRIVATE_VARIABLES */
 
 /**
@@ -286,9 +285,6 @@ static int8_t CDC_Receive_HS(uint8_t* Buf, uint32_t *Len)
     	  rx_buffer.size += *Len;
       }
   }
-
-  // Tell the USB stack we're ready to receive more data
-  rx_flag = 1;
 
   //HAL_GPIO_WritePin(SPARE1_GPIO_Port, SPARE1_Pin, GPIO_PIN_RESET);
 

@@ -126,7 +126,7 @@ namespace platform::NUsense {
             // For every new target, update the state if it is a servo.
             message_actuation_ServoTargets* new_targets = nuc.get_targets();
             for (int i = 0; i < new_targets->targets_count; i++) {
-                auto new_target = &(new_targets->targets[i]);
+                message_actuation_ServoTarget* new_target = &(new_targets->targets[i]);
                 if ((new_target->id) < NUMBER_OF_DEVICES) {
                     servo_states[new_target->id].profile_velocity =
                         std::max(0.0, (float(new_target->time.seconds) * 1000) + (float(new_target->time.nanos) / 1e6));
