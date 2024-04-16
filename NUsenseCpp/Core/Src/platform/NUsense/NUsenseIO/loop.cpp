@@ -1,9 +1,10 @@
+#include <algorithm>
+#include <chrono>
 #include <sstream>
 
 #include "../NUsenseIO.hpp"
 #include "signal.h"
 #include "usbd_cdc_if.h"
-#include <chrono>
 
 namespace platform::NUsense {
 
@@ -26,8 +27,19 @@ namespace platform::NUsense {
                     // for the second bank of registers.
                     case StatusState::WRITE_1_RESPONSE:
 
-                        send_servo_write_2_request(current_id, i);
-                        status_states[(uint8_t) current_id - 1] = WRITE_2_RESPONSE;
+                        // If the torque has just been enabled by the last write-instruction, then
+                        // cool down for 1 ms until the servo decides to behave itself.
+                        if ((servo_states[(uint8_t) current_id - 1].torque_enabled == false)
+                            && (servo_states[(uint8_t) current_id - 1].torque != 0.0)) {
+                            torque_cooldown_timers[i].begin(1000);
+                            status_states[(uint8_t) current_id - 1] = WRITE_1_COOLDOWN;
+                            packet_handlers[i].reset();
+                        }
+                        // Otherwise, send the next write-instruction as normal.
+                        else {
+                            send_servo_write_2_request(current_id, i);
+                            status_states[(uint8_t) current_id - 1] = WRITE_2_RESPONSE;
+                        }
 
                         break;
 
@@ -98,6 +110,15 @@ namespace platform::NUsense {
                         break;
                 }
             }
+
+            // If we are cooling down, then see whether the timer has timed out. If so, then send
+            // the next write-instruction.
+            if ((status_states[(uint8_t) current_id - 1] == WRITE_1_COOLDOWN)
+                && (torque_cooldown_timers[i].has_timed_out())) {
+
+                send_servo_write_2_request(current_id, i);
+                status_states[(uint8_t) current_id - 1] = WRITE_2_RESPONSE;
+            }
         }
 
         // Handle the incoming protobuf messages from the nuc.
@@ -105,15 +126,15 @@ namespace platform::NUsense {
             // For every new target, update the state if it is a servo.
             message_actuation_ServoTargets* new_targets = nuc.get_targets();
             for (int i = 0; i < new_targets->targets_count; i++) {
-                auto new_target = new_targets->targets[i];
-                if ((new_target.id) < NUMBER_OF_DEVICES) {
-                    servo_states[new_target.id].profile_velocity =
-                        (float(new_target.time.seconds) * 1000) + (float(new_target.time.nanos) / 1e6);
-                    servo_states[new_target.id].position_p_gain  = new_target.gain;
-                    servo_states[new_target.id].goal_position    = new_target.position;
-                    servo_states[new_target.id].torque           = new_target.torque;
+                message_actuation_ServoTarget* new_target = &(new_targets->targets[i]);
+                if ((new_target->id) < NUMBER_OF_DEVICES) {
+                    servo_states[new_target->id].profile_velocity =
+                        std::max(0.0, (float(new_target->time.seconds) * 1000) + (float(new_target->time.nanos) / 1e6));
+                    servo_states[new_target->id].position_p_gain = new_target->gain;
+                    servo_states[new_target->id].goal_position   = new_target->position;
+                    servo_states[new_target->id].torque          = new_target->torque;
                     // Set the dirty-flag so that the Dynamixel stream writes to the servo.
-                    servo_states[new_target.id].dirty = true;
+                    servo_states[new_target->id].dirty = true;
                 }
             }
         }

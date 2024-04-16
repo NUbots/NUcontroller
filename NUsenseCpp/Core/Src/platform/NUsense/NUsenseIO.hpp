@@ -10,11 +10,11 @@
 #include "../../usb/PacketHandler.hpp"
 #include "../../usb/protobuf/NUSenseData.pb.h"
 #include "../../usb/protobuf/pb_encode.h"
+#include "../../utility/support/Button.hpp"
+#include "../../utility/support/MillisecondTimer.hpp"
 #include "../ServoState.hpp"
 #include "NUgus.hpp"
 #include "imu.h"
-#include "../../utility/support/Button.hpp"
-#include "../../utility/support/MillisecondTimer.hpp"
 
 namespace platform::NUsense {
     constexpr uint32_t MAX_ENCODE_SIZE = 1600;
@@ -43,11 +43,15 @@ namespace platform::NUsense {
         ///         request is up thereto.
         std::array<uint8_t, NUM_PORTS> chain_indices;
 
-        enum StatusState { READ_RESPONSE = 0, WRITE_1_RESPONSE = 1, WRITE_2_RESPONSE = 2 };
+        enum StatusState { READ_RESPONSE = 0, WRITE_1_RESPONSE = 1, WRITE_2_RESPONSE = 2, WRITE_1_COOLDOWN = 3 };
         /// @brief  These are the states of all expected statuses.
         /// @note   This is to keep track what the original instruction was for so that one can
         ///         tell what the next one is.
         std::array<StatusState, NUMBER_OF_DEVICES> status_states;
+
+        /// @brief  Each timer is to cooldown the two write-instructions when the torque has just
+        ///         been enabled.
+        std::array<utility::support::MicrosecondTimer, NUM_PORTS> torque_cooldown_timers;
 
         /// @brief  This is the packet-handler for the serialised protobuf messages sent by the NUC.
         /// @note   Any better name than 'nuc' is welcome.
@@ -57,12 +61,9 @@ namespace platform::NUsense {
         ///         to serialise and sent to the NUC
         message_platform_NUSense nusense_msg;
 
-        // @brief   The IMU instance
-        // @note    The namespacing is gross af and needs to be fixed
+        /// @brief   The IMU instance
+        /// @note    The namespacing is gross af and needs to be fixed
         ::NUsense::IMU imu;
-
-        /// @brief  The container for decoded IMU values (float)
-        ::NUsense::IMU::ConvertedData converted_data;
 
         /// @brief  Container for the raw data received IMU ReadBurst calls
         uint8_t IMU_rx[14];

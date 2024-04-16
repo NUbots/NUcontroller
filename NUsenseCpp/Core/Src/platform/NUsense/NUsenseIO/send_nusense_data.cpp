@@ -3,21 +3,24 @@
 namespace platform::NUsense {
     bool NUsenseIO::nusense_to_nuc() {
         // Get a new lot of IMU data
+        ::NUsense::IMU::ConvertedData converted_data;
         converted_data = imu.getNewConvertedData();
 
         // TODO: (JohanneMontano) Handle IMU read and conversions if it fails
         // Fill the struct with the values we converted from the IMU output
         // For now we just say we have these values regardless if the read and conversion fails or not
         // We have to do it this way because nanopb will not encode the submessage field if has_msg is set to false
+        // Invert the axes since the PCB is upside down.
         nusense_msg.imu.has_accel = true;
         nusense_msg.imu.accel.x   = converted_data.accelerometer.x;
-        nusense_msg.imu.accel.y   = converted_data.accelerometer.y;
-        nusense_msg.imu.accel.z   = converted_data.accelerometer.z;
+        nusense_msg.imu.accel.y   = -converted_data.accelerometer.y;
+        nusense_msg.imu.accel.z   = -converted_data.accelerometer.z;
 
+        // Invert the axes since the PCB is upside down.
         nusense_msg.imu.has_gyro = true;
         nusense_msg.imu.gyro.x   = converted_data.gyroscope.x;
-        nusense_msg.imu.gyro.y   = converted_data.gyroscope.y;
-        nusense_msg.imu.gyro.z   = converted_data.gyroscope.z;
+        nusense_msg.imu.gyro.y   = -converted_data.gyroscope.y;
+        nusense_msg.imu.gyro.z   = -converted_data.gyroscope.z;
 
         nusense_msg.imu.temperature = converted_data.temperature;
         nusense_msg.has_imu         = true;

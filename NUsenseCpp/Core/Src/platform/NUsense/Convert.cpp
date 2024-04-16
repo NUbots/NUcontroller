@@ -115,10 +115,6 @@ namespace platform::NUsense {
             // Do the actual converstion to angle
             float angle = scaled_value * 0.0015358897f;
 
-            // Apply the servo specific operations
-            angle *= servo_direction[id];
-            angle += servo_offset[id];
-
             // Normalise the angle to (-pi, pi] for internal use
             return utility::math::angle::normalizeAngle(angle);
         }
@@ -129,10 +125,6 @@ namespace platform::NUsense {
                           std::array<double, 20> servo_offset) {
             // Base unit: 0.088 degrees = 0.0015358897 rad
             // Range: 0 - 4095 = 0 - 360.36 = 6.2894683215 rad
-
-            // first undo the servo specific operations
-            angle -= servo_offset[id];
-            angle *= servo_direction[id];
 
             // Normalise the angle to (-pi, pi] in case the offset changed this
             angle = utility::math::angle::normalizeAngle(angle);

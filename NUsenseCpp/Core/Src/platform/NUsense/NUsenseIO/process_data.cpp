@@ -1,7 +1,6 @@
 #include "../NUsenseIO.hpp"
 
 #include "../Convert.hpp"
-#include "../../../utility/math/comparison.hpp"
 
 namespace platform::NUsense {
 
@@ -13,7 +12,7 @@ namespace platform::NUsense {
         // IDs are 1..20 so need to be converted for the servo_states index
         uint8_t servo_index = packet.id - 1;
 
-        servo_states[servo_index].torque_enabled &= (data.torque_enable == 1);
+        servo_states[servo_index].torque_enabled = (data.torque_enable == 1) ? true : false;
 
         // Although they're stored in the servo state here, packet errors are combined and processed all at once as
         // subcontroller errors in the RawSensors message
