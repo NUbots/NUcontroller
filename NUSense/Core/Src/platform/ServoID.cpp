@@ -44,9 +44,7 @@ namespace platform {
         else if (str == "L_ANKLE_ROLL")     { value = Value::L_ANKLE_ROLL; }
         else if (str == "HEAD_YAW")         { value = Value::HEAD_YAW; }
         else if (str == "HEAD_PITCH")       { value = Value::HEAD_PITCH; }
-        else {
-            throw std::runtime_error("String " + str + " did not match any enum for ServoID");
-        }
+        else { value = Value::NUMBER_OF_SERVOS; }
         // clang-format on
     }
 
@@ -72,7 +70,7 @@ namespace platform {
             case Value::L_ANKLE_ROLL: return "L_ANKLE_ROLL";
             case Value::HEAD_YAW: return "HEAD_YAW";
             case Value::HEAD_PITCH: return "HEAD_PITCH";
-            default: throw std::runtime_error("enum ServoID's value is corrupt, unknown value stored");
+            default: return "UNKNOWN";
         }
     }
 

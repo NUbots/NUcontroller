@@ -17,6 +17,7 @@ namespace dynamixel {
     public:
         /// @brief  the result of whether all the status-packets have been received,
         enum Result { NONE = 0x00, SUCCESS, ERROR, CRC_ERROR, TIMEOUT };
+
         /**
          * @brief    Constructs the packet-handler.
          * @param    port the reference to the port to be communicated on,

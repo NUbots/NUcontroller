@@ -29,7 +29,7 @@ namespace uart {
         struct RingBuffer {
             RingBuffer() {}
             /// @brief  the data of the buffer:
-            uint8_t data[PORT_BUFFER_SIZE];
+            uint8_t data[PORT_BUFFER_SIZE]{};
             /// @brief  the front of the 'queue' where bytes are read or popped,
             /// @note   This is inclusive of the first byte.
             /// @note   "I have been waiting for so long; I am nearly at the front of the queue."

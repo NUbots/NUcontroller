@@ -24,7 +24,8 @@ namespace platform::NUSense {
     private:
         /// @brief  These are the ports on the NUSense board. They are either to be used for
         ///         sending packets directly or to be passed to a packet-handler.
-        std::array<uart::Port, NUM_PORTS> ports{};
+        std::array<uart::Port, NUM_PORTS> ports =
+            {uart::Port(1), uart::Port(2), uart::Port(3), uart::Port(4), uart::Port(5), uart::Port(6)};
 
         /// @brief  This is the local storage of each servo's state. This is to be updated
         ///         regularly by polling the servos constantly and to be spammed to the NUC.
@@ -36,7 +37,7 @@ namespace platform::NUSense {
 
         /// @brief  These are permanent packet-handlers, one for each port to handle incoming
         ///         statuses.
-        std::array<dynamixel::PacketHandler, NUM_PORTS> packet_handlers{};
+        std::array<dynamixel::PacketHandler, NUM_PORTS> packet_handlers;
 
         /// @brief  These are the indices of each chain to keep track of which servos the read
         ///         request is up thereto.
@@ -81,42 +82,42 @@ namespace platform::NUSense {
         utility::support::MillisecondTimer loop_timer{};
 
         /// @brief  The SW_MODE button
-        utility::support::Button mode_button{};
+        utility::support::Button mode_button = utility::support::Button(GPIOC, 15);
 
         /// @brief  The SW_START button
-        utility::support::Button start_button{};
+        utility::support::Button start_button = utility::support::Button(GPIOH, 0);
 
     public:
         /// @brief   Constructs the instance for NUSense communications.
-        NUSenseIO() {
-            // Initialise ports
-            for (int i = 1; i <= 6; ++i) {
-                ports.push_back(uart::Port(i));
-            }
-
-            // Initialise chains
-            using platform::NUSense::NUgus::ID;
-            chains = {{R_SHOULDER_PITCH, R_SHOULDER_ROLL, R_ELBOW},
-                      {L_SHOULDER_PITCH, L_SHOULDER_ROLL, L_ELBOW},
-                      {R_HIP_YAW, R_HIP_ROLL, R_HIP_PITCH, R_KNEE, R_ANKLE_PITCH, R_ANKLE_ROLL},
-                      {L_HIP_YAW, L_HIP_ROLL, L_HIP_PITCH, L_KNEE, L_ANKLE_PITCH, L_ANKLE_ROLL},
-                      {HEAD_YAW, HEAD_PITCH},
-                      {}};
-
-            // Initialise packet handlers
-            for (auto& port : ports) {
-                packet_handlers.push_back(dynamixel::PacketHandler(port));
-            }
-
-            // Initialise buttons
-            mode_button  = Button(GPIOC, 15);
-            start_button = Button(GPIOH, 0);
-
+        NUSenseIO() : chains(initialise_chains()), packet_handlers(init_packet_handlers()) {
             // Begin at the beginning of the chains.
             chain_indices.fill(0);
 
             // Begin IMU for polling
             imu.init();
+        }
+
+        /// @brief Initialises the packet-handlers, amount equal to NUM_PORTS.
+        /// @return The initialised packet-handlers.
+        inline std::array<dynamixel::PacketHandler, NUM_PORTS> init_packet_handlers() {
+            return {dynamixel::PacketHandler(ports[0]),
+                    dynamixel::PacketHandler(ports[1]),
+                    dynamixel::PacketHandler(ports[2]),
+                    dynamixel::PacketHandler(ports[3]),
+                    dynamixel::PacketHandler(ports[4]),
+                    dynamixel::PacketHandler(ports[5])};
+        }
+
+        inline std::array<std::vector<platform::NUSense::NUgus::ID>, NUM_PORTS> initialise_chains() {
+            using ID = platform::NUSense::NUgus::ID;
+            // clang-format off
+            return {std::vector<ID>{ID::R_SHOULDER_PITCH, ID::R_SHOULDER_ROLL, ID::R_ELBOW},
+                    std::vector<ID>{ID::L_SHOULDER_PITCH, ID::L_SHOULDER_ROLL, ID::L_ELBOW},
+                    std::vector<ID>{ID::R_HIP_YAW, ID::R_HIP_ROLL, ID::R_HIP_PITCH, ID::R_KNEE, ID::R_ANKLE_PITCH, ID::R_ANKLE_ROLL},
+                    std::vector<ID>{ID::L_HIP_YAW, ID::L_HIP_ROLL, ID::L_HIP_PITCH, ID::L_KNEE, ID::L_ANKLE_PITCH, ID::L_ANKLE_ROLL},
+                    std::vector<ID>{ID::HEAD_YAW, ID::HEAD_PITCH},
+                    std::vector<ID>{}};
+            // clang-format on
         }
 
         /// @brief   Begins the ports and sets the servos up with indirect addresses, etc.

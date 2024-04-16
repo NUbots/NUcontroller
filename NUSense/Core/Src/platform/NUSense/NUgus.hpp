@@ -2,11 +2,9 @@
 #define PLATFORM_NUSENSE_NUGUS_HPP
 
 #include <array>
-#include <stdexcept>
 
 #include "../../dynamixel/DynamixelServo.hpp"
 // #include "dynamixel/v2/FSR.hpp"
-// #include "dynamixel/v2/OpenCR.hpp"
 
 namespace platform::NUSense {
 
@@ -61,11 +59,9 @@ namespace platform::NUSense {
             HEAD_PITCH       = 20,
             R_FSR            = 111,
             L_FSR            = 112,
-            OPENCR           = 200,
             BROADCAST        = 254
         };
 
-        // OpenCR OPENCR;
         MX64 R_SHOULDER_PITCH;
         MX64 L_SHOULDER_PITCH;
         MX64 R_SHOULDER_ROLL;
@@ -74,16 +70,16 @@ namespace platform::NUSense {
         MX64 L_ELBOW;
         MX106 R_HIP_YAW;
         MX106 L_HIP_YAW;
-        MX106 R_HIP_ROLL;
-        MX106 L_HIP_ROLL;
-        MX106 R_HIP_PITCH;
-        MX106 L_HIP_PITCH;
+        XH540_W270 R_HIP_ROLL;
+        XH540_W270 L_HIP_ROLL;
+        XH540_W270 R_HIP_PITCH;
+        XH540_W270 L_HIP_PITCH;
         XH540_W270 R_KNEE;
         XH540_W270 L_KNEE;
-        MX106 R_ANKLE_PITCH;
-        MX106 L_ANKLE_PITCH;
-        MX106 R_ANKLE_ROLL;
-        MX106 L_ANKLE_ROLL;
+        XH540_W270 R_ANKLE_PITCH;
+        XH540_W270 L_ANKLE_PITCH;
+        XH540_W270 R_ANKLE_ROLL;
+        XH540_W270 L_ANKLE_ROLL;
         MX64 HEAD_YAW;
         MX64 HEAD_PITCH;
 
@@ -111,8 +107,8 @@ namespace platform::NUSense {
                 case ID::R_ANKLE_ROLL: return R_ANKLE_ROLL;
                 case ID::L_ANKLE_ROLL: return L_ANKLE_ROLL;
                 case ID::HEAD_YAW: return HEAD_YAW;
-                case ID::HEAD_PITCH: return HEAD_PITCH;
-                default: throw std::runtime_error("Unknown device id");
+                case ID::HEAD_PITCH:
+                default: return HEAD_PITCH;
             }
         }
 

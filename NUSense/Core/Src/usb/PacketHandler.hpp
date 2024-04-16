@@ -103,8 +103,8 @@ namespace usb {
             if (rx_buffer.size >= (length + offset)) {
                 // If the bytes to be popped span across No Man's Land, then use two distinct
                 // copies.
-                if (((rx_buffer.front + length + offset) >= RX_BUF_SIZE)
-                    && ((rx_buffer.front + offset) < RX_BUF_SIZE)) {
+                if ((uint16_t(rx_buffer.front + length + offset) >= RX_BUF_SIZE)
+                    && (uint16_t(rx_buffer.front + offset) < RX_BUF_SIZE)) {
                     std::copy(&rx_buffer.data[(rx_buffer.front + offset) % RX_BUF_SIZE],
                               &rx_buffer.data[RX_BUF_SIZE],
                               &bytes[0]);
