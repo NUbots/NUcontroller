@@ -124,12 +124,12 @@ namespace platform::NUSense {
         /// @note    Is loosely inspired by startup() in NUbots/NUbots OpenCR HardwareIO.
         void startup();
 
-        /// @brief   Handles everything.
+        /// @brief   Handles the loop of communicating with the sensors and the NUC.
         /// @note    This should eventually be replaced more detailed functions like that in HardwareIO.
         void loop();
 
         /// @brief   Parse the read data from a servo.
-        /// @note    Is taken from HardwareIO.
+        /// @note    Is taken from NUbots/NUbots OpenCR HardwareIO.
         /// @param   packet the packet-structure to parse.
         void process_servo_data(const dynamixel::StatusReturnCommand<sizeof(DynamixelServoReadData)> packet);
 
@@ -148,8 +148,8 @@ namespace platform::NUSense {
         /// @param   port_i the index of the port on which to send.
         void send_servo_write_2_request(const NUgus::ID id, const uint8_t port_i);
 
-        /// @brief   Sends a serialised message_platform_NUSense to the nuc via usb
-        /// @return  Whether the message was sent successfully
+        /// @brief   Sends a serialised message_platform_NUSense to the nuc via usb.
+        /// @return  Whether the message was sent successfully.
         bool nusense_to_nuc();
     };
 

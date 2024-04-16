@@ -76,7 +76,7 @@ namespace platform::NUSense {
         // velocity-based profile.
         for (int i = 0; i < NUM_PORTS; i++) {
 
-            // Re-use the same packet-hanlder for each port.
+            // Re-use the same packet-handler for each port.
             dynamixel::PacketHandler packet_handler(ports[i]);
 
             for (const auto& id : chains[i]) {
@@ -99,7 +99,7 @@ namespace platform::NUSense {
             }
         }
 
-        // For each port, write for all servos the profile-velocity to be 1 s.
+        // For each port, write for all servos the profile-velocity to be 1s.
         for (int i = 0; i < NUM_PORTS; i++) {
 
             // Re-use the same packet-hanlder for each port.
@@ -123,15 +123,6 @@ namespace platform::NUSense {
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
-
-        /*
-         * ~~~ ~~~ ~~~ Set-up of the Indirect Registers ~~~ ~~~ ~~~
-         * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         * Here, the indirect registers are set up by a sequence of
-         * write-instructions on each port. These indirect registers are used for
-         * the contiguous read-bank which is read constantly in a loop and the two
-         * write-banks.
-         */
 
         /*
          * ~~~ ~~~ ~~~ Set-up of the Indirect Registers ~~~ ~~~ ~~~
@@ -189,7 +180,7 @@ namespace platform::NUSense {
         // write-bank to the indirect registers.
         for (int i = 0; i < NUM_PORTS; i++) {
 
-            // Re-use the same packet-hanlder for each port.
+            // Re-use the same packet-handler for each port.
             dynamixel::PacketHandler packet_handler(ports[i]);
 
             for (const auto& id : chains[i]) {
@@ -226,7 +217,7 @@ namespace platform::NUSense {
         // write-bank to the indirect registers.
         for (int i = 0; i < NUM_PORTS; i++) {
 
-            // Re-use the same packet-hanlder for each port.
+            // Re-use the same packet-handler for each port.
             dynamixel::PacketHandler packet_handler(ports[i]);
 
             for (const auto& id : chains[i]) {
