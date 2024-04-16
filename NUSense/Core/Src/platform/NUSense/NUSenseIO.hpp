@@ -108,6 +108,8 @@ namespace platform::NUSense {
                     dynamixel::PacketHandler(ports[5])};
         }
 
+        /// @brief Initialises the chains of servos.
+        /// @return The initialised chains.
         inline std::array<std::vector<platform::NUSense::NUgus::ID>, NUM_PORTS> initialise_chains() {
             using ID = platform::NUSense::NUgus::ID;
             // clang-format off
