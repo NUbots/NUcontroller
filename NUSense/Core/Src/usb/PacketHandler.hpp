@@ -15,11 +15,25 @@ namespace usb {
     /// @brief   Handles the USB protobuf packets.
     class PacketHandler {
     public:
+<<<<<<< HEAD:NUSense/Core/Src/usb/PacketHandler.hpp
         /// @brief   Constructs the packet handler.
         PacketHandler() {
             rx_buffer.front = 0;
             rx_buffer.back  = 0;
             rx_buffer.size  = 0;
+=======
+        /**
+         * @brief   Constructs the packet-handler.
+         */
+        PacketHandler()
+            : pb_length(0)
+            , remaining_length(0)
+            , is_packet_ready(false) {
+            targets = message_actuation_ServoTargets_init_zero;
+            rx_buffer.front = 0;
+            rx_buffer.back = 0;
+            rx_buffer.size = 0;
+>>>>>>> main:NUsenseCpp/Core/Src/usb/PacketHandler.hpp
         }
 
         /// @brief   Handles outgoing bytes from the ring-buffer, parses any packet, and decodes it.
@@ -27,7 +41,10 @@ namespace usb {
         bool handle_incoming() {
 
             if (rx_buffer.size != 0) {
+<<<<<<< HEAD:NUSense/Core/Src/usb/PacketHandler.hpp
                 rx_count += 1;
+=======
+>>>>>>> main:NUsenseCpp/Core/Src/usb/PacketHandler.hpp
                 // Check if we have a header and if we do extract our lengths and pb bytes
                 if ((rx_buffer.data[rx_buffer.front] == (char) 0xE2)
                     && (rx_buffer.data[(rx_buffer.front + 1) % RX_BUF_SIZE] == (char) 0x98)
@@ -50,7 +67,7 @@ namespace usb {
                         pop((uint8_t*) pb_packets, rx_buffer.size - 5, 5);
                     }
                 }
-                else if ((remaining_length != 0) && (rx_buffer.size >= remaining_length)) {
+                else if (remaining_length != 0) {
                     uint16_t old_size;
                     old_size = pop((uint8_t*) &pb_packets[pb_length - remaining_length],
                                    remaining_length <= rx_buffer.size ? remaining_length : rx_buffer.size);
@@ -74,12 +91,15 @@ namespace usb {
                     pb_istream_from_buffer(reinterpret_cast<const pb_byte_t*>(&pb_packets[0]), pb_length);
                 pb_decode(&input_stream, message_actuation_ServoTargets_fields, &targets);
 
+<<<<<<< HEAD:NUSense/Core/Src/usb/PacketHandler.hpp
                 // Monitor the frequency of decodings and missing targets.
                 decode_count += 1;
                 near_id       = near_id == targets.targets[0].id ? near_id + 1 : targets.targets[0].id + 1;
                 missing_count = targets.targets_count == 20 ? missing_count : missing_count + 1;
 
                 // Packet has been decoded!
+=======
+>>>>>>> main:NUsenseCpp/Core/Src/usb/PacketHandler.hpp
                 return true;
             }
 
@@ -139,9 +159,14 @@ namespace usb {
         ///         firmware, namely CDC_Receive_HS.
         uint16_t remaining_length = 0;
         /// @brief  whether a complete protobuf packet has been gathered to be decoded,
+<<<<<<< HEAD:NUSense/Core/Src/usb/PacketHandler.hpp
         bool is_packet_ready = false;
         /// @brief The servo targets to send to the servos
         message_actuation_ServoTargets targets = message_actuation_ServoTargets_init_zero;
+=======
+        bool is_packet_ready;
+        message_actuation_ServoTargets targets;
+>>>>>>> main:NUsenseCpp/Core/Src/usb/PacketHandler.hpp
     };
 
 }  // namespace usb

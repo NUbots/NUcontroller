@@ -9,6 +9,7 @@
  */
 
 #include "imu.h"
+#include <cmath>
 
 #include <cmath>
 

@@ -1,5 +1,8 @@
 #include "../Convert.hpp"
+<<<<<<< HEAD:NUSense/Core/Src/platform/NUSense/NUSenseIO/process_data.cpp
 #include "../NUSenseIO.hpp"
+=======
+>>>>>>> main:NUsenseCpp/Core/Src/platform/NUsense/NUsenseIO/process_data.cpp
 
 namespace platform::NUSense {
 

@@ -106,13 +106,18 @@ namespace platform::NUSense {
             dynamixel::PacketHandler packet_handler(ports[i]);
 
             for (const auto& id : chains[i]) {
+<<<<<<< HEAD:NUSense/Core/Src/platform/NUSense/NUSenseIO/startup.cpp
                 // Send the write-instruction again if there is something wrong
+=======
+                // Send the write-instruction again if there is something wrong 
+>>>>>>> main:NUsenseCpp/Core/Src/platform/NUsense/NUsenseIO/startup.cpp
                 // with the returned status.
                 do {
                     // Reset the packet-handler before a new interaction has begun.
                     packet_handler.reset();
 
                     // Send the write-instruction.
+<<<<<<< HEAD:NUSense/Core/Src/platform/NUSense/NUSenseIO/startup.cpp
                     ports[i].write(dynamixel::WriteCommand<uint32_t>(
                         (uint8_t) id,
                         (uint16_t) dynamixel::DynamixelServo::Address::PROFILE_VELOCITY_L,
@@ -124,6 +129,36 @@ namespace platform::NUSense {
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
+=======
+                    ports[i].write(
+                        dynamixel::WriteCommand<uint32_t>(
+                            (uint8_t)id,
+                            (uint16_t)dynamixel::DynamixelServo::Address::PROFILE_VELOCITY_L,
+                            1000
+                        )
+                    );
+
+                    // Wait for the status to be received and decoded.
+                    while (
+                        packet_handler.check_sts<0>(id) 
+                        == dynamixel::PacketHandler::Result::NONE
+                    );
+                } while (
+                    packet_handler.get_result() 
+                    != dynamixel::PacketHandler::Result::SUCCESS
+                );
+            }
+        }
+
+        /*
+        * ~~~ ~~~ ~~~ Set-up of the Indirect Registers ~~~ ~~~ ~~~
+        * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        * Here, the indirect registers are set up by a sequence of 
+        * write-instructions on each port. These indirect registers are used for 
+        * the contiguous read-bank which is read constantly in a loop and the two 
+        * write-banks.
+        */
+>>>>>>> main:NUsenseCpp/Core/Src/platform/NUsense/NUsenseIO/startup.cpp
 
         /*
          * ~~~ ~~~ ~~~ Set-up of the Indirect Registers ~~~ ~~~ ~~~

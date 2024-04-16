@@ -110,6 +110,15 @@ namespace platform::NUSense {
                 send_servo_write_2_request(current_id, i);
                 status_states[(uint8_t) current_id - 1] = WRITE_2_RESPONSE;
             }
+
+            // If we are cooling down, then see whether the timer has timed out. If so, then send
+            // the next write-instruction.
+            if ((status_states[(uint8_t) current_id - 1] == WRITE_1_COOLDOWN)
+                && (torque_cooldown_timers[i].has_timed_out())) {
+
+                send_servo_write_2_request(current_id, i);
+                status_states[(uint8_t) current_id - 1] = WRITE_2_RESPONSE;
+            }
         }
 
         // Handle the incoming protobuf messages from the nuc.
@@ -117,7 +126,11 @@ namespace platform::NUSense {
             // For every new target, update the state if it is a servo.
             message_actuation_ServoTargets* new_targets = nuc.get_targets();
             for (int i = 0; i < new_targets->targets_count; i++) {
+<<<<<<< HEAD:NUSense/Core/Src/platform/NUSense/NUSenseIO/loop.cpp
                 auto new_target = &(new_targets->targets[i]);
+=======
+                message_actuation_ServoTarget* new_target = &(new_targets->targets[i]);
+>>>>>>> main:NUsenseCpp/Core/Src/platform/NUsense/NUsenseIO/loop.cpp
                 if ((new_target->id) < NUMBER_OF_DEVICES) {
                     servo_states[new_target->id].profile_velocity =
                         std::max(0.0, (float(new_target->time.seconds) * 1000) + (float(new_target->time.nanos) / 1e6));
