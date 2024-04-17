@@ -48,7 +48,7 @@ formatters = OrderedDict()
 
 formatters["clang-format"] = {
     "format": [["clang-format", "-i", "-style=file", "{path}"]],
-    "include": ["*.cpp", "*.hpp", "*.proto"],
+    "include": ["*.cpp", "*.hpp", "*.proto", "NUSense/Core/Inc/imu.h"],
     "exclude": [
         "NUSense/Drivers/*",
         "NUSense/USB_DEVICE/*",
