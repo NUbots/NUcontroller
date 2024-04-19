@@ -1,0 +1,171 @@
+#include <algorithm>
+#include <chrono>
+#include <sstream>
+
+#include "../NUSenseIO.hpp"
+#include "signal.h"
+#include "usbd_cdc_if.h"
+
+namespace platform::NUSense {
+
+    void NUSenseIO::loop() {
+        // For each port, check whether the expected status has been
+        // successfully received. If so, then handle it and send the next read-
+        // instruction.
+        for (int i = 0; i < NUM_PORTS; i++) {
+            // This line may be slow. The whole data-structure of chains may need to optimised as
+            // something faster than vectors.
+            platform::NUSense::NUgus::ID current_id = (chains[i])[chain_indices[i]];
+
+            dynamixel::PacketHandler::Result result =
+                packet_handlers[i].check_sts<sizeof(platform::NUSense::DynamixelServoReadData)>(current_id);
+            // If there is a status-response waiting, then handle it.
+            if (result == dynamixel::PacketHandler::SUCCESS) {
+
+                switch (status_states[(uint8_t) current_id - 1]) {
+                    // After a response for the first bank of registers, send a write-instruction
+                    // for the second bank of registers.
+                    case StatusState::WRITE_1_RESPONSE:
+
+                        // If the torque has just been enabled by the last write-instruction, then
+                        // cool down for 1 ms until the servo decides to behave itself.
+                        if ((servo_states[(uint8_t) current_id - 1].torque_enabled == false)
+                            && (servo_states[(uint8_t) current_id - 1].torque != 0.0)) {
+                            torque_cooldown_timers[i].begin(1000);
+                            status_states[(uint8_t) current_id - 1] = WRITE_1_COOLDOWN;
+                            packet_handlers[i].reset();
+                        }
+                        // Otherwise, send the next write-instruction as normal.
+                        else {
+                            send_servo_write_2_request(current_id, i);
+                            status_states[(uint8_t) current_id - 1] = WRITE_2_RESPONSE;
+                        }
+
+                        break;
+
+                    // After a response for the second bank of registers, send a read-instruction
+                    // for the read bank of registers.
+                    case StatusState::WRITE_2_RESPONSE:
+
+                        // Reset the flag now that the two write-instructions were properly
+                        // received.
+                        servo_states[(uint8_t) current_id - 1].dirty = false;
+
+                        send_servo_read_request(current_id, i);
+                        status_states[(uint8_t) current_id - 1] = READ_RESPONSE;
+
+                        break;
+
+                    default:
+                    // Parse and convert the read data to the local cache and then send the first
+                    // write instruction if the servo is dirty.
+                    case StatusState::READ_RESPONSE:
+                        process_servo_data(
+                            *reinterpret_cast<const dynamixel::StatusReturnCommand<sizeof(
+                                platform::NUSense::DynamixelServoReadData)>*>(packet_handlers[i].get_sts_packet()));
+
+                        // Move along the chain.
+                        chain_indices[i] = (chain_indices[i] + 1) % chains[i].size();
+                        current_id       = (chains[i])[chain_indices[i]];
+
+                        // If the servo-state is dirty, then send a write-instruction.
+                        if (servo_states[(uint8_t) current_id - 1].dirty) {
+                            send_servo_write_1_request(current_id, i);
+                            status_states[(uint8_t) current_id - 1] = WRITE_1_RESPONSE;
+                        }
+                        else {
+                            // Else, send a read-instruction.
+                            send_servo_read_request(current_id, i);
+                            status_states[(uint8_t) current_id - 1] = READ_RESPONSE;
+                        }
+
+                        break;
+                }
+            }
+            // If there was an error, then just restart the stream.
+            else if ((result == dynamixel::PacketHandler::ERROR) || (result == dynamixel::PacketHandler::CRC_ERROR)
+                     || (result == dynamixel::PacketHandler::TIMEOUT)) {
+                // Move along the chain.
+                chain_indices[i] = (chain_indices[i] + 1) % chains[i].size();
+                current_id       = (chains[i])[chain_indices[i]];
+
+                // If the servo-state is dirty, then send a write-instruction.
+                if (servo_states[(uint8_t) current_id - 1].dirty) {
+                    send_servo_write_1_request(current_id, i);
+                    status_states[(uint8_t) current_id - 1] = WRITE_1_RESPONSE;
+                }
+                else {
+                    send_servo_read_request(current_id, i);
+                    status_states[(uint8_t) current_id - 1] = READ_RESPONSE;
+                }
+
+                break;
+            }
+
+            // If we are cooling down, then see whether the timer has timed out. If so, then send
+            // the next write-instruction.
+            if ((status_states[(uint8_t) current_id - 1] == WRITE_1_COOLDOWN)
+                && (torque_cooldown_timers[i].has_timed_out())) {
+
+                send_servo_write_2_request(current_id, i);
+                status_states[(uint8_t) current_id - 1] = WRITE_2_RESPONSE;
+            }
+
+            // If we are cooling down, then see whether the timer has timed out. If so, then send
+            // the next write-instruction.
+            if ((status_states[(uint8_t) current_id - 1] == WRITE_1_COOLDOWN)
+                && (torque_cooldown_timers[i].has_timed_out())) {
+
+                send_servo_write_2_request(current_id, i);
+                status_states[(uint8_t) current_id - 1] = WRITE_2_RESPONSE;
+            }
+        }
+
+        // Handle the incoming protobuf messages from the nuc.
+        if (nuc.handle_incoming()) {
+            // For every new target, update the state if it is a servo.
+            message_actuation_ServoTargets* new_targets = nuc.get_targets();
+            for (int i = 0; i < new_targets->targets_count; i++) {
+                message_actuation_ServoTarget* new_target = &(new_targets->targets[i]);
+                if ((new_target->id) < NUMBER_OF_DEVICES) {
+                    servo_states[new_target->id].profile_velocity =
+                        std::max(0.0, (float(new_target->time.seconds) * 1000) + (float(new_target->time.nanos) / 1e6));
+                    servo_states[new_target->id].position_p_gain = new_target->gain;
+                    servo_states[new_target->id].goal_position   = new_target->position;
+                    servo_states[new_target->id].torque          = new_target->torque;
+                    // Set the dirty-flag so that the Dynamixel stream writes to the servo.
+                    servo_states[new_target->id].dirty = true;
+                }
+            }
+        }
+
+        // Here send data to the NUC at 100 Hz.
+        if (loop_timer.has_timed_out()) {
+            // If it has timed out, then restart the timer straight away.
+            loop_timer.begin(10);
+
+            // Encode a message and send it to the NUC.
+            if (nusense_to_nuc()) {
+                // If the message was successfully sent, then reset the averaging filter.
+                // For now, this is how we are downsampling the ~500-Hz data to 100-Hz fixed data.
+                // One day, we may get a better filter (if we can get this chip faster).
+                for (auto& servo_state : servo_states) {
+                    servo_state.filter_count     = 0.0f;
+                    servo_state.packet_error     = 0x00;
+                    servo_state.hardware_error   = 0x00;
+                    servo_state.present_pwm      = 0.0f;
+                    servo_state.present_current  = 0.0f;
+                    servo_state.present_velocity = 0.0f;
+                    servo_state.voltage          = 0.0f;
+                    servo_state.temperature      = 0.0f;
+                    servo_state.mean_present_position.reset();
+                }
+            }
+
+            if (mode_button.filter()) {
+                SET_SIGNAL_1();
+                RESET_SIGNAL_1();
+            }
+        }
+    }
+}  // namespace platform::NUSense
