@@ -46,6 +46,7 @@ namespace dynamixel {
                 // If the status was received, add the device to the chain
                 if (result == PacketHandler::Result::SUCCESS) {
                     devices.push_back(id);
+                    /// TODO: Potentially use the returned data to store the device model number and firmware version.
                 }
             }
         }
@@ -95,6 +96,7 @@ namespace dynamixel {
                     auto sts = reinterpret_cast<const StatusReturnCommand<3>*>(packet_handler.get_sts_packet());
                     // Add the ID to the chain
                     devices.push_back(sts->id);
+                    /// TODO: Potentially use the returned data to store the device model number and firmware version.
                 }
                 // If we got an error, hold onto it for logging
                 else if (result == PacketHandler::Result::ERROR) {
