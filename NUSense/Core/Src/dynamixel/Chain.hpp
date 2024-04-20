@@ -15,12 +15,15 @@ namespace dynamixel {
      */
     class Chain {
     public:
-        /// @brief  Constructs the chain.
-        Chain(uart::Port& port) : port(port), index(0) {
-            packet_handler = PacketHandler(port);
+        /// @brief  Constructs the chain, and starts device discovery.
+        Chain(uart::Port& port) : port(port), packet_handler(PacketHandler(port)), index(0), utility_timer() {
+            // start chain discovery
+            discover();
+            // discover_broadcast();
         };
 
         /// @brief  Destructs the chain.
+        /// @note   Could ensure the packet handler isn't waiting on anything? idk
         virtual ~Chain(){};
 
         /// @brief  Discover which Dynamixel devices are connected to the chain
@@ -46,6 +49,9 @@ namespace dynamixel {
                 // If the status was received, add the device to the chain
                 if (result == PacketHandler::Result::SUCCESS) {
                     devices.push_back(id);
+                    if (sts->id <= 20) {
+                        servos.push_back(sts->id);
+                    }
                     /// TODO: Potentially use the returned data to store the device model number and firmware version.
                 }
             }
@@ -96,6 +102,9 @@ namespace dynamixel {
                     auto sts = reinterpret_cast<const StatusReturnCommand<3>*>(packet_handler.get_sts_packet());
                     // Add the ID to the chain
                     devices.push_back(sts->id);
+                    if (sts->id <= 20) {
+                        servos.push_back(sts->id);
+                    }
                     /// TODO: Potentially use the returned data to store the device model number and firmware version.
                 }
                 // If we got an error, hold onto it for logging
@@ -106,9 +115,21 @@ namespace dynamixel {
             } while (result != PacketHandler::Result::TIMEOUT);
         }
 
-        /// @brief  Gets the list of devices in the chain.
-        std::vector<NUgus::ID> get_devices() {
+        /// @brief  Gets all devices in the chain.
+        /// @retval A reference to the vector of devices in the chain.
+        std::vector<NUgus::ID>& get_devices() {
             return devices;
+        }
+
+        /// @brief  Gets all servos in the chain.
+        /// @retval A reference to the vector of servos in the chain.
+        std::vector<NUgus::ID>& get_servos() {
+            return servos;
+        }
+
+        /// @brief Gets the list of devices which errored out during discovery
+        std::vector<NUgus::ID>& get_error_devices() {
+            return error_devices;
         }
 
         /// @brief Whether a device is present in the chain
@@ -126,14 +147,60 @@ namespace dynamixel {
             return packet_handler;
         }
 
-        /// @brief  Gets the index of the chain.
+        /// @brief  Gets the current index along the chain.
         uint8_t get_index() {
             return index;
         }
 
+        /// @brief  Return the ID at the current index
+        NUgus::ID current() {
+            return devices[index];
+        }
+
+        /// @brief Move along the chain
+        NUgus::ID next() {
+            index = (index + 1) % devices.size();
+            return devices[index];
+        }
+
+        /// @brief  Pass a write instruction to the port of the chain
+        /// @note   This also resets the packet handler before the write.
+        template <typename T>
+        const uint16_t write(const T& data) {
+            // Reset the packet-handler before a new interaction has begun.
+            packet_handler.reset();
+            pakcet_handler.begin();
+
+            return port.write(data);
+        }
+
+        /// @brief Gets the total number of devices in the chain
+        uint8_t size() {
+            return devices.size();
+        }
+
+        /// @brief Whether the chain is empty
+        bool empty() {
+            return devices.empty();
+        }
+
+        /// @brief Get the chain utility timer
+        utility::support::MicrosecondTimer& get_timer() {
+            return utility_timer;
+        }
+
+        /// @brief Allow the chain to be indexed like a vector
+        NUgus::ID operator[](uint8_t i) {
+            return devices[i];
+        }
+
+
     private:
         /// @brief  The list of dynamixel devices in the chain.
         std::vector<NUgus::ID> devices;
+        /// @brief  The list of servos on the chain (i.e. devices with ID <= 20)
+        /// @note   For forward compatibility with, e.g. FSRs
+        std::vector<NUgus::ID> servos;
         /// @brief  Dynamixel devices which error out during discovery
         std::vector<NUgus::ID> error_devices;
         /// @brief  The port that the chain is connected to.
@@ -142,6 +209,8 @@ namespace dynamixel {
         PacketHandler packet_handler;
         /// @brief  Where the read request is up to in this chain.
         uint8_t index;
+        /// @brief  To allow for cooldowns between write instructions
+        utility::support::MicrosecondTimer utility_timer;
     };
 };  // namespace dynamixel
 
