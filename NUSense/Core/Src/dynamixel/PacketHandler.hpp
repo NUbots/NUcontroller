@@ -37,6 +37,8 @@ namespace dynamixel {
 
         /**
          * @brief     Checks whether the expected status-packet has been received.
+         * @param     id the ID of the expected status-packet, if id=254 (broadcast), then an incoming packet with any
+         * ID will be accepted.
          * @retval    #NONE if not all the packets have been decoded,
          *            #SUCCESS if all the expected packets have been decoded,
          */
@@ -79,7 +81,9 @@ namespace dynamixel {
                 reinterpret_cast<const dynamixel::StatusReturnCommand<0>*>(packetiser.get_decoded_packet());
 
             // If the CRC, the ID, and the packet-kind are correct, then return any error.
-            if ((sts->id == (uint8_t) id) && (sts->instruction == dynamixel::STATUS_RETURN)) {
+            bool id_correct          = (sts->id == (uint8_t) id) || (id == (uint8_t) dynamixel::ID::BROADCAST);
+            bool packet_kind_correct = (sts->instruction == dynamixel::STATUS_RETURN);
+            if (id_correct && packet_kind_correct) {
                 // If the status-packet is not short, then check the CRC and the error.
                 if (packetiser.get_decoded_length() == 7 + 4 + N)
                     if (sts->crc != packetiser.get_decoded_crc())
@@ -117,11 +121,11 @@ namespace dynamixel {
 
         /**
          * @brief   Begins the timeout-timer.
+         * @param   timeout the timeout in microseconds, at most 65535, default is 500
          * @note    This must be called in order to handle timeouts.
          */
-        void begin() {
-            // For now, wait for at most 500 microseconds.
-            timeout_timer.begin(3000);
+        void begin(uint16_t timeout = 500) {
+            timeout_timer.begin(timeout);
         }
 
         /**
