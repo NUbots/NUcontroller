@@ -19,27 +19,25 @@ namespace platform::NUSense {
         */
 
         // For each port, write for all servos the return-delay-time to be 0 μs.
-        for (int i = 0; i < NUM_PORTS; i++) {
-
-            // Re-use the same packet-hanlder for each port.
-            dynamixel::PacketHandler packet_handler(ports[i]);
-
-            for (const auto& id : chains[i]) {
-                // Send the write-instruction again if there is something wrong
-                // with the returned status.
+        for (const auto& chain : chains) {
+            // Get the packet-handler from the chain.
+            dynamixel::PacketHandler& packet_handler = chain.get_packet_handler();
+            for (const auto& id : chain.get_servos()) {
+                // Send the write instruction again if there is something wrong with the returned status.
                 do {
                     // Reset the packet-handler before a new interaction has begun.
                     packet_handler.reset();
 
                     // Send the write-instruction.
-                    ports[i].write(dynamixel::WriteCommand<uint8_t>(
+                    chain.write(dynamixel::WriteCommand<uint8_t>(
                         (uint8_t) id,
                         (uint16_t) dynamixel::DynamixelServo::Address::RETURN_DELAY_TIME,
                         0x00));
 
                     // Wait for the status to be received and decoded.
-                    while (packet_handler.check_sts<0>(id) == dynamixel::PacketHandler::Result::NONE)
-                        ;
+                    do {
+                        packet_handler.check_sts<0>(id);
+                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE);
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
@@ -47,12 +45,10 @@ namespace platform::NUSense {
         // For each port, write for all servos the status-return-level to allow
         // all statuses to be returned.
         // Arguably, this is not needed since it is 0x02 by default.
-        for (int i = 0; i < NUM_PORTS; i++) {
-
-            // Re-use the same packet-hanlder for each port.
-            dynamixel::PacketHandler packet_handler(ports[i]);
-
-            for (const auto& id : chains[i]) {
+        for (const auto& chain : chains) {
+            // Get the packet-handler from the chain.
+            dynamixel::PacketHandler& packet_handler = chain.get_packet_handler();
+            for (const auto& id : chain.get_servos()) {
                 // Send the write-instruction again if there is something wrong
                 // with the returned status.
                 do {
@@ -60,26 +56,25 @@ namespace platform::NUSense {
                     packet_handler.reset();
 
                     // Send the write-instruction.
-                    ports[i].write(dynamixel::WriteCommand<uint8_t>(
+                    chain.write(dynamixel::WriteCommand<uint8_t>(
                         (uint8_t) id,
                         (uint16_t) dynamixel::DynamixelServo::Address::STATUS_RETURN_LEVEL,
                         0x02));
 
                     // Wait for the status to be received and decoded.
-                    while (packet_handler.check_sts<0>(id) == dynamixel::PacketHandler::Result::NONE)
-                        ;
+                    do {
+                        packet_handler.check_sts<0>(id);
+                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE);
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
 
         // For each port, write for all servos the drive-mode to have a
         // velocity-based profile.
-        for (int i = 0; i < NUM_PORTS; i++) {
-
-            // Re-use the same packet-handler for each port.
-            dynamixel::PacketHandler packet_handler(ports[i]);
-
-            for (const auto& id : chains[i]) {
+        for (const auto& chain : chains) {
+            // Get the packet-handler from the chain.
+            dynamixel::PacketHandler& packet_handler = chain.get_packet_handler();
+            for (const auto& id : chain.get_servos()) {
                 // Send the write-instruction again if there is something wrong
                 // with the returned status.
                 do {
@@ -87,39 +82,39 @@ namespace platform::NUSense {
                     packet_handler.reset();
 
                     // Send the write-instruction.
-                    ports[i].write(
+                    chain.write(
                         dynamixel::WriteCommand<uint8_t>((uint8_t) id,
                                                          (uint16_t) dynamixel::DynamixelServo::Address::DRIVE_MODE,
                                                          0x04));
 
                     // Wait for the status to be received and decoded.
-                    while (packet_handler.check_sts<0>(id) == dynamixel::PacketHandler::Result::NONE)
-                        ;
+                    do {
+                        packet_handler.check_sts<0>(id);
+                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE);
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
 
         // For each port, write for all servos the profile-velocity to be 1s.
-        for (int i = 0; i < NUM_PORTS; i++) {
-
-            // Re-use the same packet-hanlder for each port.
-            dynamixel::PacketHandler packet_handler(ports[i]);
-
-            for (const auto& id : chains[i]) {
+        for (const auto& chain : chains) {
+            // Get the packet-handler from the chain.
+            dynamixel::PacketHandler& packet_handler = chain.get_packet_handler();
+            for (const auto& id : chain.get_servos()) {
                 // Send the write-instruction again if there is something wrong with the returned status.
                 do {
                     // Reset the packet-handler before a new interaction has begun.
                     packet_handler.reset();
 
                     // Send the write-instruction.
-                    ports[i].write(dynamixel::WriteCommand<uint32_t>(
+                    chain.write(dynamixel::WriteCommand<uint32_t>(
                         (uint8_t) id,
                         (uint16_t) dynamixel::DynamixelServo::Address::PROFILE_VELOCITY_L,
                         1000));
 
                     // Wait for the status to be received and decoded.
-                    while (packet_handler.check_sts<0>(id) == dynamixel::PacketHandler::Result::NONE)
-                        ;
+                    do {
+                        packet_handler.check_sts<0>(id);
+                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE);
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
@@ -135,20 +130,14 @@ namespace platform::NUSense {
 
         // For each port, write for all servos the addresses of the read-bank to
         // the indirect registers.
-        for (int i = 0; i < NUM_PORTS; i++) {
-
-            // Re-use the same packet-hanlder for each port.
-            dynamixel::PacketHandler packet_handler(ports[i]);
-
-            for (const auto& id : chains[i]) {
+        for (const auto& chain : chains) {
+            // Get the packet-handler from the chain.
+            dynamixel::PacketHandler& packet_handler = chain.get_packet_handler();
+            for (const auto& id : chain.get_servos()) {
                 // Send the write-instruction again if there is something wrong
                 // with the returned status.
                 do {
-                    // Reset the packet-handler before a new interaction has begun.
-                    packet_handler.reset();
-
-                    // Send the write-instruction.
-                    ports[i].write(dynamixel::WriteCommand<std::array<uint16_t, 17>>(
+                    chain.write(dynamixel::WriteCommand<std::array<uint16_t, 17>>(
                         (uint8_t) id,
                         (uint16_t) platform::NUSense::AddressBook::SERVO_READ_ADDRESS,
                         {uint16_t(dynamixel::DynamixelServo::Address::TORQUE_ENABLE),
@@ -170,28 +159,23 @@ namespace platform::NUSense {
                          uint16_t(dynamixel::DynamixelServo::Address::PRESENT_TEMPERATURE)}));
 
                     // Wait for the status to be received and decoded.
-                    while (packet_handler.check_sts<0>(id) == dynamixel::PacketHandler::Result::NONE)
-                        ;
+                    do {
+                        packet_handler.check_sts<0>(id);
+                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE);
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
 
         // For each port, write for all servos the addresses of the first
         // write-bank to the indirect registers.
-        for (int i = 0; i < NUM_PORTS; i++) {
-
-            // Re-use the same packet-handler for each port.
-            dynamixel::PacketHandler packet_handler(ports[i]);
-
-            for (const auto& id : chains[i]) {
+        for (const auto& chain : chains) {
+            // Get the packet-handler from the chain.
+            dynamixel::PacketHandler& packet_handler = chain.get_packet_handler();
+            for (const auto& id : chain.get_servos()) {
                 // Send the write-instruction again if there is something wrong
                 // with the returned status.
                 do {
-                    // Reset the packet-handler before a new interaction has begun.
-                    packet_handler.reset();
-
-                    // Send the write-instruction.
-                    ports[i].write(dynamixel::WriteCommand<std::array<uint16_t, 11>>(
+                    chain.write(dynamixel::WriteCommand<std::array<uint16_t, 11>>(
                         (uint8_t) id,
                         (uint16_t) platform::NUSense::AddressBook::SERVO_WRITE_ADDRESS_1,
                         {uint16_t(dynamixel::DynamixelServo::Address::TORQUE_ENABLE),
@@ -207,28 +191,22 @@ namespace platform::NUSense {
                          uint16_t(dynamixel::DynamixelServo::Address::POSITION_P_GAIN_H)}));
 
                     // Wait for the status to be received and decoded.
-                    while (packet_handler.check_sts<0>(id) == dynamixel::PacketHandler::Result::NONE)
-                        ;
+                    do {
+                        packet_handler.check_sts<0>(id);
+                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE);
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
 
         // For each port, write for all servos the addresses of the second
         // write-bank to the indirect registers.
-        for (int i = 0; i < NUM_PORTS; i++) {
-
-            // Re-use the same packet-handler for each port.
-            dynamixel::PacketHandler packet_handler(ports[i]);
-
-            for (const auto& id : chains[i]) {
-                // Send the write-instruction again if there is something wrong
-                // with the returned status.
+        for (const auto& chain : chains) {
+            // Get the packet-handler from the chain.
+            dynamixel::PacketHandler& packet_handler = chain.get_packet_handler();
+            for (const auto& id : chain.get_servos()) {
+                // Send the write-instruction again if there is something wrong with the returned status.
                 do {
-                    // Reset the packet-handler before a new interaction has begun.
-                    packet_handler.reset();
-
-                    // Send the write-instruction.
-                    ports[i].write(dynamixel::WriteCommand<std::array<uint16_t, 24>>(
+                    chain.write(dynamixel::WriteCommand<std::array<uint16_t, 24>>(
                         (uint8_t) id,
                         (uint16_t) platform::NUSense::AddressBook::SERVO_WRITE_ADDRESS_2,
                         {uint16_t(dynamixel::DynamixelServo::Address::FEEDFORWARD_1ST_GAIN_L),
@@ -257,8 +235,9 @@ namespace platform::NUSense {
                          uint16_t(dynamixel::DynamixelServo::Address::GOAL_POSITION_H)}));
 
                     // Wait for the status to be received and decoded.
-                    while (packet_handler.check_sts<0>(id) == dynamixel::PacketHandler::Result::NONE)
-                        ;
+                    do {
+                        packet_handler.check_sts<0>(id);
+                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE);
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
@@ -270,11 +249,10 @@ namespace platform::NUSense {
         status_states.fill(StatusState::WRITE_1_RESPONSE);
 
         // Send the first write-instruction to begin the chain-reaction on each port.
-        std::vector<platform::NUSense::NUgus::ID> chain = chains[0];
-        for (int i = 0; i < NUM_PORTS; i++) {
-            if (chains[i].size() != 0) {
-                packet_handlers[i].begin();
-                send_servo_write_1_request((chains[i])[chain_indices[i]], i);
+        for (const auto& chain : chains) {
+            if (!chain.empty()) {
+                chain.get_packet_handler().begin();
+                send_servo_write_1_request(chain.current());
             }
         }
     }

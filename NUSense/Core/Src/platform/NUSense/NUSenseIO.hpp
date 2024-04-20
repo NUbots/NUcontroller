@@ -4,6 +4,7 @@
 #include <array>
 #include <stdio.h>
 
+#include "../../dynamixel/Chain.hpp"
 #include "../../dynamixel/Dynamixel.hpp"
 #include "../../dynamixel/PacketHandler.hpp"
 #include "../../uart/Port.hpp"
@@ -33,25 +34,18 @@ namespace platform::NUSense {
 
         /// @brief  This is the list of known servos on each port or daisy-chain.
         ///         For now, it is written a priori until servo-discovery is made.
-        std::array<std::vector<NUgus::ID>, NUM_PORTS> chains{};
-
-        /// @brief  These are permanent packet-handlers, one for each port to handle incoming
-        ///         statuses.
-        std::array<dynamixel::PacketHandler, NUM_PORTS> packet_handlers;
-
-        /// @brief  These are the indices of each chain to keep track of which servos the read
-        ///         request is up thereto.
-        std::array<uint8_t, NUM_PORTS> chain_indices{};
+        std::array<dynamixel::Chain, NUM_PORTS> chains = {dynamixel::Chain(ports[0]),
+                                                          dynamixel::Chain(ports[1]),
+                                                          dynamixel::Chain(ports[2]),
+                                                          dynamixel::Chain(ports[3]),
+                                                          dynamixel::Chain(ports[4]),
+                                                          dynamixel::Chain(ports[5])};
 
         enum StatusState { READ_RESPONSE = 0, WRITE_1_RESPONSE = 1, WRITE_2_RESPONSE = 2, WRITE_1_COOLDOWN = 3 };
         /// @brief  These are the states of all expected statuses.
         /// @note   This is to keep track what the original instruction was for so that one can
         ///         tell what the next one is.
         std::array<StatusState, NUMBER_OF_DEVICES> status_states{};
-
-        /// @brief  Each timer is to cooldown the two write-instructions when the torque has just
-        ///         been enabled.
-        std::array<utility::support::MicrosecondTimer, NUM_PORTS> torque_cooldown_timers{};
 
         /// @brief  This is the packet-handler for the serialised protobuf messages sent by the NUC.
         /// @note   Any better name than 'nuc' is welcome.
@@ -89,37 +83,9 @@ namespace platform::NUSense {
 
     public:
         /// @brief   Constructs the instance for NUSense communications.
-        NUSenseIO() : chains(initialise_chains()), packet_handlers(init_packet_handlers()) {
-            // Begin at the beginning of the chains.
-            chain_indices.fill(0);
-
+        NUSenseIO() {
             // Begin IMU for polling
             imu.init();
-        }
-
-        /// @brief Initialises the packet-handlers, amount equal to NUM_PORTS.
-        /// @return The initialised packet-handlers.
-        inline std::array<dynamixel::PacketHandler, NUM_PORTS> init_packet_handlers() {
-            return {dynamixel::PacketHandler(ports[0]),
-                    dynamixel::PacketHandler(ports[1]),
-                    dynamixel::PacketHandler(ports[2]),
-                    dynamixel::PacketHandler(ports[3]),
-                    dynamixel::PacketHandler(ports[4]),
-                    dynamixel::PacketHandler(ports[5])};
-        }
-
-        /// @brief Initialises the chains of servos.
-        /// @return The initialised chains.
-        inline std::array<std::vector<platform::NUSense::NUgus::ID>, NUM_PORTS> initialise_chains() {
-            using ID = platform::NUSense::NUgus::ID;
-            // clang-format off
-            return {std::vector<ID>{ID::R_SHOULDER_PITCH, ID::R_SHOULDER_ROLL, ID::R_ELBOW},
-                    std::vector<ID>{ID::L_SHOULDER_PITCH, ID::L_SHOULDER_ROLL, ID::L_ELBOW},
-                    std::vector<ID>{ID::R_HIP_YAW, ID::R_HIP_ROLL, ID::R_HIP_PITCH, ID::R_KNEE, ID::R_ANKLE_PITCH, ID::R_ANKLE_ROLL},
-                    std::vector<ID>{ID::L_HIP_YAW, ID::L_HIP_ROLL, ID::L_HIP_PITCH, ID::L_KNEE, ID::L_ANKLE_PITCH, ID::L_ANKLE_ROLL},
-                    std::vector<ID>{ID::HEAD_YAW, ID::HEAD_PITCH},
-                    std::vector<ID>{}};
-            // clang-format on
         }
 
         /// @brief   Begins the ports and sets the servos up with indirect addresses, etc.
@@ -140,15 +106,27 @@ namespace platform::NUSense {
         /// @param   port_i the index of the port on which to send.
         void send_servo_read_request(const NUgus::ID id, const uint8_t port_i);
 
+        /// @brief   Sends a read-instruction for the read-bank of registers.
+        /// @param   chain the chain of servos to send the read-instruction to.
+        void NUSenseIO::send_servo_read_request(const dynamixel::Chain& chain);
+
         /// @brief   Sends a write-instruction for the first write-bank of registers.
         /// @param   id the Dynamixel ID of the servo.
         /// @param   port_i the index of the port on which to send.
         void send_servo_write_1_request(const NUgus::ID id, const uint8_t port_i);
 
+        /// @brief   Sends a write-instruction for the first write-bank of registers.
+        /// @param   chain the chain of servos to send the write-instruction to.
+        void NUSenseIO::send_servo_write_1_request(const dynamixel::Chain& chain);
+
         /// @brief   Sends a write-instruction for the second write-bank of registers.
         /// @param   id the Dynamixel ID of the servo.
         /// @param   port_i the index of the port on which to send.
         void send_servo_write_2_request(const NUgus::ID id, const uint8_t port_i);
+
+        /// @brief   Sends a write-instruction for the second write-bank of registers.
+        /// @param   chain the chain of servos to send the write-instruction to.
+        void NUSenseIO::send_servo_write_2_request(const dynamixel::Chain& chain);
 
         /// @brief   Sends a serialised message_platform_NUSense to the nuc via usb.
         /// @return  Whether the message was sent successfully.

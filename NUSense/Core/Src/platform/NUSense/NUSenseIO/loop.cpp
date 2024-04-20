@@ -12,33 +12,33 @@ namespace platform::NUSense {
         // For each port, check whether the expected status has been
         // successfully received. If so, then handle it and send the next read-
         // instruction.
-        for (int i = 0; i < NUM_PORTS; i++) {
-            // This line may be slow. The whole data-structure of chains may need to optimised as
-            // something faster than vectors.
-            platform::NUSense::NUgus::ID current_id = (chains[i])[chain_indices[i]];
+        for (const auto& chain : chains) {
+            // Index of the current servo in the chain, 0 indexed.
+            uint8_t current_servo_index = (uint8_t) chain.current() - 1;
 
             dynamixel::PacketHandler::Result result =
-                packet_handlers[i].check_sts<sizeof(platform::NUSense::DynamixelServoReadData)>(current_id);
+                chain.get_packet_handler().check_sts<sizeof(platform::NUSense::DynamixelServoReadData)>(
+                    chain.current());
             // If there is a status-response waiting, then handle it.
             if (result == dynamixel::PacketHandler::SUCCESS) {
 
-                switch (status_states[(uint8_t) current_id - 1]) {
+                switch (status_states[current_servo_index]) {
                     // After a response for the first bank of registers, send a write-instruction
                     // for the second bank of registers.
                     case StatusState::WRITE_1_RESPONSE:
 
                         // If the torque has just been enabled by the last write-instruction, then
                         // cool down for 1 ms until the servo decides to behave itself.
-                        if ((servo_states[(uint8_t) current_id - 1].torque_enabled == false)
-                            && (servo_states[(uint8_t) current_id - 1].torque != 0.0)) {
-                            torque_cooldown_timers[i].begin(1000);
-                            status_states[(uint8_t) current_id - 1] = WRITE_1_COOLDOWN;
-                            packet_handlers[i].reset();
+                        if ((servo_states[current_servo_index].torque_enabled == false)
+                            && (servo_states[current_servo_index].torque != 0.0)) {
+                            chain.get_timer().begin(1000);
+                            status_states[current_servo_index] = WRITE_1_COOLDOWN;
+                            chain.get_packet_handler().reset();
                         }
                         // Otherwise, send the next write-instruction as normal.
                         else {
-                            send_servo_write_2_request(current_id, i);
-                            status_states[(uint8_t) current_id - 1] = WRITE_2_RESPONSE;
+                            send_servo_write_2_request(chain);
+                            status_states[current_servo_index] = WRITE_2_RESPONSE;
                         }
 
                         break;
@@ -49,10 +49,10 @@ namespace platform::NUSense {
 
                         // Reset the flag now that the two write-instructions were properly
                         // received.
-                        servo_states[(uint8_t) current_id - 1].dirty = false;
+                        servo_states[current_servo_index].dirty = false;
 
-                        send_servo_read_request(current_id, i);
-                        status_states[(uint8_t) current_id - 1] = READ_RESPONSE;
+                        send_servo_read_request(chain);
+                        status_states[current_servo_index] = READ_RESPONSE;
 
                         break;
 
@@ -60,23 +60,24 @@ namespace platform::NUSense {
                     // Parse and convert the read data to the local cache and then send the first
                     // write instruction if the servo is dirty.
                     case StatusState::READ_RESPONSE:
-                        process_servo_data(
-                            *reinterpret_cast<const dynamixel::StatusReturnCommand<sizeof(
-                                platform::NUSense::DynamixelServoReadData)>*>(packet_handlers[i].get_sts_packet()));
+                        process_servo_data(*reinterpret_cast<const dynamixel::StatusReturnCommand<sizeof(
+                                               platform::NUSense::DynamixelServoReadData)>*>(
+                            chain.get_packet_handler().get_sts_packet()));
 
                         // Move along the chain.
-                        chain_indices[i] = (chain_indices[i] + 1) % chains[i].size();
-                        current_id       = (chains[i])[chain_indices[i]];
+                        chain.next();
+                        // update servo index variable
+                        current_servo_index = (uint8_t) chain.current() - 1;
 
                         // If the servo-state is dirty, then send a write-instruction.
-                        if (servo_states[(uint8_t) current_id - 1].dirty) {
-                            send_servo_write_1_request(current_id, i);
-                            status_states[(uint8_t) current_id - 1] = WRITE_1_RESPONSE;
+                        if (servo_states[current_servo_index].dirty) {
+                            send_servo_write_1_request(chain);
+                            status_states[current_servo_index] = WRITE_1_RESPONSE;
                         }
                         else {
                             // Else, send a read-instruction.
-                            send_servo_read_request(current_id, i);
-                            status_states[(uint8_t) current_id - 1] = READ_RESPONSE;
+                            send_servo_read_request(chain);
+                            status_states[current_servo_index] = READ_RESPONSE;
                         }
 
                         break;
@@ -86,17 +87,18 @@ namespace platform::NUSense {
             else if ((result == dynamixel::PacketHandler::ERROR) || (result == dynamixel::PacketHandler::CRC_ERROR)
                      || (result == dynamixel::PacketHandler::TIMEOUT)) {
                 // Move along the chain.
-                chain_indices[i] = (chain_indices[i] + 1) % chains[i].size();
-                current_id       = (chains[i])[chain_indices[i]];
+                chain.next();
+                // update servo index variable
+                current_servo_index = (uint8_t) chain.current() - 1;
 
                 // If the servo-state is dirty, then send a write-instruction.
-                if (servo_states[(uint8_t) current_id - 1].dirty) {
-                    send_servo_write_1_request(current_id, i);
-                    status_states[(uint8_t) current_id - 1] = WRITE_1_RESPONSE;
+                if (servo_states[current_servo_index].dirty) {
+                    send_servo_write_1_request(chain);
+                    status_states[current_servo_index] = WRITE_1_RESPONSE;
                 }
                 else {
-                    send_servo_read_request(current_id, i);
-                    status_states[(uint8_t) current_id - 1] = READ_RESPONSE;
+                    send_servo_read_request(chain);
+                    status_states[current_servo_index] = READ_RESPONSE;
                 }
 
                 break;
@@ -104,20 +106,16 @@ namespace platform::NUSense {
 
             // If we are cooling down, then see whether the timer has timed out. If so, then send
             // the next write-instruction.
-            if ((status_states[(uint8_t) current_id - 1] == WRITE_1_COOLDOWN)
-                && (torque_cooldown_timers[i].has_timed_out())) {
-
-                send_servo_write_2_request(current_id, i);
-                status_states[(uint8_t) current_id - 1] = WRITE_2_RESPONSE;
+            if ((status_states[current_servo_index] == WRITE_1_COOLDOWN) && (chain.get_timer().has_timed_out())) {
+                send_servo_write_2_request(chain);
+                status_states[current_servo_index] = WRITE_2_RESPONSE;
             }
 
             // If we are cooling down, then see whether the timer has timed out. If so, then send
             // the next write-instruction.
-            if ((status_states[(uint8_t) current_id - 1] == WRITE_1_COOLDOWN)
-                && (torque_cooldown_timers[i].has_timed_out())) {
-
-                send_servo_write_2_request(current_id, i);
-                status_states[(uint8_t) current_id - 1] = WRITE_2_RESPONSE;
+            if ((status_states[current_servo_index] == WRITE_1_COOLDOWN) && (chain.get_timer().has_timed_out())) {
+                send_servo_write_2_request(chain);
+                status_states[current_servo_index] = WRITE_2_RESPONSE;
             }
         }
 
