@@ -43,19 +43,19 @@ namespace dynamixel {
         template <uint16_t N>
         const Result check_sts(const platform::NUSense::NUgus::ID id) {
 
-            // If the packet has timed out, then return early.
-            // May be better to move this to where read_result == NO_BYTE_READ, but the handler may
-            // get stuck indefinitely if phantom bytes are constantly coming in. Any ideas are
-            // welcome.
-            if (timeout_timer.has_timed_out()) {
-                return TIMEOUT;
-            }
-
             if (!packetiser.is_packet_ready()) {
                 // Peek to see if there is a byte on the buffer yet.
                 uint16_t read_result = port.read();
                 if (read_result == uart::NO_BYTE_READ) {
+                    if (timeout_timer.has_timed_out()) {
+                        // If the packet has timed out, then return early.
+                        return TIMEOUT;
+                    }
                     return NONE;
+                }
+                else {
+                    // If at least one byte has been received, then restart the timer from now on.
+                    timeout_timer.restart(1000);
                 }
 
                 // If so, then decode it.
@@ -121,7 +121,7 @@ namespace dynamixel {
          */
         void begin() {
             // For now, wait for at most 500 microseconds.
-            timeout_timer.begin(3000);
+            timeout_timer.begin(1000);
         }
 
         /**

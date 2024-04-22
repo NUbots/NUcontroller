@@ -266,14 +266,24 @@ static int8_t CDC_Receive_HS(uint8_t* Buf, uint32_t *Len)
 
   // Move the back backwards (higher) in the array unless there is no more room left.
   if (rx_buffer.size < RX_BUF_SIZE) {
-      // If the max buffer size is exceeded, wrap around using 2 memcpy calls
+      // If the max buffer size is exceeded, wrap around using two copies.
       if (rx_buffer.back + *Len > RX_BUF_SIZE) {
-          memcpy(&rx_buffer.data[rx_buffer.back], &Buf[0], RX_BUF_SIZE - rx_buffer.back);
-          memcpy(&rx_buffer.data[0], &Buf[RX_BUF_SIZE - rx_buffer.back], rx_buffer.back + *Len - RX_BUF_SIZE);
+          // Use a dumb for-loop since memcpy throws the volatile qualifier away which apparently 
+          // can lead to undefined behaviour.
+          for (int i = 0; i < RX_BUF_SIZE - rx_buffer.back; i++) {
+            rx_buffer.data[rx_buffer.back + i] = Buf[i];
+          }
+          for (int i = 0; i < rx_buffer.back + *Len - RX_BUF_SIZE; i++) {
+            rx_buffer.data[i] = Buf[RX_BUF_SIZE - rx_buffer.back + i];
+          }
       }
-      // If not then 1 memcpy call should suffice
+      // If not then, one copy should be enough.
       else {
-          memcpy(&rx_buffer.data[rx_buffer.back], &Buf[0], *Len);
+          // Use a dumb for-loop since memcpy throws the volatile qualifier away which apparently 
+          // can lead to undefined behaviour.
+          for (int i = 0; i < *Len; i++) {
+            rx_buffer.data[rx_buffer.back + i] = Buf[i];
+          }
       }
 
       rx_buffer.back = (rx_buffer.back + *Len) % RX_BUF_SIZE;
