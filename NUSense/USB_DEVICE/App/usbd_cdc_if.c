@@ -277,7 +277,7 @@ static int8_t CDC_Receive_HS(uint8_t* Buf, uint32_t *Len)
             rx_buffer.data[i] = Buf[RX_BUF_SIZE - rx_buffer.back + i];
           }
       }
-      // If not then, one copy should be enough.
+      // If not, then one copy should be enough.
       else {
           // Use a dumb for-loop since memcpy throws the volatile qualifier away which apparently 
           // can lead to undefined behaviour.
