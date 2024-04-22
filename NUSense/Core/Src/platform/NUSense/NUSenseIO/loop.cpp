@@ -94,7 +94,7 @@ namespace platform::NUSense {
 
                     // Reset the flag now that the two write-instructions have begun.
                     servo_states[(uint8_t) current_id - 1].dirty = false;
-                    
+
                     send_servo_write_1_request(current_id, i);
                     status_states[(uint8_t) current_id - 1] = WRITE_1_RESPONSE;
                 }
