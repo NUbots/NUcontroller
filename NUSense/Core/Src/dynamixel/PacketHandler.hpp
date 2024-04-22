@@ -120,7 +120,7 @@ namespace dynamixel {
          * @note    This must be called in order to handle timeouts.
          */
         void begin() {
-            // For now, wait for at most 500 microseconds.
+            // For now, wait for at most 1000 microseconds.
             timeout_timer.begin(1000);
         }
 

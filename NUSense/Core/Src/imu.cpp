@@ -146,10 +146,13 @@ void NUSense::IMU::readBurst(Address addr, uint8_t* data, uint16_t length) {
             packet[i] = 0x00;
     }
 
+    // Wait for at most 1 ms for data to come back.
     HAL_GPIO_WritePin(MPU_NSS_GPIO_Port, MPU_NSS_Pin, GPIO_PIN_RESET);
     status = HAL_SPI_TransmitReceive(&hspi4, packet, rx_data, length + 1, 1);
     HAL_GPIO_WritePin(MPU_NSS_GPIO_Port, MPU_NSS_Pin, GPIO_PIN_SET);
 
+    // If there has been new data within that time, then update the data cache.
+    // Else, leave it.
     if (status == HAL_OK) {
         for (int i = 0; i < length; i++)
             data[i] = rx_data[i + 1];
