@@ -56,6 +56,15 @@ namespace utility::support {
         }
 
         /**
+         * @brief   Restarts the timer.
+         * @param   timeout the timeout in microseconds, at most 65535.
+         */
+        void restart(uint16_t timeout) {
+            stop();
+            begin(timeout);
+        }
+
+        /**
          * @brief   Sees whether the timer has timed out.
          * @note    This should be kept very short.
          * @return  whether the timer has timed out,
@@ -68,7 +77,7 @@ namespace utility::support {
                 // saw-tooth wave.
                 if (!((count - threshold) & 0x8000)) {
                     // Since the timer has timed out, it is no longer counting.
-                    is_counting = false;
+                    stop();
                     return true;
                 }
                 else

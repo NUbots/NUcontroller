@@ -27,6 +27,7 @@ namespace usb {
         bool handle_incoming() {
 
             if (rx_buffer.size != 0) {
+                HAL_NVIC_DisableIRQ(OTG_HS_IRQn);
                 // Check if we have a header and if we do extract our lengths and pb bytes
                 if ((rx_buffer.data[rx_buffer.front] == (char) 0xE2)
                     && (rx_buffer.data[(rx_buffer.front + 1) % RX_BUF_SIZE] == (char) 0x98)
@@ -63,6 +64,7 @@ namespace usb {
                     rx_buffer.front = (rx_buffer.front + 1) % RX_BUF_SIZE;
                     rx_buffer.size--;
                 }
+                HAL_NVIC_EnableIRQ(OTG_HS_IRQn);
             }
 
             if (is_packet_ready) {

@@ -47,10 +47,6 @@ namespace platform::NUSense {
                     // for the read bank of registers.
                     case StatusState::WRITE_2_RESPONSE:
 
-                        // Reset the flag now that the two write-instructions were properly
-                        // received.
-                        servo_states[current_servo_index].dirty = false;
-
                         send_servo_read_request(chain);
                         status_states[current_servo_index] = READ_RESPONSE;
 
@@ -71,6 +67,10 @@ namespace platform::NUSense {
 
                         // If the servo-state is dirty, then send a write-instruction.
                         if (servo_states[current_servo_index].dirty) {
+
+                            // Reset the flag now that the two write-instructions have begun.
+                            servo_states[current_servo_index].dirty = false;
+
                             send_servo_write_1_request(chain);
                             status_states[current_servo_index] = WRITE_1_RESPONSE;
                         }
@@ -93,6 +93,10 @@ namespace platform::NUSense {
 
                 // If the servo-state is dirty, then send a write-instruction.
                 if (servo_states[current_servo_index].dirty) {
+
+                    // Reset the flag now that the two write-instructions have begun.
+                    servo_states[current_servo_index].dirty = false;
+
                     send_servo_write_1_request(chain);
                     status_states[current_servo_index] = WRITE_1_RESPONSE;
                 }
