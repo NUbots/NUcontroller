@@ -119,28 +119,28 @@ namespace dynamixel {
 
         /// @brief  Gets all devices in the chain.
         /// @retval A reference to the vector of devices in the chain.
-        const std::vector<platform::NUSense::NUgus::ID>& get_devices() {
+        const std::vector<platform::NUSense::NUgus::ID>& get_devices() const {
             return devices;
         };
 
         /// @brief  Gets all servos in the chain.
         /// @retval A reference to the vector of servos in the chain.
-        const std::vector<platform::NUSense::NUgus::ID>& get_servos() {
+        const std::vector<platform::NUSense::NUgus::ID>& get_servos() const {
             return servos;
         };
 
         /// @brief Gets the list of devices which errored out during discovery
-        const std::vector<platform::NUSense::NUgus::ID>& get_error_devices() {
+        const std::vector<platform::NUSense::NUgus::ID>& get_error_devices() const {
             return error_devices;
         };
 
         /// @brief Whether a device is present in the chain
-        bool contains(platform::NUSense::NUgus::ID id) {
+        bool contains(platform::NUSense::NUgus::ID id) const {
             return std::find(devices.begin(), devices.end(), id) != devices.end();
         };
 
         /// @brief  Gets the port that the chain is connected to.
-        uart::Port& get_port() {
+        uart::Port& get_port() const {
             return port;
         };
 
@@ -150,12 +150,12 @@ namespace dynamixel {
         };
 
         /// @brief  Gets the current index along the chain.
-        const uint8_t& get_index() {
+        const uint8_t& get_index() const {
             return index;
         };
 
         /// @brief  Return the ID at the current index
-        const platform::NUSense::NUgus::ID& current() {
+        const platform::NUSense::NUgus::ID& current() const {
             return devices[index];
         };
 
@@ -177,12 +177,12 @@ namespace dynamixel {
         };
 
         /// @brief Gets the total number of devices in the chain
-        const uint8_t size() {
+        const uint8_t size() const {
             return devices.size();
         };
 
         /// @brief Whether the chain is empty
-        const bool empty() {
+        const bool empty() const {
             return devices.empty();
         };
 
@@ -192,7 +192,7 @@ namespace dynamixel {
         };
 
         /// @brief Allow the chain to be indexed like a vector
-        const platform::NUSense::NUgus::ID& operator[](uint8_t i) {
+        const platform::NUSense::NUgus::ID& operator[](uint8_t i) const {
             return devices[i];
         };
 
