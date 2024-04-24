@@ -59,7 +59,10 @@ namespace platform::NUSense {
             HEAD_PITCH       = 20,
             R_FSR            = 111,
             L_FSR            = 112,
-            BROADCAST        = 254
+            BROADCAST        = 254,
+            MIN_ID           = R_SHOULDER_PITCH,
+            MAX_ID           = L_FSR,
+            MAX_SERVO_ID     = HEAD_PITCH
         };
 
         MX64 R_SHOULDER_PITCH;

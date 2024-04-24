@@ -46,7 +46,6 @@ namespace platform::NUSense {
         /// @note   This is to keep track what the original instruction was for so that one can
         ///         tell what the next one is.
         std::array<StatusState, NUMBER_OF_DEVICES> status_states{};
-
         /// @brief  This is the packet-handler for the serialised protobuf messages sent by the NUC.
         /// @note   Any better name than 'nuc' is welcome.
         usb::PacketHandler nuc{};
@@ -107,7 +106,7 @@ namespace platform::NUSense {
 
         /// @brief   Sends a read-instruction for the read-bank of registers.
         /// @param   chain the chain of servos to send the read-instruction to.
-        void NUSenseIO::send_servo_read_request(const dynamixel::Chain& chain);
+        void send_servo_read_request(const dynamixel::Chain& chain);
 
         /// @brief   Sends a write-instruction for the first write-bank of registers.
         /// @param   id the Dynamixel ID of the servo.
@@ -116,7 +115,7 @@ namespace platform::NUSense {
 
         /// @brief   Sends a write-instruction for the first write-bank of registers.
         /// @param   chain the chain of servos to send the write-instruction to.
-        void NUSenseIO::send_servo_write_1_request(const dynamixel::Chain& chain);
+        void send_servo_write_1_request(const dynamixel::Chain& chain);
 
         /// @brief   Sends a write-instruction for the second write-bank of registers.
         /// @param   id the Dynamixel ID of the servo.
@@ -125,7 +124,7 @@ namespace platform::NUSense {
 
         /// @brief   Sends a write-instruction for the second write-bank of registers.
         /// @param   chain the chain of servos to send the write-instruction to.
-        void NUSenseIO::send_servo_write_2_request(const dynamixel::Chain& chain);
+        void send_servo_write_2_request(const dynamixel::Chain& chain);
 
         /// @brief   Sends a serialised message_platform_NUSense to the nuc via usb.
         /// @return  Whether the message was sent successfully.

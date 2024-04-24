@@ -75,20 +75,19 @@ namespace dynamixel {
             // If so, then parse the array as a packet and add it with the rest.
             // Parse it as both a status-packet of expected length and a short status-packet, i.e.
             // only an error.
-            auto sts = reinterpret_cast<const dynamixel::StatusReturnCommand<N>*>(packetiser.get_decoded_packet());
+            auto sts = reinterpret_cast<const StatusReturnCommand<N>*>(packetiser.get_decoded_packet());
 
-            auto short_sts =
-                reinterpret_cast<const dynamixel::StatusReturnCommand<0>*>(packetiser.get_decoded_packet());
+            auto short_sts = reinterpret_cast<const StatusReturnCommand<0>*>(packetiser.get_decoded_packet());
 
             // If the CRC, the ID, and the packet-kind are correct, then return any error.
-            bool id_correct          = (sts->id == (uint8_t) id) || (id == (uint8_t) dynamixel::ID::BROADCAST);
-            bool packet_kind_correct = (sts->instruction == dynamixel::STATUS_RETURN);
+            bool id_correct = (sts->id == static_cast<uint8_t>(id)) || (id == platform::NUSense::NUgus::ID::BROADCAST);
+            bool packet_kind_correct = (sts->instruction == Instruction::STATUS_RETURN);
             if (id_correct && packet_kind_correct) {
                 // If the status-packet is not short, then check the CRC and the error.
                 if (packetiser.get_decoded_length() == 7 + 4 + N)
                     if (sts->crc != packetiser.get_decoded_crc())
                         result = CRC_ERROR;
-                    else if (((uint8_t) sts->error & 0x7F) == (uint8_t) dynamixel::CommandError::NO_ERROR)
+                    else if ((static_cast<uint8_t>(sts->error) & 0x7F) == static_cast<uint8_t>(CommandError::NO_ERROR))
                         // The and-operation is a quick hack to ignore hardware-errors, i.e. 0x80,
                         // given that the voltage to servos is often above the rated 16 V.
                         result = SUCCESS;
@@ -96,7 +95,8 @@ namespace dynamixel {
                         result = ERROR;
                 else if (short_sts->crc != packetiser.get_decoded_crc())
                     result = CRC_ERROR;
-                else if (((uint8_t) short_sts->error & 0x7F) == (uint8_t) dynamixel::CommandError::NO_ERROR)
+                else if ((static_cast<uint8_t>(short_sts->error) & (uint8_t) 0x7F)
+                         == static_cast<uint8_t>(CommandError::NO_ERROR))
                     // The and-operation is a quick hack to ignore hardware-errors, i.e. 0x80,
                     // given that the voltage to servos is often above the rated 16 V.
                     result = SUCCESS;
@@ -156,7 +156,7 @@ namespace dynamixel {
         /// @brief  the reference to the port that will be communicated thereon,
         uart::Port& port;
         /// @brief  the packetiser to encode the instruction and to decode the status,
-        dynamixel::Packetiser packetiser;
+        Packetiser packetiser;
         /// @brief  the result
         Result result;
         /// @brief  the timer for the packet-timeout,
