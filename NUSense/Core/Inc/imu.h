@@ -76,7 +76,9 @@ namespace platform::NUSense {
 
     class IMU {
     public:
-        IMU() : raw_data(), converted_data() {
+        /// @brief Constructs and initialises the IMU
+        /// @todo  Add configuration parameters in constructor
+        IMU() {
             // Initialize the IMU
             init();
         };
