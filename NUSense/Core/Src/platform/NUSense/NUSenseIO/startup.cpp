@@ -19,7 +19,7 @@ namespace platform::NUSense {
         */
 
         // For each port, write for all servos the return-delay-time to be 0 μs.
-        for (const auto& chain : chains) {
+        for (auto& chain : chains) {
             // Get the packet-handler from the chain.
             dynamixel::PacketHandler& packet_handler = chain.get_packet_handler();
             for (const auto& id : chain.get_servos()) {
@@ -45,7 +45,7 @@ namespace platform::NUSense {
         // For each port, write for all servos the status-return-level to allow
         // all statuses to be returned.
         // Arguably, this is not needed since it is 0x02 by default.
-        for (const auto& chain : chains) {
+        for (auto& chain : chains) {
             // Get the packet-handler from the chain.
             dynamixel::PacketHandler& packet_handler = chain.get_packet_handler();
             for (const auto& id : chain.get_servos()) {
@@ -71,7 +71,7 @@ namespace platform::NUSense {
 
         // For each port, write for all servos the drive-mode to have a
         // velocity-based profile.
-        for (const auto& chain : chains) {
+        for (auto& chain : chains) {
             // Get the packet-handler from the chain.
             dynamixel::PacketHandler& packet_handler = chain.get_packet_handler();
             for (const auto& id : chain.get_servos()) {
@@ -96,7 +96,7 @@ namespace platform::NUSense {
         }
 
         // For each port, write for all servos the profile-velocity to be 1s.
-        for (const auto& chain : chains) {
+        for (auto& chain : chains) {
             // Get the packet-handler from the chain.
             dynamixel::PacketHandler& packet_handler = chain.get_packet_handler();
             for (const auto& id : chain.get_servos()) {
@@ -130,7 +130,7 @@ namespace platform::NUSense {
 
         // For each port, write for all servos the addresses of the read-bank to
         // the indirect registers.
-        for (const auto& chain : chains) {
+        for (auto& chain : chains) {
             // Get the packet-handler from the chain.
             dynamixel::PacketHandler& packet_handler = chain.get_packet_handler();
             for (const auto& id : chain.get_servos()) {
@@ -168,7 +168,7 @@ namespace platform::NUSense {
 
         // For each port, write for all servos the addresses of the first
         // write-bank to the indirect registers.
-        for (const auto& chain : chains) {
+        for (auto& chain : chains) {
             // Get the packet-handler from the chain.
             dynamixel::PacketHandler& packet_handler = chain.get_packet_handler();
             for (const auto& id : chain.get_servos()) {
@@ -200,7 +200,7 @@ namespace platform::NUSense {
 
         // For each port, write for all servos the addresses of the second
         // write-bank to the indirect registers.
-        for (const auto& chain : chains) {
+        for (auto& chain : chains) {
             // Get the packet-handler from the chain.
             dynamixel::PacketHandler& packet_handler = chain.get_packet_handler();
             for (const auto& id : chain.get_servos()) {
@@ -249,7 +249,7 @@ namespace platform::NUSense {
         status_states.fill(StatusState::WRITE_1_RESPONSE);
 
         // Send the first write-instruction to begin the chain-reaction on each port.
-        for (const auto& chain : chains) {
+        for (auto& chain : chains) {
             if (!chain.empty()) {
                 chain.get_packet_handler().begin();
                 send_servo_write_1_request(chain);

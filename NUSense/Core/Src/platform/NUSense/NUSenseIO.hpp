@@ -106,7 +106,7 @@ namespace platform::NUSense {
 
         /// @brief   Sends a read-instruction for the read-bank of registers.
         /// @param   chain the chain of servos to send the read-instruction to.
-        void send_servo_read_request(const dynamixel::Chain& chain);
+        void send_servo_read_request(dynamixel::Chain& chain);
 
         /// @brief   Sends a write-instruction for the first write-bank of registers.
         /// @param   id the Dynamixel ID of the servo.
@@ -115,7 +115,7 @@ namespace platform::NUSense {
 
         /// @brief   Sends a write-instruction for the first write-bank of registers.
         /// @param   chain the chain of servos to send the write-instruction to.
-        void send_servo_write_1_request(const dynamixel::Chain& chain);
+        void send_servo_write_1_request(dynamixel::Chain& chain);
 
         /// @brief   Sends a write-instruction for the second write-bank of registers.
         /// @param   id the Dynamixel ID of the servo.
@@ -124,7 +124,7 @@ namespace platform::NUSense {
 
         /// @brief   Sends a write-instruction for the second write-bank of registers.
         /// @param   chain the chain of servos to send the write-instruction to.
-        void send_servo_write_2_request(const dynamixel::Chain& chain);
+        void send_servo_write_2_request(dynamixel::Chain& chain);
 
         /// @brief   Sends a serialised message_platform_NUSense to the nuc via usb.
         /// @return  Whether the message was sent successfully.

@@ -4,14 +4,14 @@
 
 namespace platform::NUSense {
 
-    void NUSenseIO::send_servo_read_request(const dynamixel::Chain& chain) {
+    void NUSenseIO::send_servo_read_request(dynamixel::Chain& chain) {
         NUgus::ID id = chain.current();
         chain.write(dynamixel::ReadCommand((uint8_t) id,
                                            (uint16_t) AddressBook::SERVO_READ,
                                            (uint16_t) sizeof(DynamixelServoReadData)));
     }
 
-    void NUSenseIO::send_servo_write_1_request(const dynamixel::Chain& chain) {
+    void NUSenseIO::send_servo_write_1_request(dynamixel::Chain& chain) {
 
         DynamixelServoWriteDataPart1 data{};
 
@@ -33,7 +33,7 @@ namespace platform::NUSense {
                                                                           data));
     }
 
-    void NUSenseIO::send_servo_write_2_request(const dynamixel::Chain& chain) {
+    void NUSenseIO::send_servo_write_2_request(dynamixel::Chain& chain) {
 
         DynamixelServoWriteDataPart2 data{};
 
