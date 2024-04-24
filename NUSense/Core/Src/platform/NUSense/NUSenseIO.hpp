@@ -57,9 +57,6 @@ namespace platform::NUSense {
         /// @brief   The IMU instance
         IMU imu{};
 
-        /// @brief  Container for the raw data received IMU ReadBurst calls
-        uint8_t IMU_rx[14]{};
-
         /// @brief  Nanopb will put the serialised bytes in this container. For some reason, the encode
         ///         function does not work with c++ defined data structures hence we use a c array for it
         uint8_t encoding_payload[2048]{};
