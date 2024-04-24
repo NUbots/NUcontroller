@@ -100,27 +100,12 @@ namespace platform::NUSense {
         void process_servo_data(const dynamixel::StatusReturnCommand<sizeof(DynamixelServoReadData)> packet);
 
         /// @brief   Sends a read-instruction for the read-bank of registers.
-        /// @param   id the Dynamixel ID of the servo.
-        /// @param   port_i the index of the port on which to send.
-        void send_servo_read_request(const NUgus::ID id, const uint8_t port_i);
-
-        /// @brief   Sends a read-instruction for the read-bank of registers.
         /// @param   chain the chain of servos to send the read-instruction to.
         void send_servo_read_request(dynamixel::Chain& chain);
 
         /// @brief   Sends a write-instruction for the first write-bank of registers.
-        /// @param   id the Dynamixel ID of the servo.
-        /// @param   port_i the index of the port on which to send.
-        void send_servo_write_1_request(const NUgus::ID id, const uint8_t port_i);
-
-        /// @brief   Sends a write-instruction for the first write-bank of registers.
         /// @param   chain the chain of servos to send the write-instruction to.
         void send_servo_write_1_request(dynamixel::Chain& chain);
-
-        /// @brief   Sends a write-instruction for the second write-bank of registers.
-        /// @param   id the Dynamixel ID of the servo.
-        /// @param   port_i the index of the port on which to send.
-        void send_servo_write_2_request(const NUgus::ID id, const uint8_t port_i);
 
         /// @brief   Sends a write-instruction for the second write-bank of registers.
         /// @param   chain the chain of servos to send the write-instruction to.
