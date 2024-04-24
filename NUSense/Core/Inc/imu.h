@@ -76,6 +76,13 @@ namespace platform::NUSense {
 
     class IMU {
     public:
+        IMU() : raw_data(), converted_data() {
+            // Initialize the IMU
+            init();
+        };
+
+        virtual ~IMU(){};
+
         // From Table-1, Table-2, and Table-3 from the datasheet.
         const uint16_t ACCEL_SENSITIVTY_2G     = 16384;  // LSB/g
         const uint16_t ACCEL_SENSITIVTY_4G     = 8192;   // LSB/g
