@@ -252,7 +252,7 @@ namespace platform::NUSense {
         for (const auto& chain : chains) {
             if (!chain.empty()) {
                 chain.get_packet_handler().begin();
-                send_servo_write_1_request(chain.current());
+                send_servo_write_1_request(chain);
             }
         }
     }
