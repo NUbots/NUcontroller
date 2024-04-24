@@ -1,6 +1,7 @@
 #ifndef DYNAMIXEL_CHAIN_HPP
 #define DYNAMIXEL_CHAIN_HPP
 
+#include <algorithm>
 
 #include "../uart/Port.hpp"
 #include "Dynamixel.hpp"
@@ -136,7 +137,7 @@ namespace dynamixel {
 
         /// @brief Whether a device is present in the chain
         bool contains(platform::NUSense::NUgus::ID id) const {
-            return std::find(devices.begin(), devices.end(), id) != devices.end();
+            return std::binary_search(devices.begin(), devices.end(), id);
         };
 
         /// @brief  Gets the port that the chain is connected to.
