@@ -56,7 +56,7 @@
 #include "spi.h"
 
 
-namespace NUSense {
+namespace platform::NUSense {
 
     //---------------Constants----------------//
     // Masks for the flags for each SPI interface, in this case only one:
@@ -721,6 +721,6 @@ namespace NUSense {
     extern uint8_t SPI_flag;
     extern uint8_t INT_flag;
 
-}  // namespace NUSense
+}  // namespace platform::NUSense
 
 #endif  //_IMU_H_

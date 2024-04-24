@@ -3,7 +3,7 @@
 namespace platform::NUSense {
     bool NUSenseIO::nusense_to_nuc() {
         // Get a new lot of IMU data
-        ::NUSense::IMU::ConvertedData converted_data;
+        IMU::ConvertedData converted_data;
         converted_data = imu.getNewConvertedData();
 
         // TODO: (JohanneMontano) Handle IMU read and conversions if it fails

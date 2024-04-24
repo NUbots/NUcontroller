@@ -56,8 +56,7 @@ namespace platform::NUSense {
         message_platform_NUSense nusense_msg = message_platform_NUSense_init_zero;
 
         /// @brief   The IMU instance
-        /// @note    The namespacing is gross af and needs to be fixed
-        ::NUSense::IMU imu{};
+        IMU imu{};
 
         /// @brief  Container for the raw data received IMU ReadBurst calls
         uint8_t IMU_rx[14]{};
