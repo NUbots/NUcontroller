@@ -114,7 +114,9 @@ namespace usb {
 
     private:
         /**
-         * @brief Read a 64 byte message from a buffer of uint8_t[8]. Mainly used for timestamp
+         * @brief Read a 64 byte message from a buffer of uint8_t[8]. Mainly used for timestamps and message hashes.
+         * @param ptr The pointer to the bytes buffer
+         * @return the decoded 64 bit value, either for timestamps or hashes
          */
         uint64_t read_le_64(const uint8_t* ptr) {
             return (uint64_t(ptr[0]) << 0) | (uint64_t(ptr[1]) << 8) | (uint64_t(ptr[2]) << 16)
