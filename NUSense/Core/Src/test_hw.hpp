@@ -19,14 +19,14 @@
 volatile uint8_t hash_true       = 0;
 uint8_t buf[8]                   = {0};
 const auto hash                  = utility::message::NUSENSE_HASH;
-volatile uint64_t servo_hash     = utility::message::SERVO_TARGETS_HASH;
+volatile uint64_t servo_hash     = utility::message::SUBCONTROLLER_SERVO_TARGETS_HASH;
 volatile uint64_t got_servo_hash = 0;
 
 volatile uint8_t is_correct_hash = 0;
 volatile uint64_t nuc_ts         = 0;
 
 usb::PacketHandler packet_handler{};
-message_actuation_ServoTargets targets;
+message_actuation_SubcontrollerServoTargets targets;
 
 namespace test_hw {
 
@@ -120,7 +120,7 @@ namespace test_hw {
             if (packet_handler.handle_incoming()) {
                 targets = *packet_handler.get_targets();
 
-                is_correct_hash = utility::message::SERVO_TARGETS_HASH == packet_handler.get_curr_msg_hash() ? 1 : 0;
+                is_correct_hash = utility::message::SUBCONTROLLER_SERVO_TARGETS_HASH == packet_handler.get_curr_msg_hash() ? 1 : 0;
                 nuc_ts          = packet_handler.get_curr_msg_timestamp();
                 got_servo_hash  = packet_handler.get_curr_msg_hash();
             }

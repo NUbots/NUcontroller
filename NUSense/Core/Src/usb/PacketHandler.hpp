@@ -87,7 +87,7 @@ namespace usb {
                 pb_istream_t input_stream = pb_istream_from_buffer(
                     reinterpret_cast<const pb_byte_t*>(&pb_packets[sizeof(uint64_t) + sizeof(uint64_t)]),
                     pb_length);
-                pb_decode(&input_stream, message_actuation_ServoTargets_fields, &targets);
+                pb_decode(&input_stream, message_actuation_SubcontrollerServoTargets_fields, &targets);
 
                 return true;
             }
@@ -108,7 +108,7 @@ namespace usb {
 
         /// @brief   Gets the targets of the last decoded packet.
         /// @return  The pointer to the targets.
-        message_actuation_ServoTargets* get_targets() {
+        message_actuation_SubcontrollerServoTargets* get_targets() {
             return &targets;
         }
 
@@ -183,7 +183,7 @@ namespace usb {
         bool is_packet_ready = false;
 
         /// @brief The servo targets to send to the servos
-        message_actuation_ServoTargets targets = message_actuation_ServoTargets_init_zero;
+        message_actuation_SubcontrollerServoTargets targets = message_actuation_SubcontrollerServoTargets_init_zero;
     };
 
 }  // namespace usb

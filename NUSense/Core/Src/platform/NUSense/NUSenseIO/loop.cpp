@@ -128,14 +128,14 @@ namespace platform::NUSense {
         // Handle the incoming protobuf messages from the nuc.
         if (nuc.handle_incoming()) {
             // If we get a message with servo targets, start decoding
-            if (nuc.get_curr_msg_hash() == utility::message::SERVO_TARGETS_HASH) {
+            if (nuc.get_curr_msg_hash() == utility::message::SUBCONTROLLER_SERVO_TARGETS_HASH) {
                 // TODO (JohanneMontano) use below somehow somewhere?
                 //  uint64_t msg_ts = nuc.get_curr_msg_timestamp();
 
                 // For every new target, update the state if it is a servo.
-                message_actuation_ServoTargets* new_targets = nuc.get_targets();
+                message_actuation_SubcontrollerServoTargets* new_targets = nuc.get_targets();
                 for (int i = 0; i < new_targets->targets_count; i++) {
-                    message_actuation_ServoTarget* new_target = &(new_targets->targets[i]);
+                    message_actuation_SubcontrollerServoTarget* new_target = &(new_targets->targets[i]);
                     if ((new_target->id) < NUMBER_OF_DEVICES) {
                         servo_states[new_target->id].profile_velocity =
                             std::max(0.0,
