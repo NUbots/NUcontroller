@@ -15,6 +15,7 @@
 #include "../ServoState.hpp"
 #include "NUgus.hpp"
 #include "imu.h"
+#include "../../utility/message/hash.hpp"
 
 namespace platform::NUSense {
     constexpr uint32_t MAX_ENCODE_SIZE = 1600;
