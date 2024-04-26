@@ -204,11 +204,11 @@ namespace utility::message {
 
     static constexpr uint64_t seed            = 0x4e55436c;
 
-    static const std::string NUSENSE_TYPENAME       = "message.platform.NUSense";
-    static const std::string SERVO_TARGETS_TYPENAME = "message.actuation.ServoTargets";
+    static const std::string NUSENSE_TYPENAME                     = "message.platform.NUSense";
+    static const std::string SUBCONTROLLER_SERVO_TARGETS_TYPENAME = "message.actuation.SubcontrollerServoTargets";
 
-    inline const uint64_t NUSENSE_HASH              = xxhash64(NUSENSE_TYPENAME.c_str(), NUSENSE_TYPENAME.size(), seed);
-    inline const uint64_t SERVO_TARGETS_HASH        = xxhash64(SERVO_TARGETS_TYPENAME.c_str(), SERVO_TARGETS_TYPENAME.size(), seed);
+    inline const uint64_t NUSENSE_HASH                     = xxhash64(NUSENSE_TYPENAME.c_str(), NUSENSE_TYPENAME.size(), seed);
+    inline const uint64_t SUBCONTROLLER_SERVO_TARGETS_HASH = xxhash64(SUBCONTROLLER_SERVO_TARGETS_TYPENAME.c_str(), SUBCONTROLLER_SERVO_TARGETS_TYPENAME.size(), seed);
 
 }  // namespace utility::message
 
