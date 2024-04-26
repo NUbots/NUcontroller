@@ -11,7 +11,7 @@
 #define INC_SETTINGS_H_
 
 // #define FIRST_BUZZ
-#define DXL_PWR
+//#define DXL_PWR
 
 //#define RUN_MAIN
 // #define TEST_IMU
