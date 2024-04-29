@@ -25,39 +25,6 @@ namespace dynamixel {
         /// @note   Could ensure the packet handler isn't waiting on anything? idk
         virtual ~Chain(){};
 
-        /// @brief  Discover which Dynamixel devices are connected to the chain
-        void discover() {
-            // Discard old devices
-            devices.clear();
-
-            // Start the packet handler for ID-by-ID discovery
-            packet_handler.reset();
-            packet_handler.begin(500);
-
-            // For now, the packet handler can't handle broadcast pings, so we have to ping each device individually
-            for (uint8_t id = static_cast<uint8_t>(platform::NUSense::NUgus::ID::MIN_ID);
-                 id < static_cast<uint8_t>(platform::NUSense::NUgus::ID::MAX_ID);
-                 id++) {
-                PacketHandler::Result result = PacketHandler::Result::NONE;
-                // Repeat ping unless we have a timeout or success in case a servo reply gets corrupted
-                do {
-                    // Send a ping to the target device
-                    write(PingCommand(id));
-                    // Wait for the status to be returned
-                    while (result == PacketHandler::Result::NONE)
-                        packet_handler.check_sts<3>(static_cast<platform::NUSense::NUgus::ID>(id));
-                } while (result != PacketHandler::Result::SUCCESS && result != PacketHandler::Result::TIMEOUT);
-                // If the status was received, add the device to the chain
-                if (result == PacketHandler::Result::SUCCESS) {
-                    devices.push_back(static_cast<platform::NUSense::NUgus::ID>(id));
-                    if (id <= 20) {
-                        servos.push_back(static_cast<platform::NUSense::NUgus::ID>(id));
-                    }
-                    /// TODO: Potentially use the returned data to store the device model number and firmware version.
-                }
-            }
-        };
-
         /**
          * @brief Issue a broadcast ping to the underlying port and the timer for response timeout.
          * @note  discover_broadcast() must be called after this to listen for responses
