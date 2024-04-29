@@ -30,6 +30,18 @@ namespace dynamixel {
             };
         };
 
+        /// @brief Destructor for the chain manager.
+        virtual ~ChainManager(){};
+
+        /// @brief Gets all the chains managed by the ChainManager
+        std::array<dynamixel::Chain, N>& get_chains() {
+            return chains;
+        };
+
+        /// @todo implement duplicate ID check
+
+        /// @todo implement missing ID check
+
     private:
         std::array<dynamixel::Chain, N> chains;
     };
