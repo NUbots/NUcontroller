@@ -77,10 +77,7 @@ namespace platform::NUSense {
 
     public:
         /// @brief   Constructs the instance for NUSense communications.
-        NUSenseIO() {
-            // Begin IMU for polling
-            imu.init();
-        }
+        NUSenseIO() : imu() {}
 
         /// @todo We need initialiser functions for the vector variables.
 
