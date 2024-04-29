@@ -9,7 +9,7 @@ namespace dynamixel {
      * @brief A collection of dynamixel device chains which belong together. There cannot be any shared IDs within a
      * ChainManager.
      */
-    template <size_t N>
+    template <uint8_t N>
     class ChainManager {
     public:
         /// @brief Constructs a chain manager for N chains, and starts device discovery on each chain.
