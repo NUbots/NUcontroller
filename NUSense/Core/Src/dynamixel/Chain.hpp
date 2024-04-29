@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "../uart/Port.hpp"
+#include "../utility/support/MillisecondTimer.hpp"
 #include "Dynamixel.hpp"
 #include "PacketHandler.hpp"
 
@@ -16,12 +17,9 @@ namespace dynamixel {
      */
     class Chain {
     public:
-        /// @brief  Constructs the chain, and starts device discovery.
-        Chain(uart::Port& port) : port(port), packet_handler(PacketHandler(port)), index(0), utility_timer() {
-            // start chain discovery
-            discover();
-            // discover_broadcast();
-        };
+        /// @brief  Constructs the chain, without starting device discovery.
+        /// @note   Discovery must be performed before the chain can be used.
+        Chain(uart::Port& port) : port(port), packet_handler(PacketHandler(port)), index(0){};
 
         /// @brief  Destructs the chain.
         /// @note   Could ensure the packet handler isn't waiting on anything? idk
@@ -61,47 +59,35 @@ namespace dynamixel {
         };
 
         /**
-         * @brief discover which Dynamixel devices are connected to the chain using a broadcast ping
-         * @note  I actually think the packet handler can handle broadcast pings, secretly.
-         * The only issue would be processing fast enough to not fill the UART buffer, but, the buffer is 2048
-         * bytes, and the status packet of a ping is 10 bytes (I think?) So, although we can't discover the
-         * theoretical maximum of 254 devices on one chain, we can definitely discover a reasonable number of
-         * devices on a chain.
-         *
-         * This also means being able to handle the long timeout (253 devices * 3 ms/device = 759 ms) of a broadcast
-         * ping, which is longer than the maximum timeout of 65.535 ms.
-         *
-         * Here is the problem, though. We don't know how many devices are on the chain, or which devices, so we are
-         * expecting a timeout (unless ID 1 is on this chain), but we don't know for how long. The servos will wait
-         * 3 ms for each ID before them, prior to responding to a broadcast ping. In standard operation (without
-         * FSRs), we can expect to wait up to 19*3=57 ms for the initial response on the head chain. Then for any
-         * subsequent responses, because chains are generally non-consecutive, we also don't know how long to wait
-         * for. In theory (again, without FSRs, although I want to make this robust to any dynamixel devices up to
-         * ID 253), the maximum inter servo wait time in 20 servo operation is ~20*3=60ms, assuming a chain has only
-         * ID 1 and 20. This is possible with the current timeout.
+         * @brief Issue a broadcast ping to the underlying port and the timer for response timeout.
+         * @note  discover_broadcast() must be called after this to listen for responses
          */
-        void discover_broadcast() {
+        void ping_broadcast() {
             // Discard old devices
             devices.clear();
 
             // Start the packet handler for ID-by-ID discovery
             packet_handler.reset();
-            PacketHandler::Result result = PacketHandler::Result::NONE;
 
             // Send a broadcast ping to discover all devices on the chain
             port.write(PingCommand(static_cast<uint8_t>(platform::NUSense::NUgus::ID::BROADCAST)));
 
             // Start the utility timer for the maximum timeout of 3 ms * 253 devices = 759 ms
             utility_timer.begin(759);
+        };
 
-            // now keep listening for packets until we timeout (at which point the chain is done)
-            do {
-                // Wait for the status to be returned
-                while (result == PacketHandler::Result::NONE)
-                    result = packet_handler.check_sts<3>(platform::NUSense::NUgus::ID::BROADCAST);
+        /// @brief  Listen for a response from a broadcast ping to discover all devices on the chain
+        /// @note   This is a blocking function, and will wait for the full timeout of 759 ms
+        /// @retval All devices found on the chain
+        const std::vector<platform::NUSense::NUgus::ID>& discover_broadcast() {
+            // Wait for the first status to be returned
+            while (packet_handler.check_sts<3>(platform::NUSense::NUgus::ID::BROADCAST) == PacketHandler::Result::NONE)
+                ;
 
+            // now keep listening for packets until we timeout and there are no more packets
+            while (!utility_timer.has_timed_out() || packet_handler.get_result() != PacketHandler::Result::NONE) {
                 // If we got a good status, extract the ID
-                if (result == PacketHandler::Result::SUCCESS) {
+                if (packet_handler.get_result() == PacketHandler::Result::SUCCESS) {
                     auto sts = reinterpret_cast<const StatusReturnCommand<3>*>(packet_handler.get_sts_packet());
                     // Add the ID to the chain
                     devices.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
@@ -111,14 +97,15 @@ namespace dynamixel {
                     /// TODO: Potentially use the returned data to store the device model number and firmware version.
                 }
                 // If we got an error, hold onto it for logging
-                else if (result == PacketHandler::Result::ERROR) {
+                else if (packet_handler.get_result() == PacketHandler::Result::ERROR) {
                     auto sts = reinterpret_cast<const StatusReturnCommand<3>*>(packet_handler.get_sts_packet());
                     error_devices.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
                 }
-            } while (!utility_timer.has_timed_out());
+                // Attempt to get the next status packet
+                packet_handler.check_sts<3>(platform::NUSense::NUgus::ID::BROADCAST);
+            };
 
-            // Stop the utility timer now that we're done
-            utility_timer.stop();
+            return devices;
         };
 
         /// @brief  Gets all devices in the chain.
