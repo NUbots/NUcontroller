@@ -32,8 +32,7 @@ namespace platform::NUSense {
         ///         regularly by polling the servos constantly and to be spammed to the NUC.
         std::array<platform::ServoState, NUMBER_OF_DEVICES> servo_states{};
 
-        /// @brief  This is the list of known servos on each port or daisy-chain.
-        ///         For now, it is written a priori until servo-discovery is made.
+        /// @brief  Collection of Chain objects used to interface with the servos.
         std::array<dynamixel::Chain, NUM_PORTS> chains = {dynamixel::Chain(ports[0]),
                                                           dynamixel::Chain(ports[1]),
                                                           dynamixel::Chain(ports[2]),
@@ -82,6 +81,8 @@ namespace platform::NUSense {
             // Begin IMU for polling
             imu.init();
         }
+
+        /// @todo We need initialiser functions for the vector variables.
 
         /// @brief   Begins the ports and sets the servos up with indirect addresses, etc.
         /// @note    Is loosely inspired by startup() in NUbots/NUbots OpenCR HardwareIO.
