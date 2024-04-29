@@ -14,6 +14,7 @@
 #include "../../utility/support/Button.hpp"
 #include "../../utility/support/MillisecondTimer.hpp"
 #include "../ServoState.hpp"
+#include "ChainManager.hpp"
 #include "NUgus.hpp"
 #include "imu.h"
 
@@ -33,12 +34,7 @@ namespace platform::NUSense {
         std::array<platform::ServoState, NUMBER_OF_DEVICES> servo_states{};
 
         /// @brief  Collection of Chain objects used to interface with the servos.
-        std::array<dynamixel::Chain, NUM_PORTS> chains = {dynamixel::Chain(ports[0]),
-                                                          dynamixel::Chain(ports[1]),
-                                                          dynamixel::Chain(ports[2]),
-                                                          dynamixel::Chain(ports[3]),
-                                                          dynamixel::Chain(ports[4]),
-                                                          dynamixel::Chain(ports[5])};
+        ChainManager<NUM_PORTS> chain_manager;
 
         enum StatusState { READ_RESPONSE = 0, WRITE_1_RESPONSE = 1, WRITE_2_RESPONSE = 2, WRITE_1_COOLDOWN = 3 };
         /// @brief  These are the states of all expected statuses.
@@ -77,9 +73,7 @@ namespace platform::NUSense {
 
     public:
         /// @brief   Constructs the instance for NUSense communications.
-        NUSenseIO() : imu() {}
-
-        /// @todo We need initialiser functions for the vector variables.
+        NUSenseIO() : chain_manager(ports), imu() {}
 
         /// @brief   Begins the ports and sets the servos up with indirect addresses, etc.
         /// @note    Is loosely inspired by startup() in NUbots/NUbots OpenCR HardwareIO.

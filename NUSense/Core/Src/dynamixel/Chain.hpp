@@ -120,7 +120,7 @@ namespace dynamixel {
             return servos;
         };
 
-        /// @brief Gets the list of devices which errored out during discovery
+        /// @brief Gets a reference to the list of devices which errored out during discovery
         const std::vector<platform::NUSense::NUgus::ID>& get_error_devices() const {
             return error_devices;
         };
@@ -130,18 +130,18 @@ namespace dynamixel {
             return std::binary_search(devices.begin(), devices.end(), id);
         };
 
-        /// @brief  Gets the port that the chain is connected to.
+        /// @brief  Gets a reference to the port that the chain is connected to.
         uart::Port& get_port() const {
             return port;
         };
 
-        /// @brief  Gets the packet-handler for the chain.
+        /// @brief  Gets a reference to the packet-handler for the chain.
         PacketHandler& get_packet_handler() {
             return packet_handler;
         };
 
         /// @brief  Gets the current index along the chain.
-        const uint8_t& get_index() const {
+        const uint8_t get_index() const {
             return index;
         };
 
@@ -177,7 +177,7 @@ namespace dynamixel {
             return devices.empty();
         };
 
-        /// @brief Get the chain utility timer
+        /// @brief Get a reference to the chain utility timer
         utility::support::MillisecondTimer& get_timer() {
             return utility_timer;
         };

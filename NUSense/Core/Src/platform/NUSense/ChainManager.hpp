@@ -1,7 +1,7 @@
 #ifndef DYNAMIXEL_CHAIN_MANAGER_HPP
 #define DYNAMIXEL_CHAIN_MANAGER_HPP
 
-#include "../dynamixel/Chain.hpp"
+#include "../../dynamixel/Chain.hpp"
 
 namespace platform::NUSense {
 
@@ -14,13 +14,13 @@ namespace platform::NUSense {
     public:
         /// @brief Constructs a chain manager for N chains, and starts device discovery on each chain.
         /// @param ports The ports to use for each chain.
-        ChainManager(std::array<uart::Port, N>& ports) : {
+        ChainManager(std::array<uart::Port, N>& ports) : chains() {
             // Construct a chain for each port
-            for (auto& port : ports) {
+            for (uint8_t i = 0; i < N; i++) {
                 // Create the chain
-                chains.push_back(Chain(port));
+                chains[i] = dynamixel::Chain(ports[i]);
                 // Start discovery in the background
-                chains.end().ping_broadcast();
+                chains[i].ping_broadcast();
             };
             // Finish discovery on each chain
             // By allowing the process to happen in the background for each chain, we only have to wait for one
@@ -43,7 +43,7 @@ namespace platform::NUSense {
         /// @todo implement missing ID check
 
     private:
-        std::array<dynamixel::Chain, N> chains;
+        std::array<dynamixel::Chain, N> chains{};
     };
 };  // namespace platform::NUSense
 

@@ -12,7 +12,7 @@ namespace platform::NUSense {
         // For each port, check whether the expected status has been
         // successfully received. If so, then handle it and send the next read-
         // instruction.
-        for (auto& chain : chains) {
+        for (auto& chain : chain_manager.get_chains()) {
             // Index of the current servo in the chain, 0 indexed.
             uint8_t current_servo_index = (uint8_t) chain.current() - 1;
 
