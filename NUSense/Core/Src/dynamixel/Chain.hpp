@@ -19,7 +19,7 @@ namespace dynamixel {
     public:
         /// @brief  Constructs the chain, without starting device discovery.
         /// @note   Discovery must be performed before the chain can be used.
-        Chain(uart::Port& port) : port(port), packet_handler(PacketHandler(port)), index(0){};
+        Chain(uart::Port& port) : port(port), packet_handler(PacketHandler(port)), index(0), discovering(false){};
 
         /// @brief  Destructs the chain.
         /// @note   Could ensure the packet handler isn't waiting on anything? idk
@@ -63,6 +63,9 @@ namespace dynamixel {
          * @note  discover_broadcast() must be called after this to listen for responses
          */
         void ping_broadcast() {
+            // Set flag
+            discovering = true;
+
             // Discard old devices
             devices.clear();
 
@@ -80,6 +83,11 @@ namespace dynamixel {
         /// @note   This is a blocking function, and will wait for the full timeout of 759 ms
         /// @retval All devices found on the chain
         const std::vector<platform::NUSense::NUgus::ID>& discover_broadcast() {
+            // Only do discovery if we're currently discovering
+            if (!discovering) {
+                return devices;
+            }
+
             // Wait for the first status to be returned
             while (packet_handler.check_sts<3>(platform::NUSense::NUgus::ID::BROADCAST) == PacketHandler::Result::NONE)
                 ;
@@ -104,6 +112,9 @@ namespace dynamixel {
                 // Attempt to get the next status packet
                 packet_handler.check_sts<3>(platform::NUSense::NUgus::ID::BROADCAST);
             };
+
+            // Unset flag
+            discovering = false;
 
             return devices;
         };
@@ -205,6 +216,8 @@ namespace dynamixel {
         /// @brief  A general utility timer for the chain.
         /// @note   Currently used to cooldown between write instructions, and to timeout during broadcast discovery.
         utility::support::MillisecondTimer utility_timer;
+        /// @brief  Whether we're currently disocvering devices
+        bool discovering;
     };
 };  // namespace dynamixel
 
