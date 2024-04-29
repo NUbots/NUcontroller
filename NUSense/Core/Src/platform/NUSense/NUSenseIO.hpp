@@ -73,7 +73,18 @@ namespace platform::NUSense {
 
     public:
         /// @brief   Constructs the instance for NUSense communications.
-        NUSenseIO() : chain_manager(ports), imu() {}
+        NUSenseIO() : chain_manager(init_chains()), imu() {}
+
+        /// @brief Initialises the packet-handlers, amount equal to NUM_PORTS.
+        /// @return The initialised packet-handlers.
+        inline std::array<dynamixel::Chain, NUM_PORTS> init_chains() {
+            return {dynamixel::Chain(ports[0]),
+                    dynamixel::Chain(ports[1]),
+                    dynamixel::Chain(ports[2]),
+                    dynamixel::Chain(ports[3]),
+                    dynamixel::Chain(ports[4]),
+                    dynamixel::Chain(ports[5])};
+        }
 
         /// @brief   Begins the ports and sets the servos up with indirect addresses, etc.
         /// @note    Is loosely inspired by startup() in NUbots/NUbots OpenCR HardwareIO.

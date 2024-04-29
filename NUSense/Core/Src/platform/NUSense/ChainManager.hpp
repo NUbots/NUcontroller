@@ -14,17 +14,14 @@ namespace platform::NUSense {
     public:
         /// @brief Constructs a chain manager for N chains, and starts device discovery on each chain.
         /// @param ports The ports to use for each chain.
-        ChainManager(std::array<uart::Port, N>& ports) : chains() {
-            // Construct a chain for each port
-            for (uint8_t i = 0; i < N; i++) {
-                // Create the chain
-                chains[i] = dynamixel::Chain(ports[i]);
-                // Start discovery in the background
-                chains[i].ping_broadcast();
-            };
-            // Finish discovery on each chain
+        ChainManager(std::array<dynamixel::Chain, N> chains) : chains(chains) {
+            // Start discovery in the background
             // By allowing the process to happen in the background for each chain, we only have to wait for one
             // broadcast timeout.
+            for (auto& chain : chains) {
+                chain.ping_broadcast();
+            };
+            // Finish discovery on each chain
             for (auto& chain : chains) {
                 chain.discover_broadcast();
             };
