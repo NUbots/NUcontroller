@@ -31,7 +31,7 @@ namespace platform::NUSense {
                         // cool down for 1 ms until the servo decides to behave itself.
                         if ((servo_states[current_servo_index].torque_enabled == false)
                             && (servo_states[current_servo_index].torque != 0.0)) {
-                            chain.get_timer().begin(1000);
+                            chain.get_timer().begin(1);
                             status_states[current_servo_index] = WRITE_1_COOLDOWN;
                             chain.get_packet_handler().reset();
                         }

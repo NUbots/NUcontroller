@@ -91,14 +91,14 @@ namespace dynamixel {
             // Send a broadcast ping to discover all devices on the chain
             port.write(PingCommand(static_cast<uint8_t>(platform::NUSense::NUgus::ID::BROADCAST)));
 
+            // Start the utility timer for the maximum timeout of 3 ms * 253 devices = 759 ms
+            utility_timer.begin(759);
+
             // now keep listening for packets until we timeout (at which point the chain is done)
             do {
-                // Start the timeout for current maximum of 60ms (expected) + 500us (timeout)
-                packet_handler.begin(60500);
-
                 // Wait for the status to be returned
                 while (result == PacketHandler::Result::NONE)
-                    packet_handler.check_sts<3>(platform::NUSense::NUgus::ID::BROADCAST);
+                    result = packet_handler.check_sts<3>(platform::NUSense::NUgus::ID::BROADCAST);
 
                 // If we got a good status, extract the ID
                 if (result == PacketHandler::Result::SUCCESS) {
@@ -115,7 +115,10 @@ namespace dynamixel {
                     auto sts = reinterpret_cast<const StatusReturnCommand<3>*>(packet_handler.get_sts_packet());
                     error_devices.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
                 }
-            } while (result != PacketHandler::Result::TIMEOUT);
+            } while (!utility_timer.has_timed_out());
+
+            // Stop the utility timer now that we're done
+            utility_timer.stop();
         };
 
         /// @brief  Gets all devices in the chain.
@@ -188,7 +191,7 @@ namespace dynamixel {
         };
 
         /// @brief Get the chain utility timer
-        utility::support::MicrosecondTimer& get_timer() {
+        utility::support::MillisecondTimer& get_timer() {
             return utility_timer;
         };
 
@@ -212,8 +215,9 @@ namespace dynamixel {
         PacketHandler packet_handler;
         /// @brief  Where the read request is up to in this chain.
         uint8_t index;
-        /// @brief  To allow for cooldowns between write instructions
-        utility::support::MicrosecondTimer utility_timer;
+        /// @brief  A general utility timer for the chain.
+        /// @note   Currently used to cooldown between write instructions, and to timeout during broadcast discovery.
+        utility::support::MillisecondTimer utility_timer;
     };
 };  // namespace dynamixel
 
