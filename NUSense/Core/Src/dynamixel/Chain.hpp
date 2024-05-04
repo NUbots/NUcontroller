@@ -134,11 +134,16 @@ namespace dynamixel {
         /// @note   This also resets the packet handler before the write.
         template <typename T>
         const uint16_t write(const T& data) {
-            // Reset the packet-handler before a new interaction has begun.
+            // Prepare the packet handler for the response packet.
             packet_handler.reset();
+
+            // Send the packet
+            const uint16_t len = port.write(data);
+
+            // Start the timeout timer
             packet_handler.begin();
 
-            return port.write(data);
+            return len;
         };
 
         /// @brief Gets the total number of devices in the chain
