@@ -101,6 +101,7 @@ namespace dynamixel {
 
         /// @brief Whether a device is present in the chain
         bool contains(platform::NUSense::NUgus::ID id) const {
+            // Due to the response policy we know `devices` is sorted
             return std::binary_search(devices.begin(), devices.end(), id);
         };
 
