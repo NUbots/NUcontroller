@@ -18,10 +18,7 @@ namespace platform::NUSense {
             for (const auto& id : chain.get_servos()) {
                 // Send the write instruction again if there is something wrong with the returned status.
                 do {
-                    // Reset the packet-handler before a new interaction has begun.
-                    packet_handler.reset();
-
-                    // Send the write-instruction.
+                    // Send the instruction with reset and timeout.
                     chain.write(dynamixel::WriteCommand<uint8_t>(
                         (uint8_t) id,
                         (uint16_t) dynamixel::DynamixelServo::Address::RETURN_DELAY_TIME,
@@ -45,10 +42,7 @@ namespace platform::NUSense {
                 // Send the write-instruction again if there is something wrong
                 // with the returned status.
                 do {
-                    // Reset the packet-handler before a new interaction has begun.
-                    packet_handler.reset();
-
-                    // Send the write-instruction.
+                    // Send the instruction with reset and timeout.
                     chain.write(dynamixel::WriteCommand<uint8_t>(
                         (uint8_t) id,
                         (uint16_t) dynamixel::DynamixelServo::Address::STATUS_RETURN_LEVEL,
@@ -71,10 +65,7 @@ namespace platform::NUSense {
                 // Send the write-instruction again if there is something wrong
                 // with the returned status.
                 do {
-                    // Reset the packet-handler before a new interaction has begun.
-                    packet_handler.reset();
-
-                    // Send the write-instruction.
+                    // Send the instruction with reset and timeout.
                     chain.write(
                         dynamixel::WriteCommand<uint8_t>((uint8_t) id,
                                                          (uint16_t) dynamixel::DynamixelServo::Address::DRIVE_MODE,
@@ -95,10 +86,7 @@ namespace platform::NUSense {
             for (const auto& id : chain.get_servos()) {
                 // Send the write-instruction again if there is something wrong with the returned status.
                 do {
-                    // Reset the packet-handler before a new interaction has begun.
-                    packet_handler.reset();
-
-                    // Send the write-instruction.
+                    // Send the instruction with reset and timeout.
                     chain.write(dynamixel::WriteCommand<uint32_t>(
                         (uint8_t) id,
                         (uint16_t) dynamixel::DynamixelServo::Address::PROFILE_VELOCITY_L,
@@ -130,6 +118,7 @@ namespace platform::NUSense {
                 // Send the write-instruction again if there is something wrong
                 // with the returned status.
                 do {
+                    // Send the instruction with reset and timeout.
                     chain.write(dynamixel::WriteCommand<std::array<uint16_t, 17>>(
                         (uint8_t) id,
                         (uint16_t) platform::NUSense::AddressBook::SERVO_READ_ADDRESS,
@@ -168,6 +157,7 @@ namespace platform::NUSense {
                 // Send the write-instruction again if there is something wrong
                 // with the returned status.
                 do {
+                    // Send the instruction with reset and timeout.
                     chain.write(dynamixel::WriteCommand<std::array<uint16_t, 11>>(
                         (uint8_t) id,
                         (uint16_t) platform::NUSense::AddressBook::SERVO_WRITE_ADDRESS_1,
@@ -199,6 +189,7 @@ namespace platform::NUSense {
             for (const auto& id : chain.get_servos()) {
                 // Send the write-instruction again if there is something wrong with the returned status.
                 do {
+                    // Send the instruction with reset and timeout.
                     chain.write(dynamixel::WriteCommand<std::array<uint16_t, 24>>(
                         (uint8_t) id,
                         (uint16_t) platform::NUSense::AddressBook::SERVO_WRITE_ADDRESS_2,
@@ -244,7 +235,6 @@ namespace platform::NUSense {
         // Send the first write-instruction to begin the chain-reaction on each port.
         for (auto& chain : chain_manager.get_chains()) {
             if (!chain.empty()) {
-                chain.get_packet_handler().begin();
                 send_servo_write_1_request(chain);
             }
         }

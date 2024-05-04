@@ -28,6 +28,7 @@ namespace platform::NUSense {
         data.position_p_gain = convert::p_gain(servo_states[i].position_p_gain);
 
         // Send a write-instruction for the current servo.
+        // Chain.write readys the packet handler for the response packet and starts the timeout timer.
         chain.write(dynamixel::WriteCommand<DynamixelServoWriteDataPart1>((uint8_t) id,
                                                                           (uint16_t) AddressBook::SERVO_WRITE_1,
                                                                           data));
@@ -50,6 +51,7 @@ namespace platform::NUSense {
         data.goal_position        = convert::position(i, servo_states[i].goal_position, {1}, {0});
 
         // Send a write-instruction for the current servo.
+        // Chain.write readys the packet handler for the response packet and starts the timeout timer.
         chain.write(dynamixel::WriteCommand<DynamixelServoWriteDataPart2>((uint8_t) id,
                                                                           (uint16_t) AddressBook::SERVO_WRITE_2,
                                                                           data));

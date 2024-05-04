@@ -33,7 +33,6 @@ namespace platform::NUSense {
                             && (servo_states[current_servo_index].torque != 0.0)) {
                             chain.get_timer().begin(1);
                             status_states[current_servo_index] = WRITE_1_COOLDOWN;
-                            chain.get_packet_handler().reset();
                         }
                         // Otherwise, send the next write-instruction as normal.
                         else {
@@ -106,13 +105,6 @@ namespace platform::NUSense {
                 }
 
                 break;
-            }
-
-            // If we are cooling down, then see whether the timer has timed out. If so, then send
-            // the next write-instruction.
-            if ((status_states[current_servo_index] == WRITE_1_COOLDOWN) && (chain.get_timer().has_timed_out())) {
-                send_servo_write_2_request(chain);
-                status_states[current_servo_index] = WRITE_2_RESPONSE;
             }
 
             // If we are cooling down, then see whether the timer has timed out. If so, then send
