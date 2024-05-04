@@ -75,7 +75,9 @@ namespace dynamixel {
                     error_devices.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
                 }
                 // Reset the packet handler for the next packet (that is likely already in the buffer)
-                packet_handler.ready();
+                // if we got a full packet (including an error), or a timeout.
+                if (packet_handler.get_result() != PacketHandler::Result::NONE)
+                    packet_handler.ready();
             };
 
             // Unset flag
