@@ -113,10 +113,9 @@ namespace dynamixel {
         }
 
         /**
-         * @brief   Resets the handler.
-         * @note    This has to be called before the next packet is expected.
+         * @brief   Return to a clean slate to ready the handler for a new packet.
          */
-        void reset() {
+        void ready() {
             packetiser.reset();
             result = NONE;
         }

@@ -38,7 +38,7 @@ namespace dynamixel {
             devices.clear();
 
             // Start the packet handler for ID-by-ID discovery
-            packet_handler.reset();
+            packet_handler.ready();
 
             // Send a broadcast ping to discover all devices on the chain
             port.write(PingCommand(static_cast<uint8_t>(platform::NUSense::NUgus::ID::BROADCAST)));
@@ -135,7 +135,7 @@ namespace dynamixel {
         template <typename T>
         const uint16_t write(const T& data) {
             // Prepare the packet handler for the response packet.
-            packet_handler.reset();
+            packet_handler.ready();
 
             // Send the packet
             const uint16_t len = port.write(data);
