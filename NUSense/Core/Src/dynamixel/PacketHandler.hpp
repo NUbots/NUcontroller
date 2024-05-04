@@ -44,26 +44,24 @@ namespace dynamixel {
          */
         template <uint16_t N>
         const Result check_sts(const platform::NUSense::NUgus::ID id) {
-
+            // Grab a new byte if there isn't a whole packet ready.
             if (!packetiser.is_packet_ready()) {
-                // Peek to see if there is a byte on the buffer yet.
+                // Attempt to read a byte from the buffer
                 uint16_t read_result = port.read();
+                // If there is no byte, then return early.
                 if (read_result == uart::NO_BYTE_READ) {
                     if (timeout_timer.has_timed_out()) {
-                        // If the packet has timed out, then return early.
                         return (result = TIMEOUT);
                     }
-                    return (result = NONE);
+                    else {
+                        return (result = NONE);
+                    }
                 }
-                else {
-                    // If at least one byte has been received, then restart the timer from now on.
-                    timeout_timer.restart(1000);
-                }
-
-                // If so, then decode it.
+                // We recieved at least one byte, so restart the timer and decode it
+                timeout_timer.restart(1000);
                 packetiser.decode(read_result);
 
-                // Unless the packetiser has a whole packet, return.
+                // Unless the packetiser has a whole packet, return early.
                 if (!packetiser.is_packet_ready()) {
                     return (result = NONE);
                 }
@@ -75,30 +73,33 @@ namespace dynamixel {
             // If so, then parse the array as a packet and add it with the rest.
             // Parse it as both a status-packet of expected length and a short status-packet, i.e.
             // only an error.
-            auto sts = reinterpret_cast<const StatusReturnCommand<N>*>(packetiser.get_decoded_packet());
-
+            auto sts       = reinterpret_cast<const StatusReturnCommand<N>*>(packetiser.get_decoded_packet());
             auto short_sts = reinterpret_cast<const StatusReturnCommand<0>*>(packetiser.get_decoded_packet());
 
-            // If the CRC, the ID, and the packet-kind are correct, then return any error.
+            // Perform some checks on the packet
             bool id_correct = (sts->id == static_cast<uint8_t>(id)) || (id == platform::NUSense::NUgus::ID::BROADCAST);
             bool packet_kind_correct = (sts->instruction == Instruction::STATUS_RETURN);
+
+            // If the CRC, the ID, and the packet-kind are correct, then return any error.
             if (id_correct && packet_kind_correct) {
-                // If the status-packet is not short, then check the CRC and the error.
+                // Check the recieved status packet has the expected length to ensure it isn't an error packet.
                 if (packetiser.get_decoded_length() == 7 + 4 + N)
+                    // Check the CRC of the status-packet before anything else.
                     if (sts->crc != packetiser.get_decoded_crc())
                         result = CRC_ERROR;
+                    // Before we return an error, mask out the alert field to ignore hardware errors, as we often have
+                    // servo voltages above 16V.
                     else if ((static_cast<uint8_t>(sts->error) & 0x7F) == static_cast<uint8_t>(CommandError::NO_ERROR))
-                        // The and-operation is a quick hack to ignore hardware-errors, i.e. 0x80,
-                        // given that the voltage to servos is often above the rated 16 V.
                         result = SUCCESS;
                     else
                         result = ERROR;
+                // If the status-packet is short, then we got an error packet, so check the CRC too.
                 else if (short_sts->crc != packetiser.get_decoded_crc())
                     result = CRC_ERROR;
+                // Before we return an error, mask out the alert field to ignore hardware errors, as we often have servo
+                // voltages above 16V.
                 else if ((static_cast<uint8_t>(short_sts->error) & (uint8_t) 0x7F)
                          == static_cast<uint8_t>(CommandError::NO_ERROR))
-                    // The and-operation is a quick hack to ignore hardware-errors, i.e. 0x80,
-                    // given that the voltage to servos is often above the rated 16 V.
                     result = SUCCESS;
                 else
                     result = ERROR;
@@ -113,6 +114,7 @@ namespace dynamixel {
 
         /**
          * @brief   Resets the handler.
+         * @note    This has to be called before the next packet is expected.
          */
         void reset() {
             packetiser.reset();
