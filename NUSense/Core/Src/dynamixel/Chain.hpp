@@ -66,7 +66,7 @@ namespace dynamixel {
                         auto sts = reinterpret_cast<const StatusReturnCommand<3>*>(packet_handler.get_sts_packet());
                         // Add the ID to the chain
                         devices.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
-                        if (sts->id <= 20) {
+                        if (sts->id <= static_cast<uint8_t>(platform::NUSense::NUgus::ID::MAX_SERVO_ID)) {
                             servos.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
                         }
                         /// TODO: Potentially use the returned data to store the device model number and firmware
@@ -181,6 +181,7 @@ namespace dynamixel {
 
 
     private:
+        // cheeky typedef within 
         /// @brief  The list of dynamixel devices in the chain.
         std::vector<platform::NUSense::NUgus::ID> devices;
         /// @brief  The list of servos on the chain (i.e. devices with ID <= 20)
