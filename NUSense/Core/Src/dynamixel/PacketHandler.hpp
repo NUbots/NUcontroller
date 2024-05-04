@@ -51,9 +51,9 @@ namespace dynamixel {
                 if (read_result == uart::NO_BYTE_READ) {
                     if (timeout_timer.has_timed_out()) {
                         // If the packet has timed out, then return early.
-                        return TIMEOUT;
+                        return (result = TIMEOUT);
                     }
-                    return NONE;
+                    return (result = NONE);
                 }
                 else {
                     // If at least one byte has been received, then restart the timer from now on.
@@ -65,7 +65,7 @@ namespace dynamixel {
 
                 // Unless the packetiser has a whole packet, return.
                 if (!packetiser.is_packet_ready()) {
-                    return NONE;
+                    return (result = NONE);
                 }
             }
 
