@@ -78,12 +78,12 @@ namespace platform::NUSense {
         /// @brief Initialises the packet-handlers, amount equal to NUM_PORTS.
         /// @return The initialised packet-handlers.
         inline std::array<dynamixel::Chain, NUM_PORTS> init_chains() {
-            return {dynamixel::Chain(ports[0]),
-                    dynamixel::Chain(ports[1]),
-                    dynamixel::Chain(ports[2]),
-                    dynamixel::Chain(ports[3]),
-                    dynamixel::Chain(ports[4]),
-                    dynamixel::Chain(ports[5])};
+            return {dynamixel::Chain(ports[0], 0),
+                    dynamixel::Chain(ports[1], 1),
+                    dynamixel::Chain(ports[2], 2),
+                    dynamixel::Chain(ports[3], 3),
+                    dynamixel::Chain(ports[4], 4),
+                    dynamixel::Chain(ports[5], 5)};
         }
 
         /// @brief   Begins the ports and sets the servos up with indirect addresses, etc.

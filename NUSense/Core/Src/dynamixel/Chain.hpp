@@ -19,7 +19,8 @@ namespace dynamixel {
     public:
         /// @brief  Constructs the chain, without starting device discovery.
         /// @note   Discovery must be performed before the chain can be used.
-        Chain(uart::Port& port) : port(port), packet_handler(PacketHandler(port)), index(0), discovering(false){};
+        Chain(uart::Port& port, uint8_t chain_id = 0)
+            : port(port), packet_handler(PacketHandler(port)), chain_id(chain_id){};
 
         /// @brief  Destructs the chain.
         /// @note   Could ensure the packet handler isn't waiting on anything? idk
@@ -174,12 +175,14 @@ namespace dynamixel {
         /// @brief  The packet-handler for the chain.
         PacketHandler packet_handler;
         /// @brief  Where the read request is up to in this chain.
-        uint8_t index;
+        uint8_t index = 0;
         /// @brief  A general utility timer for the chain.
         /// @note   Currently used to cooldown between write instructions, and to timeout during broadcast discovery.
         utility::support::MillisecondTimer utility_timer;
         /// @brief  Whether we're currently disocvering devices
-        bool discovering;
+        bool discovering = false;
+        /// @brief Optional identifier for the chain to help debugging
+        const uint8_t chain_id;
     };
 };  // namespace dynamixel
 
