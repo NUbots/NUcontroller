@@ -59,25 +59,33 @@ namespace dynamixel {
             // keep listening for packets until we timeout and there are no more packets
             while (packet_handler.check_sts<3>(platform::NUSense::NUgus::ID::BROADCAST) != PacketHandler::Result::NONE
                    || !utility_timer.has_timed_out()) {
-                // If we got a good status, extract the ID
-                if (packet_handler.get_result() == PacketHandler::Result::SUCCESS) {
-                    auto sts = reinterpret_cast<const StatusReturnCommand<3>*>(packet_handler.get_sts_packet());
-                    // Add the ID to the chain
-                    devices.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
-                    if (sts->id <= 20) {
-                        servos.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
-                    }
-                    /// TODO: Potentially use the returned data to store the device model number and firmware version.
-                }
-                // If we got an error, hold onto it for logging
-                else if (packet_handler.get_result() == PacketHandler::Result::ERROR) {
-                    auto sts = reinterpret_cast<const StatusReturnCommand<3>*>(packet_handler.get_sts_packet());
-                    error_devices.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
+                switch (packet_handler.get_result()) {
+                    // If we got a good status, extract the ID
+                    // note: we need the braces for scoping the sts variable
+                    case PacketHandler::Result::SUCCESS: {
+                        auto sts = reinterpret_cast<const StatusReturnCommand<3>*>(packet_handler.get_sts_packet());
+                        // Add the ID to the chain
+                        devices.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
+                        if (sts->id <= 20) {
+                            servos.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
+                        }
+                        /// TODO: Potentially use the returned data to store the device model number and firmware
+                        /// version.
+                    } break;
+                    // If we got an error, hold onto it for logging
+                    case PacketHandler::Result::ERROR: {
+                        auto sts = reinterpret_cast<const StatusReturnCommand<3>*>(packet_handler.get_sts_packet());
+                        error_devices.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
+                    } break;
+                    // Skip the packet handler reset for a partial or none packet
+                    case PacketHandler::Result::PARTIAL:
+                    case PacketHandler::Result::NONE: continue;
+                    // For completeness
+                    default: break;
                 }
                 // Reset the packet handler for the next packet (that is likely already in the buffer)
                 // if we got a full packet (including an error), or a timeout.
-                if (packet_handler.get_result() != PacketHandler::Result::NONE)
-                    packet_handler.ready();
+                packet_handler.ready();
             };
 
             // Unset flag

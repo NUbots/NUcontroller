@@ -16,7 +16,7 @@ namespace dynamixel {
     class PacketHandler {
     public:
         /// @brief  the result of whether all the status-packets have been received,
-        enum Result { NONE = 0x00, SUCCESS, ERROR, CRC_ERROR, TIMEOUT };
+        enum Result { NONE = 0x00, PARTIAL, SUCCESS, ERROR, CRC_ERROR, TIMEOUT };
 
         /**
          * @brief    Constructs the packet-handler.
@@ -63,7 +63,7 @@ namespace dynamixel {
 
                 // Unless the packetiser has a whole packet, return early.
                 if (!packetiser.is_packet_ready()) {
-                    return (result = NONE);
+                    return (result = PARTIAL);
                 }
             }
 

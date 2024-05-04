@@ -27,7 +27,8 @@ namespace platform::NUSense {
                     // Wait for the status to be received and decoded.
                     do {
                         packet_handler.check_sts<0>(id);
-                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE);
+                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE
+                             || packet_handler.get_result() == dynamixel::PacketHandler::Result::PARTIAL);
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
@@ -51,7 +52,8 @@ namespace platform::NUSense {
                     // Wait for the status to be received and decoded.
                     do {
                         packet_handler.check_sts<0>(id);
-                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE);
+                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE
+                             || packet_handler.get_result() == dynamixel::PacketHandler::Result::PARTIAL);
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
@@ -74,7 +76,8 @@ namespace platform::NUSense {
                     // Wait for the status to be received and decoded.
                     do {
                         packet_handler.check_sts<0>(id);
-                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE);
+                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE
+                             || packet_handler.get_result() == dynamixel::PacketHandler::Result::PARTIAL);
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
@@ -95,7 +98,8 @@ namespace platform::NUSense {
                     // Wait for the status to be received and decoded.
                     do {
                         packet_handler.check_sts<0>(id);
-                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE);
+                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE
+                             || packet_handler.get_result() == dynamixel::PacketHandler::Result::PARTIAL);
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
@@ -143,7 +147,8 @@ namespace platform::NUSense {
                     // Wait for the status to be received and decoded.
                     do {
                         packet_handler.check_sts<0>(id);
-                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE);
+                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE
+                             || packet_handler.get_result() == dynamixel::PacketHandler::Result::PARTIAL);
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
@@ -176,7 +181,8 @@ namespace platform::NUSense {
                     // Wait for the status to be received and decoded.
                     do {
                         packet_handler.check_sts<0>(id);
-                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE);
+                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE
+                             || packet_handler.get_result() == dynamixel::PacketHandler::Result::PARTIAL);
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
@@ -221,7 +227,8 @@ namespace platform::NUSense {
                     // Wait for the status to be received and decoded.
                     do {
                         packet_handler.check_sts<0>(id);
-                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE);
+                    } while (packet_handler.get_result() == dynamixel::PacketHandler::Result::NONE
+                             || packet_handler.get_result() == dynamixel::PacketHandler::Result::PARTIAL);
                 } while (packet_handler.get_result() != dynamixel::PacketHandler::Result::SUCCESS);
             }
         }
