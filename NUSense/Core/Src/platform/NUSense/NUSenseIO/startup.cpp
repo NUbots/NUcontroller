@@ -3,13 +3,6 @@
 namespace platform::NUSense {
 
     void NUSenseIO::startup() {
-        // Begin the receiving. This should be done only once if we are using the DMA
-        // as a buffer.
-        for (auto& port : ports) {
-            port.begin_rx();
-            port.flush_rx();
-        }
-
         /*
             ~~~ ~~~ ~~~ Basic Set-up ~~~ ~~~ ~~~
             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

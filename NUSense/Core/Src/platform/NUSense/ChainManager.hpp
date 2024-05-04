@@ -15,12 +15,16 @@ namespace platform::NUSense {
         /// @brief Constructs a chain manager for N chains, and starts device discovery on each chain.
         /// @param ports The ports to use for each chain.
         ChainManager(std::array<dynamixel::Chain, N> chains) : chains(chains) {
-            // Start discovery in the background
-            // By allowing the process to happen in the background for each chain, we only have to wait for one
-            // broadcast timeout.
+            // Initialise each chain
             for (auto& chain : chains) {
+                // Begin the receiving. This should be done only once if we are using the DMA as a buffer.
+                chain.get_port().begin_rx();
+                chain.get_port().flush_rx();
+                // Start the broadcast ping in the background before we listen on any chain so we only have to wait for
+                // one broadcast timeout (759ms) total.
                 chain.ping_broadcast();
-            };
+            }
+
             // Finish discovery on each chain
             for (auto& chain : chains) {
                 chain.discover_broadcast();
