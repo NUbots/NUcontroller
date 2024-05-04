@@ -74,6 +74,8 @@ namespace dynamixel {
                     auto sts = reinterpret_cast<const StatusReturnCommand<3>*>(packet_handler.get_sts_packet());
                     error_devices.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
                 }
+                // Reset the packet handler for the next packet (that is likely already in the buffer)
+                packet_handler.ready();
             };
 
             // Unset flag
