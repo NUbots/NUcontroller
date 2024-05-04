@@ -55,12 +55,9 @@ namespace dynamixel {
                 return devices;
             }
 
-            // Wait for the first status to be returned
-            while (packet_handler.check_sts<3>(platform::NUSense::NUgus::ID::BROADCAST) == PacketHandler::Result::NONE)
-                ;
-
-            // now keep listening for packets until we timeout and there are no more packets
-            while (!utility_timer.has_timed_out() || packet_handler.get_result() != PacketHandler::Result::NONE) {
+            // keep listening for packets until we timeout and there are no more packets
+            while (packet_handler.check_sts<3>(platform::NUSense::NUgus::ID::BROADCAST) != PacketHandler::Result::NONE
+                   || !utility_timer.has_timed_out()) {
                 // If we got a good status, extract the ID
                 if (packet_handler.get_result() == PacketHandler::Result::SUCCESS) {
                     auto sts = reinterpret_cast<const StatusReturnCommand<3>*>(packet_handler.get_sts_packet());
@@ -76,8 +73,6 @@ namespace dynamixel {
                     auto sts = reinterpret_cast<const StatusReturnCommand<3>*>(packet_handler.get_sts_packet());
                     error_devices.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
                 }
-                // Attempt to get the next status packet
-                packet_handler.check_sts<3>(platform::NUSense::NUgus::ID::BROADCAST);
             };
 
             // Unset flag
