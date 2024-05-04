@@ -114,11 +114,11 @@ namespace uart {
     public:
         /// @brief   Constructs the port by mapping the number to the corresponding UART interface.
         /// @param   uart_number the number of the corresponding UART interface,
-        Port(uint8_t uart_number);
+        Port(uint8_t uart_number = 1) : rs_link(uart_number), num_bytes_tx(0), comm_state(RX_IDLE) {}
 
         /// @brief   Destructs the port.
         /// @note    Nothing needs to be freed for now.
-        virtual ~Port();
+        virtual ~Port() {}
 
         /// @brief   Gets the number of remaining bytes in the rx-buffer, i.e. the bytes received so far.
         /// @return  the number of remaining bytes in the rx-buffer,

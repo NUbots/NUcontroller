@@ -14,15 +14,13 @@ namespace utility::support {
         /**
          * @brief    Constructs the timer.
          */
-        MillisecondTimer() {
-            threshold   = 0;
-            is_counting = false;
-        };
+        MillisecondTimer() : threshold(0), is_counting(false) {}
+
         /**
          * @brief   Destructs the timer.
          * @note    nothing needs to be freed as of yet,
          */
-        virtual ~MillisecondTimer(){};
+        virtual ~MillisecondTimer() {}
 
         /**
          * @brief   Begins the timer.

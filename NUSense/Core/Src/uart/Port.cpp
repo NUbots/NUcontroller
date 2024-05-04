@@ -4,13 +4,6 @@
 
 namespace uart {
 
-    Port::Port(uint8_t uart_number = 1) : rs_link(uart_number), num_bytes_tx(0), comm_state(RX_IDLE) {}
-
-    Port::~Port() {
-        // May do something with this later.
-        // Not really anything to free as of yet.
-    }
-
     uint16_t Port::get_available_rx() {
 #ifdef USE_DMA_RX_BUFFER
         handle_rx();

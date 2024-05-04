@@ -22,18 +22,13 @@ namespace dynamixel {
          * @brief    Constructs the packet-handler.
          * @param    port the reference to the port to be communicated on,
          */
-        PacketHandler(uart::Port& port)
-            : port(port)
-            , packetiser()
-            , result(NONE)
-            , timeout_timer(){
+        PacketHandler(uart::Port& port) : port(port), packetiser(), result(NONE), timeout_timer(){}
 
-              };
         /**
          * @brief   Destructs the packet-handler.
          * @note    nothing needs to be freed as of yet,
          */
-        virtual ~PacketHandler(){};
+        virtual ~PacketHandler(){}
 
         /**
          * @brief     Checks whether the expected status-packet has been received.
