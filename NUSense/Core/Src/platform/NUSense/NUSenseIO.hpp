@@ -21,6 +21,7 @@
 namespace platform::NUSense {
     constexpr uint32_t MAX_ENCODE_SIZE = 1600;
     constexpr uint8_t NUM_PORTS        = 6;
+    constexpr uint8_t NUM_CHAINS       = 5;
 
     class NUSenseIO {
     private:
@@ -34,7 +35,7 @@ namespace platform::NUSense {
         std::array<platform::ServoState, NUMBER_OF_DEVICES> servo_states{};
 
         /// @brief  Collection of Chain objects used to interface with the servos.
-        ChainManager<NUM_PORTS> chain_manager;
+        ChainManager<NUM_CHAINS> chain_manager;
 
         enum StatusState { READ_RESPONSE = 0, WRITE_1_RESPONSE = 1, WRITE_2_RESPONSE = 2, WRITE_1_COOLDOWN = 3 };
         /// @brief  These are the states of all expected statuses.
@@ -77,13 +78,12 @@ namespace platform::NUSense {
 
         /// @brief Initialises the packet-handlers, amount equal to NUM_PORTS.
         /// @return The initialised packet-handlers.
-        inline std::array<dynamixel::Chain, NUM_PORTS> init_chains() {
+        inline std::array<dynamixel::Chain, NUM_CHAINS> init_chains() {
             return {dynamixel::Chain(ports[0], 0),
                     dynamixel::Chain(ports[1], 1),
                     dynamixel::Chain(ports[2], 2),
                     dynamixel::Chain(ports[3], 3),
-                    dynamixel::Chain(ports[4], 4),
-                    dynamixel::Chain(ports[5], 5)};
+                    dynamixel::Chain(ports[4], 4)};
         }
 
         /// @brief   Begins the ports and sets the servos up with indirect addresses, etc.
