@@ -52,7 +52,7 @@ namespace dynamixel {
                         return (result = NONE);
                     }
                 }
-                // We recieved at least one byte, so restart the timer and decode it
+                // We received at least one byte, so restart the timer and decode it
                 timeout_timer.restart(1000);
                 packetiser.decode(read_result);
 
