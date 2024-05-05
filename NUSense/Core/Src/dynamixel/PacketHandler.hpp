@@ -77,7 +77,7 @@ namespace dynamixel {
 
             // If the CRC, the ID, and the packet-kind are correct, then return any error.
             if (id_correct && packet_kind_correct) {
-                // Check the recieved status packet has the expected length to ensure it isn't an error packet.
+                // Check the received status packet has the expected length to ensure it isn't an error packet.
                 if (packetiser.get_decoded_length() == 7 + 4 + N)
                     // Check the CRC of the status-packet before anything else.
                     if (sts->crc != packetiser.get_decoded_crc())
