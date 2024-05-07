@@ -7,6 +7,3 @@
 #endif
 
 PB_BIND(google_protobuf_Duration, google_protobuf_Duration, AUTO)
-
-
-

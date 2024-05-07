@@ -21,4 +21,3 @@ PB_BIND(message_platform_NUSense, message_platform_NUSense, 2)
 PB_BIND(message_platform_NUSense_ServoMapEntry, message_platform_NUSense_ServoMapEntry, AUTO)
 
 
-

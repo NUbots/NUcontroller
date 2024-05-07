@@ -3,6 +3,7 @@
 
 #include <array>
 #include <stdio.h>
+#include <iterator>
 
 #include "../../dynamixel/Dynamixel.hpp"
 #include "../../dynamixel/PacketHandler.hpp"

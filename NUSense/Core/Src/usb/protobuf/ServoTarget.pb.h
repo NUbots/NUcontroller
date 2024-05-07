@@ -4,6 +4,7 @@
 #ifndef PB_MESSAGE_ACTUATION_SERVOTARGET_PB_H_INCLUDED
 #define PB_MESSAGE_ACTUATION_SERVOTARGET_PB_H_INCLUDED
 #include "pb.h"
+#include "timestamp.pb.h"
 #include "duration.pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
@@ -16,7 +17,7 @@
 typedef struct _message_actuation_ServoTarget {
     /* / When the target was created */
     bool has_time;
-    google_protobuf_Duration time;
+    google_protobuf_Timestamp time;
     /* / The ID of the servo being controlled */
     uint32_t id;
     /* / The position value of the destination. 0 to 4,095 (0xFFF) is available.
@@ -65,11 +66,11 @@ extern "C" {
 #endif
 
 /* Initializer values for message structs */
-#define message_actuation_ServoTarget_init_default {false, google_protobuf_Duration_init_default, 0, 0, 0, 0}
+#define message_actuation_ServoTarget_init_default {false, google_protobuf_Timestamp_init_default, 0, 0, 0, 0}
 #define message_actuation_ServoTargets_init_default {0, {message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default, message_actuation_ServoTarget_init_default}}
 #define message_actuation_SubcontrollerServoTarget_init_default {false, google_protobuf_Duration_init_default, 0, 0, 0, 0}
 #define message_actuation_SubcontrollerServoTargets_init_default {0, {message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default, message_actuation_SubcontrollerServoTarget_init_default}}
-#define message_actuation_ServoTarget_init_zero  {false, google_protobuf_Duration_init_zero, 0, 0, 0, 0}
+#define message_actuation_ServoTarget_init_zero  {false, google_protobuf_Timestamp_init_zero, 0, 0, 0, 0}
 #define message_actuation_ServoTargets_init_zero {0, {message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero, message_actuation_ServoTarget_init_zero}}
 #define message_actuation_SubcontrollerServoTarget_init_zero {false, google_protobuf_Duration_init_zero, 0, 0, 0, 0}
 #define message_actuation_SubcontrollerServoTargets_init_zero {0, {message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero, message_actuation_SubcontrollerServoTarget_init_zero}}
@@ -97,7 +98,7 @@ X(a, STATIC,   SINGULAR, FLOAT,    gain,              4) \
 X(a, STATIC,   SINGULAR, FLOAT,    torque,            5)
 #define message_actuation_ServoTarget_CALLBACK NULL
 #define message_actuation_ServoTarget_DEFAULT NULL
-#define message_actuation_ServoTarget_time_MSGTYPE google_protobuf_Duration
+#define message_actuation_ServoTarget_time_MSGTYPE google_protobuf_Timestamp
 
 #define message_actuation_ServoTargets_FIELDLIST(X, a) \
 X(a, STATIC,   REPEATED, MESSAGE,  targets,           1)
@@ -133,7 +134,7 @@ extern const pb_msgdesc_t message_actuation_SubcontrollerServoTargets_msg;
 #define message_actuation_SubcontrollerServoTargets_fields &message_actuation_SubcontrollerServoTargets_msg
 
 /* Maximum encoded size of messages (where known) */
-#define MESSAGE_ACTUATION_SERVOTARGET_PB_H_MAX_SIZE message_actuation_ServoTargets_size
+#define MESSAGE_ACTUATION_NUSENSE_MESSAGES_SERVOTARGET_PB_H_MAX_SIZE message_actuation_ServoTargets_size
 #define message_actuation_ServoTarget_size       45
 #define message_actuation_ServoTargets_size      940
 #define message_actuation_SubcontrollerServoTarget_size 45
