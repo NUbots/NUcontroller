@@ -11,10 +11,7 @@
 #include "imu.h"
 #include "settings.h"
 #include "stm32h7xx_hal.h"
-#include "usb/PacketHandler.hpp"
 #include "usbd_cdc_if.h"
-
-#include "utility/message/hash.hpp"
 
 namespace test_hw {
 

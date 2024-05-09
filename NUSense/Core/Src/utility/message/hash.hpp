@@ -88,7 +88,7 @@ namespace utility::message {
      * @param input_v  Void pointer to a data structure, casted to a const char pointer.
      * @param length Number of elements inside the data structure.
      * @param seed A 32 bit number used in the hashing algorithm
-     * 
+     *
      * @return The resulting hash value
      */
     inline uint32_t xxhash32(const void* input_v, const size_t& length, const uint32_t& seed) {
@@ -146,12 +146,12 @@ namespace utility::message {
         return h;
     }
 
-     /**
+    /**
      * @brief Calculate the 64 bit hash using a given pointer to a data structure, length and seed.
      * @param input_v  Void pointer to a data structure, casted to a const char pointer.
      * @param length Number of elements inside the data structure.
      * @param seed A 64 bit number used in the hashing algorithm.
-     * 
+     *
      * @return The resulting hash value
      */
     inline const uint64_t xxhash64(const void* input_v, const size_t& length, const uint64_t& seed) {

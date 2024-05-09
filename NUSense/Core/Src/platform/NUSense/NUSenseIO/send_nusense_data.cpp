@@ -92,7 +92,7 @@ namespace platform::NUSense {
 
         // Add the protobuf bytes into the nbs vector
         nbs.insert(nbs.end(), std::begin(encoding_payload), std::begin(encoding_payload) + output_buffer.bytes_written);
-        
+
         // Attempt to transmit data then handle it accordingly if it fails
         if (CDC_Transmit_HS(nbs.data(), nbs.size()) != USBD_OK) {
             // Going into this block means that the usb failed to transmit our data
