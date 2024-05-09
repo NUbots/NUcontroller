@@ -49,7 +49,7 @@ namespace dynamixel {
 
         /// @brief  Listen for a response from a broadcast ping to discover all devices on the chain
         /// @note   This is a blocking function, and will wait for the full timeout of 759 ms
-        /// @retval All devices found on the chain
+        /// @return All devices found on the chain
         const std::vector<platform::NUSense::NUgus::ID>& discover_broadcast() {
             // Only do discovery if we're currently discovering
             if (!discovering) {
@@ -80,6 +80,9 @@ namespace dynamixel {
                     // Skip the packet handler reset for a partial or none packet
                     case PacketHandler::Result::PARTIAL:
                     case PacketHandler::Result::NONE: continue;
+                    // We should never recieve a timeout here as the timeout is for the PacketHandler::timeout_timer,
+                    // which is not used for broadcast discovery, as we use the Chain::utility_timer for that.
+                    case PacketHandler::Result::TIMEOUT:
                     // For completeness
                     default: break;
                 }
@@ -95,7 +98,7 @@ namespace dynamixel {
         };
 
         /// @brief  Gets all devices in the chain.
-        /// @retval A reference to the vector of devices in the chain.
+        /// @return A reference to the vector of devices in the chain.
         const std::vector<platform::NUSense::NUgus::ID>& get_devices() const {
             return devices;
         };
@@ -112,6 +115,7 @@ namespace dynamixel {
         };
 
         /// @brief Whether a device is present in the chain
+        /// @param id: The ID of the device to check for
         bool contains(platform::NUSense::NUgus::ID id) const {
             // Due to the response policy we know `devices` is sorted
             return std::binary_search(devices.begin(), devices.end(), id);
@@ -128,7 +132,7 @@ namespace dynamixel {
         };
 
         /// @brief  Gets the current index along the chain.
-        const uint8_t get_index() const {
+        uint8_t get_index() const {
             return index;
         };
 
@@ -146,7 +150,7 @@ namespace dynamixel {
         /// @brief  Pass a write instruction to the port of the chain
         /// @note   This also resets the packet handler before the write.
         template <typename T>
-        const uint16_t write(const T& data) {
+        uint16_t write(const T& data) {
             // Prepare the packet handler for the response packet.
             packet_handler.ready();
 
@@ -160,12 +164,12 @@ namespace dynamixel {
         };
 
         /// @brief Gets the total number of devices in the chain
-        const uint8_t size() const {
+        uint8_t size() const {
             return devices.size();
         };
 
         /// @brief Whether the chain is empty
-        const bool empty() const {
+        bool empty() const {
             return devices.empty();
         };
 
@@ -181,7 +185,6 @@ namespace dynamixel {
 
 
     private:
-        // cheeky typedef within 
         /// @brief  The list of dynamixel devices in the chain.
         std::vector<platform::NUSense::NUgus::ID> devices;
         /// @brief  The list of servos on the chain (i.e. devices with ID <= 20)

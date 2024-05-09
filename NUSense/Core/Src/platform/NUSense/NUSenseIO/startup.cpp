@@ -20,8 +20,8 @@ namespace platform::NUSense {
                 do {
                     // Send the instruction with reset and timeout.
                     chain.write(dynamixel::WriteCommand<uint8_t>(
-                        (uint8_t) id,
-                        (uint16_t) dynamixel::DynamixelServo::Address::RETURN_DELAY_TIME,
+                        uint8_t(id),
+                        uint16_t(dynamixel::DynamixelServo::Address::RETURN_DELAY_TIME),
                         0x00));
 
                     // Wait for the status to be received and decoded.
@@ -45,8 +45,8 @@ namespace platform::NUSense {
                 do {
                     // Send the instruction with reset and timeout.
                     chain.write(dynamixel::WriteCommand<uint8_t>(
-                        (uint8_t) id,
-                        (uint16_t) dynamixel::DynamixelServo::Address::STATUS_RETURN_LEVEL,
+                        uint8_t(id),
+                        uint16_t(dynamixel::DynamixelServo::Address::STATUS_RETURN_LEVEL),
                         0x02));
 
                     // Wait for the status to be received and decoded.
@@ -69,8 +69,8 @@ namespace platform::NUSense {
                 do {
                     // Send the instruction with reset and timeout.
                     chain.write(
-                        dynamixel::WriteCommand<uint8_t>((uint8_t) id,
-                                                         (uint16_t) dynamixel::DynamixelServo::Address::DRIVE_MODE,
+                        dynamixel::WriteCommand<uint8_t>(uint8_t(id),
+                                                         uint16_t(dynamixel::DynamixelServo::Address::DRIVE_MODE),
                                                          0x04));
 
                     // Wait for the status to be received and decoded.
@@ -91,8 +91,8 @@ namespace platform::NUSense {
                 do {
                     // Send the instruction with reset and timeout.
                     chain.write(dynamixel::WriteCommand<uint32_t>(
-                        (uint8_t) id,
-                        (uint16_t) dynamixel::DynamixelServo::Address::PROFILE_VELOCITY_L,
+                        uint8_t(id),
+                        uint16_t(dynamixel::DynamixelServo::Address::PROFILE_VELOCITY_L),
                         1000));
 
                     // Wait for the status to be received and decoded.
@@ -124,8 +124,8 @@ namespace platform::NUSense {
                 do {
                     // Send the instruction with reset and timeout.
                     chain.write(dynamixel::WriteCommand<std::array<uint16_t, 17>>(
-                        (uint8_t) id,
-                        (uint16_t) platform::NUSense::AddressBook::SERVO_READ_ADDRESS,
+                        uint8_t(id),
+                        uint16_t(platform::NUSense::AddressBook::SERVO_READ_ADDRESS),
                         {uint16_t(dynamixel::DynamixelServo::Address::TORQUE_ENABLE),
                          uint16_t(dynamixel::DynamixelServo::Address::HARDWARE_ERROR_STATUS),
                          uint16_t(dynamixel::DynamixelServo::Address::PRESENT_PWM_L),
@@ -164,8 +164,8 @@ namespace platform::NUSense {
                 do {
                     // Send the instruction with reset and timeout.
                     chain.write(dynamixel::WriteCommand<std::array<uint16_t, 11>>(
-                        (uint8_t) id,
-                        (uint16_t) platform::NUSense::AddressBook::SERVO_WRITE_ADDRESS_1,
+                        uint8_t(id),
+                        uint16_t(platform::NUSense::AddressBook::SERVO_WRITE_ADDRESS_1),
                         {uint16_t(dynamixel::DynamixelServo::Address::TORQUE_ENABLE),
                          uint16_t(dynamixel::DynamixelServo::Address::VELOCITY_I_GAIN_L),
                          uint16_t(dynamixel::DynamixelServo::Address::VELOCITY_I_GAIN_H),
@@ -197,8 +197,8 @@ namespace platform::NUSense {
                 do {
                     // Send the instruction with reset and timeout.
                     chain.write(dynamixel::WriteCommand<std::array<uint16_t, 24>>(
-                        (uint8_t) id,
-                        (uint16_t) platform::NUSense::AddressBook::SERVO_WRITE_ADDRESS_2,
+                        uint8_t(id),
+                        uint16_t(platform::NUSense::AddressBook::SERVO_WRITE_ADDRESS_2),
                         {uint16_t(dynamixel::DynamixelServo::Address::FEEDFORWARD_1ST_GAIN_L),
                          uint16_t(dynamixel::DynamixelServo::Address::FEEDFORWARD_1ST_GAIN_H),
                          uint16_t(dynamixel::DynamixelServo::Address::FEEDFORWARD_2ND_GAIN_L),

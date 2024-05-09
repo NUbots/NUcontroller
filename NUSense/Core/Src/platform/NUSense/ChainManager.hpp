@@ -13,7 +13,7 @@ namespace platform::NUSense {
     class ChainManager {
     public:
         /// @brief Constructs a chain manager for N chains, and starts device discovery on each chain.
-        /// @param ports The ports to use for each chain.
+        /// @param chains: An array of chains to manage.
         ChainManager(std::array<dynamixel::Chain, N> chains) : chains(chains) {
             // Initialise each chain
             for (auto& chain : chains) {

@@ -32,25 +32,25 @@ namespace test_hw {
         imu.init();
 
         while (1) {
-            /* test readReg */
+            /* test read_reg */
             rx[0] = 0xFF;  // clear to known state
-            imu.readReg(NUSense::IMU::Address::WHO_AM_I, rx);
+            imu.read_reg(NUSense::IMU::Address::WHO_AM_I, rx);
             if (rx[0] != 0x98) {
                 error++;
             }
 
-            /* test readBurst with a single readval */
+            /* test read_burst with a single readval */
             rx[0] = 0xFF;  // clear to known state
-            imu.readBurst(NUSense::IMU::Address::WHO_AM_I, rx, 1);
+            imu.read_burst(NUSense::IMU::Address::WHO_AM_I, rx, 1);
             if (rx[0] != 0x98) {
                 error++;
             }
 
-            /* test readBurst with multiple readvals */
+            /* test read_burst with multiple readvals */
             /* NOTE this one fails and im not sure why... */
             for (int i = 0; i < 14; i++)
-                rx[i] = 0xFF;                                       // clear to known state
-            imu.readBurst(NUSense::IMU::Address::FIFO_R_W, rx, 3);  // include reg either side of WHO AM I
+                rx[i] = 0xFF;                                        // clear to known state
+            imu.read_burst(NUSense::IMU::Address::FIFO_R_W, rx, 3);  // include reg either side of WHO AM I
             if (rx[1] != 0x98) {
                 error++;
             }
@@ -59,16 +59,16 @@ namespace test_hw {
             /* test just acc x vals */
             for (int i = 0; i < 14; i++)
                 rx[i] = 0xFF;  // clear to known state
-            imu.readBurst(NUSense::IMU::Address::ACCEL_XOUT_H, rx, 2);
+            imu.read_burst(NUSense::IMU::Address::ACCEL_XOUT_H, rx, 2);
             uint16_t acc_x_raw = (rx[0] << 8) | rx[1];                                          // swap byte order
             float acc_x_conv   = static_cast<float>(acc_x_raw) / imu.ACCEL_SENSITIVITY_CHOSEN;  // conversion
 
             /* test all sensor vals */
             for (int i = 0; i < 14; i++)
                 rx[i] = 0xFF;  // clear to known state
-            imu.readBurst(imu.READ_BLOCK_START, rx, imu.READ_BLOCK_LEN);
+            imu.read_burst(imu.READ_BLOCK_START, rx, imu.READ_BLOCK_LEN);
             raw_data = *(reinterpret_cast<NUSense::IMU::RawData*>(rx));  // cast raw bytes to struct
-            imu.convertRawData(&raw_data, &converted_data);
+            imu.convert_raw_data(&raw_data, &converted_data);
 
             /* test class form, resets form breakpoint locations */
 
@@ -76,24 +76,24 @@ namespace test_hw {
             raw_data       = {};
             converted_data = {};
             // check with first raw data generation
-            raw_data = imu.getNewRawData();
-            imu.generateConvertedData();
-            converted_data = imu.getLastConvertedData();
+            raw_data = imu.get_new_raw_data();
+            imu.generate_converted_data();
+            converted_data = imu.get_last_converted_data();
 
             // reset again
             raw_data       = {};
             converted_data = {};
             // check with opposite of before. the vals here shouldn't align
-            raw_data       = imu.getLastRawData();
-            converted_data = imu.getNewConvertedData();
+            raw_data       = imu.get_last_raw_data();
+            converted_data = imu.get_new_converted_data();
 
             // reset one last time
             raw_data       = {};
             converted_data = {};
             // check if read on demand works
-            raw_data = imu.getLastRawData();  // read data
-            imu.getNewRawData();              // get fresh data
-            raw_data = imu.getLastRawData();  // read it again
+            raw_data = imu.get_last_raw_data();  // read data
+            imu.get_new_raw_data();              // get fresh data
+            raw_data = imu.get_last_raw_data();  // read it again
 
             sprintf(str,
                     "IMU:\t"

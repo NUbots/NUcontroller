@@ -14,7 +14,7 @@ namespace platform::NUSense {
         // instruction.
         for (auto& chain : chain_manager.get_chains()) {
             // Index of the current servo in the chain, 0 indexed.
-            uint8_t current_servo_index = (uint8_t) chain.current() - 1;
+            uint8_t current_servo_index = static_cast<uint8_t>(chain.current()) - 1;
 
             dynamixel::PacketHandler::Result result =
                 chain.get_packet_handler().check_sts<sizeof(platform::NUSense::DynamixelServoReadData)>(
@@ -62,7 +62,7 @@ namespace platform::NUSense {
                         // Move along the chain.
                         chain.next();
                         // update servo index variable
-                        current_servo_index = (uint8_t) chain.current() - 1;
+                        current_servo_index = static_cast<uint8_t>(chain.current()) - 1;
 
                         // If the servo-state is dirty, then send a write-instruction.
                         if (servo_states[current_servo_index].dirty) {
@@ -88,7 +88,7 @@ namespace platform::NUSense {
                 // Move along the chain.
                 chain.next();
                 // update servo index variable
-                current_servo_index = (uint8_t) chain.current() - 1;
+                current_servo_index = static_cast<uint8_t>(chain.current()) - 1;
 
                 // If the servo-state is dirty, then send a write-instruction.
                 if (servo_states[current_servo_index].dirty) {

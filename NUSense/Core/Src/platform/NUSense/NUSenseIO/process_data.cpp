@@ -13,7 +13,7 @@ namespace platform::NUSense {
 
         // Although they're stored in the servo state here, packet errors are combined and processed all at once as
         // subcontroller errors in the RawSensors message
-        servo_states[servo_index].packet_error &= (uint8_t) packet.error;
+        servo_states[servo_index].packet_error &= static_cast<uint8_t>(packet.error);
 
         // Servo error status from control table, NOT dynamixel status packet error.
         servo_states[servo_index].hardware_error &= data.hardware_error_status;

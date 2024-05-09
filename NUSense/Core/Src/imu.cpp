@@ -33,61 +33,62 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef* hspi) {
 void platform::NUSense::IMU::init() {
     // Select the first PLL as the clock and do a soft reset.
     // This may fix the problem of the power-up sequence in Section-4.19 of the IMU's datasheet.
-    // writeReg(Address::PWR_MGMT_1,     PWR_MGMT_1_CLKSEL_AUTO);
-    writeReg(Address::PWR_MGMT_1, PWR_MGMT_1_DEVICE_RESET | PWR_MGMT_1_CLKSEL_AUTO);
+    // write_reg(Address::PWR_MGMT_1,     PWR_MGMT_1_CLKSEL_AUTO);
+    write_reg(Address::PWR_MGMT_1, PWR_MGMT_1_DEVICE_RESET | PWR_MGMT_1_CLKSEL_AUTO);
     HAL_Delay(1);
-    writeReg(Address::PWR_MGMT_1, PWR_MGMT_1_CLKSEL_AUTO);
+    write_reg(Address::PWR_MGMT_1, PWR_MGMT_1_CLKSEL_AUTO);
 
     // Make sure that we are in SPI-mode.
-    writeReg(Address::USER_CTRL, USER_CTRL_I2C_IF_DIS | USER_CTRL_DMP_RST | USER_CTRL_FIFO_EN | USER_CTRL_SIG_COND_RST);
+    write_reg(Address::USER_CTRL,
+              USER_CTRL_I2C_IF_DIS | USER_CTRL_DMP_RST | USER_CTRL_FIFO_EN | USER_CTRL_SIG_COND_RST);
 
     // Turn on all sensors.
-    writeReg(Address::PWR_MGMT_2, 0x00);
+    write_reg(Address::PWR_MGMT_2, 0x00);
 
     // Set the full-scale for the gyroscope.
-    writeReg(Address::GYRO_CONFIG, GYRO_CONFIG_FS_SEL_CHOSEN);
+    write_reg(Address::GYRO_CONFIG, GYRO_CONFIG_FS_SEL_CHOSEN);
 
     // Set the full-scale for the accelerometer.
-    writeReg(Address::ACCEL_CONFIG, ACCEL_CONFIG1_FS_SEL_CHOSEN);
+    write_reg(Address::ACCEL_CONFIG, ACCEL_CONFIG1_FS_SEL_CHOSEN);
 
     // Set the accelerometer's LPF to 218 Hz and the lowest number of samples.
-    writeReg(Address::ACCEL_CONFIG2, ACCEL_CONFIG2_DEC2_CFG_4SAMPLES | ACCEL_CONFIG2_ACCEL_FCHOICE_B_FALSE | 0x00);
+    write_reg(Address::ACCEL_CONFIG2, ACCEL_CONFIG2_DEC2_CFG_4SAMPLES | ACCEL_CONFIG2_ACCEL_FCHOICE_B_FALSE | 0x00);
 
     // Set the gyroscope's LPF to 250 Hz.
-    writeReg(Address::CONFIG, CONFIG_FIFO_MODE_OVERFLOW_WAIT);
+    write_reg(Address::CONFIG, CONFIG_FIFO_MODE_OVERFLOW_WAIT);
 
     // Set the sample-rate to 1 kHz.
-    writeReg(Address::SMPLRT_DIV, 0x00);
+    write_reg(Address::SMPLRT_DIV, 0x00);
 
     // Set the offset for gyroscope's x-axis to 90/4 = 22.
-    writeReg(Address::XG_OFFS_USRH, 0x00);
-    writeReg(Address::XG_OFFS_USRL, 0x16);
+    write_reg(Address::XG_OFFS_USRH, 0x00);
+    write_reg(Address::XG_OFFS_USRL, 0x16);
 
     // Set the offset for gyroscope's y-axis to -406/4 = -101.
-    writeReg(Address::YG_OFFS_USRH, 0xFF);
-    writeReg(Address::YG_OFFS_USRL, 0x9B);
+    write_reg(Address::YG_OFFS_USRH, 0xFF);
+    write_reg(Address::YG_OFFS_USRL, 0x9B);
 
     // Set the offset for gyroscope's z-axis to -61/4 = -15.
-    writeReg(Address::ZG_OFFS_USRH, 0xFF);
-    writeReg(Address::ZG_OFFS_USRL, 0xF1);
+    write_reg(Address::ZG_OFFS_USRH, 0xFF);
+    write_reg(Address::ZG_OFFS_USRL, 0xF1);
     /*
     // Set the offset for accelerometer's x-axis to 0, for now.
-    writeReg(Address::XA_OFFSET_H,     0x00);
-    writeReg(Address::XA_OFFSET_L,     0x02);
+    write_reg(Address::XA_OFFSET_H,     0x00);
+    write_reg(Address::XA_OFFSET_L,     0x02);
 
     // Set the offset for accelerometer's y-axis to 0, for now.
-    writeReg(Address::YA_OFFSET_H,     0x00);
-    writeReg(Address::YA_OFFSET_L,     0x02);
+    write_reg(Address::YA_OFFSET_H,     0x00);
+    write_reg(Address::YA_OFFSET_L,     0x02);
 
     // Set the offset for accelerometer's z-axis to 0, for now.
-    writeReg(Address::ZA_OFFSET_H,     0x00);
-    writeReg(Address::ZA_OFFSET_L,     0x02);
+    write_reg(Address::ZA_OFFSET_H,     0x00);
+    write_reg(Address::ZA_OFFSET_L,     0x02);
     */
 
     /*
     // We don't use the FIFO at the moment, but this will be needed in the future
     // Write all sensors' values in the FIFO.
-    writeReg(Address::FIFO_EN,
+    write_reg(Address::FIFO_EN,
              FIFO_EN_TEMP_EN | FIFO_EN_XG_FIFO_EN | FIFO_EN_YG_FIFO_EN | FIFO_EN_ZG_FIFO_EN | FIFO_EN_ACCEL_FIFO_EN);
     */
 }
@@ -99,7 +100,7 @@ void platform::NUSense::IMU::init() {
  * @param   the byte to be sent,
  * @return  none
  */
-void platform::NUSense::IMU::writeReg(Address addr, uint8_t data) {
+void platform::NUSense::IMU::write_reg(Address addr, uint8_t data) {
     uint8_t packet[2] = {static_cast<uint8_t>(addr) | IMU_WRITE, data};
 
     HAL_GPIO_WritePin(MPU_NSS_GPIO_Port, MPU_NSS_Pin, GPIO_PIN_RESET);
@@ -114,7 +115,7 @@ void platform::NUSense::IMU::writeReg(Address addr, uint8_t data) {
  * @param   a pointer to the byte to be read,
  * @return  none
  */
-void platform::NUSense::IMU::readReg(Address addr, uint8_t* data) {
+void platform::NUSense::IMU::read_reg(Address addr, uint8_t* data) {
     uint8_t rx_data[2] = {0xFF, 0xFF};
     uint8_t packet[2]  = {static_cast<uint8_t>(addr) | IMU_READ, 0x00};
 
@@ -133,7 +134,7 @@ void platform::NUSense::IMU::readReg(Address addr, uint8_t* data) {
  * @param   the length, i.e. the number of registers to be read,
  * @return  none
  */
-void platform::NUSense::IMU::readBurst(Address addr, uint8_t* data, uint16_t length) {
+void platform::NUSense::IMU::read_burst(Address addr, uint8_t* data, uint16_t length) {
     uint8_t packet[length + 1];
     uint8_t rx_data[length + 1];
     HAL_StatusTypeDef status;
@@ -167,7 +168,7 @@ void platform::NUSense::IMU::readBurst(Address addr, uint8_t* data, uint16_t len
  * @param   the converted data,
  * @return  none
  */
-void platform::NUSense::IMU::convertRawData(IMU::RawData* raw_data, IMU::ConvertedData* converted_data) {
+void platform::NUSense::IMU::convert_raw_data(IMU::RawData* raw_data, IMU::ConvertedData* converted_data) {
 
     auto& acc  = raw_data->accelerometer;
     auto& gyro = raw_data->gyroscope;
@@ -196,19 +197,19 @@ void platform::NUSense::IMU::convertRawData(IMU::RawData* raw_data, IMU::Convert
  * @brief   fill converted data based on existing raw data
  * @return  none
  */
-void platform::NUSense::IMU::generateConvertedData(void) {
+void platform::NUSense::IMU::generate_converted_data(void) {
     // sneaky lil one liner with private variable permissions
-    convertRawData(&raw_data, &converted_data);
+    convert_raw_data(&raw_data, &converted_data);
 };
 
 /*
  * @brief   get new data, return it, donezo
  */
-platform::NUSense::IMU::RawData platform::NUSense::IMU::getNewRawData(void) {
+platform::NUSense::IMU::RawData platform::NUSense::IMU::get_new_raw_data(void) {
     // create read buffer
     uint8_t buff[14];
     // read raw vals into the buffer
-    readBurst(READ_BLOCK_START, buff, READ_BLOCK_LEN);
+    read_burst(READ_BLOCK_START, buff, READ_BLOCK_LEN);
     // cast raw vals into the internal struct
     raw_data = *(reinterpret_cast<platform::NUSense::IMU::RawData*>(buff));
     // return it the new data
@@ -219,10 +220,10 @@ platform::NUSense::IMU::RawData platform::NUSense::IMU::getNewRawData(void) {
 /*
  * @brief   get new data, convert it, return it, donezo
  */
-platform::NUSense::IMU::ConvertedData platform::NUSense::IMU::getNewConvertedData(void) {
+platform::NUSense::IMU::ConvertedData platform::NUSense::IMU::get_new_converted_data(void) {
     // get and convert new data
-    getNewRawData();
-    convertRawData(&raw_data, &converted_data);
+    get_new_raw_data();
+    convert_raw_data(&raw_data, &converted_data);
     // donezo
     return converted_data;
 };
@@ -230,13 +231,13 @@ platform::NUSense::IMU::ConvertedData platform::NUSense::IMU::getNewConvertedDat
 /*
  * @brief   a simple getter for the current stored raw data
  */
-platform::NUSense::IMU::RawData platform::NUSense::IMU::getLastRawData(void) {
+platform::NUSense::IMU::RawData platform::NUSense::IMU::get_last_raw_data(void) {
     return raw_data;
 };
 
 /*
  * @brief   a simple getter for the current stored converted data
  */
-platform::NUSense::IMU::ConvertedData platform::NUSense::IMU::getLastConvertedData(void) {
+platform::NUSense::IMU::ConvertedData platform::NUSense::IMU::get_last_converted_data(void) {
     return converted_data;
 };

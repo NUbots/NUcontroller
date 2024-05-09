@@ -21,7 +21,7 @@
 namespace platform::NUSense {
     constexpr uint32_t MAX_ENCODE_SIZE = 1600;
     constexpr uint8_t NUM_PORTS        = 6;
-    constexpr uint8_t NUM_CHAINS       = 5;
+    constexpr uint8_t NUM_CHAINS       = NUM_PORTS;
 
     class NUSenseIO {
     private:
@@ -79,7 +79,8 @@ namespace platform::NUSense {
                              dynamixel::Chain(ports[1], 1),
                              dynamixel::Chain(ports[2], 2),
                              dynamixel::Chain(ports[3], 3),
-                             dynamixel::Chain(ports[4], 4)})
+                             dynamixel::Chain(ports[4], 4),
+                             dynamixel::Chain(ports[5], 5)})
             , imu() {}
 
         /// @brief   Begins the ports and sets the servos up with indirect addresses, etc.
