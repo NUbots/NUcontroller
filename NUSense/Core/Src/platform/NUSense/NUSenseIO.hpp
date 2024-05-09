@@ -2,8 +2,8 @@
 #define PLATFORM_NUSENSE_NUSENSEIO_HPP
 
 #include <array>
-#include <stdio.h>
 #include <iterator>
+#include <stdio.h>
 
 #include "../../dynamixel/Dynamixel.hpp"
 #include "../../dynamixel/PacketHandler.hpp"
@@ -11,12 +11,12 @@
 #include "../../usb/PacketHandler.hpp"
 #include "../../usb/protobuf/NUSenseData.pb.h"
 #include "../../usb/protobuf/pb_encode.h"
+#include "../../utility/message/hash.hpp"
 #include "../../utility/support/Button.hpp"
 #include "../../utility/support/MillisecondTimer.hpp"
 #include "../ServoState.hpp"
 #include "NUgus.hpp"
 #include "imu.h"
-#include "../../utility/message/hash.hpp"
 
 namespace platform::NUSense {
     constexpr uint32_t MAX_ENCODE_SIZE = 1600;

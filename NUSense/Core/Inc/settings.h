@@ -15,6 +15,5 @@
 
 #define RUN_MAIN
 // #define TEST_IMU
-//#define TEST_STREAMREACTOR
 
 #endif /* INC_SETTINGS_H_ */

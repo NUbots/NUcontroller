@@ -83,6 +83,8 @@ int main(void) {
     // Enable the clock for GPIOH.
     RCC->AHB4ENR |= (0b1 << (7));
 
+//    HAL_Delay(1000);
+//    test_hw::test_streamreactor();
 #ifdef RUN_MAIN
     // Delay for a bit to give the motor time to boot up. Without this delay, I found that the
     // motor does not respond at all. From some basic testing, I think that it is because the motor
