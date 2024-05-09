@@ -87,11 +87,24 @@ namespace usb {
                 pb_istream_t input_stream = pb_istream_from_buffer(
                     reinterpret_cast<const pb_byte_t*>(&pb_packets[sizeof(uint64_t) + sizeof(uint64_t)]),
                     pb_length);
+                
                 pb_decode(&input_stream, message_actuation_SubcontrollerServoTargets_fields, &targets);
-
                 return true;
+
+                // TODO (JohanneMontano) nanopb is complaining about something if we handle it using the code below. It seems like the nanopb error
+                // always happens but also always successfully decodes the SubcontrollerServoTargets message anyway. This must be investigated.
+                // nanopb_decoding_err = pb_decode(&input_stream, message_actuation_SubcontrollerServoTargets_fields, &targets) ? false : true;
+                // if (!nanopb_decoding_err) {
+                //     return true;
+                // }
             }
             return false;
+        }
+
+        /// @brief Getter for the member nanopb_decode_err
+        /// @brief A boolean value that describes the state of the most recent pb_decode() call
+        bool get_nanopb_decoding_status() {
+            return nanopb_decoding_err;
         }
 
         /// @brief Get the hash of the most recently decoded message
@@ -184,6 +197,9 @@ namespace usb {
 
         /// @brief The servo targets to send to the servos
         message_actuation_SubcontrollerServoTargets targets = message_actuation_SubcontrollerServoTargets_init_zero;
+
+        /// @brief A flag that describes the status of the most recent call to pb_decode
+        bool nanopb_decoding_err = false;
     };
 
 }  // namespace usb
