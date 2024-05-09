@@ -29,9 +29,10 @@ namespace platform::NUSense {
 
         // Send a write-instruction for the current servo.
         // Chain.write readys the packet handler for the response packet and starts the timeout timer.
-        chain.write(dynamixel::WriteCommand<DynamixelServoWriteDataPart1>(static_cast<uint8_t>(id),
-                                                                          static_cast<uint16_t>(AddressBook::SERVO_WRITE_1),
-                                                                          data));
+        chain.write(
+            dynamixel::WriteCommand<DynamixelServoWriteDataPart1>(static_cast<uint8_t>(id),
+                                                                  static_cast<uint16_t>(AddressBook::SERVO_WRITE_1),
+                                                                  data));
     }
 
     void NUSenseIO::send_servo_write_2_request(dynamixel::Chain& chain) {
@@ -52,8 +53,9 @@ namespace platform::NUSense {
 
         // Send a write-instruction for the current servo.
         // Chain.write readys the packet handler for the response packet and starts the timeout timer.
-        chain.write(dynamixel::WriteCommand<DynamixelServoWriteDataPart2>(static_cast<uint8_t>(id),
-                                                                          static_cast<uint16_t>(AddressBook::SERVO_WRITE_2),
-                                                                          data));
+        chain.write(
+            dynamixel::WriteCommand<DynamixelServoWriteDataPart2>(static_cast<uint8_t>(id),
+                                                                  static_cast<uint16_t>(AddressBook::SERVO_WRITE_2),
+                                                                  data));
     }
 }  // namespace platform::NUSense

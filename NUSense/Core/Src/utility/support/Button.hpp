@@ -29,7 +29,7 @@ namespace utility::support {
          * @brief   Destructs the button.
          * @note    nothing needs to be freed as of yet,
          */
-        virtual ~Button(){}
+        virtual ~Button() {}
 
         /**
          * @brief   Polls the pin.

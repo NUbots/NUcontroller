@@ -18,13 +18,13 @@ namespace utility::support {
          * @brief    Constructs the timer.
          * @param    htim the reference to the timer to be counted,
          */
-        MicrosecondTimer(TIM_HandleTypeDef* htim = &htim4) : htim(htim), threshold(0), is_counting(false){}
+        MicrosecondTimer(TIM_HandleTypeDef* htim = &htim4) : htim(htim), threshold(0), is_counting(false) {}
 
         /**
          * @brief   Destructs the timer.
          * @note    nothing needs to be freed as of yet,
          */
-        virtual ~MicrosecondTimer(){}
+        virtual ~MicrosecondTimer() {}
 
         /**
          * @brief   Begins the timer.
