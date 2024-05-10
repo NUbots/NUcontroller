@@ -131,4 +131,5 @@ namespace test_hw {
 #endif
 
 }  // namespace test_hw
+
 #endif /* SRC_TEST_HW_HPP_ */
