@@ -60,7 +60,7 @@ namespace nusense {
         // errors.
         pb_ostream_t output_buffer = pb_ostream_from_buffer(&encoding_payload[0], MAX_ENCODE_SIZE);
 
-        if (!pb_encode(&output_buffer, message_platform_NUSense_fields, &nusense_msg)) {
+        if (!pb_encode(&output_buffer, message_nusense_fields, &nusense_msg)) {
             // Encoding failed, we won't bother to send a packet
             nanopb_encoding_err = true;
 
