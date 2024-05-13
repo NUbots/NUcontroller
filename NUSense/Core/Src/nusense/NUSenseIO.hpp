@@ -1,19 +1,19 @@
-#ifndef PLATFORM_NUSENSE_NUSENSEIO_HPP
-#define PLATFORM_NUSENSE_NUSENSEIO_HPP
+#ifndef NUSENSE_NUSENSEIO_HPP
+#define NUSENSE_NUSENSEIO_HPP
 
 #include <array>
 #include <stdio.h>
 
-#include "../../dynamixel/Chain.hpp"
-#include "../../dynamixel/Dynamixel.hpp"
-#include "../../dynamixel/PacketHandler.hpp"
-#include "../../uart/Port.hpp"
-#include "../../usb/PacketHandler.hpp"
-#include "../../usb/protobuf/NUSenseData.pb.h"
-#include "../../usb/protobuf/pb_encode.h"
-#include "../../utility/support/Button.hpp"
-#include "../../utility/support/MillisecondTimer.hpp"
-#include "../ServoState.hpp"
+#include "ServoState.hpp"
+#include "../dynamixel/Chain.hpp"
+#include "../dynamixel/Dynamixel.hpp"
+#include "../dynamixel/PacketHandler.hpp"
+#include "../uart/Port.hpp"
+#include "../usb/PacketHandler.hpp"
+#include "../usb/protobuf/NUSenseData.pb.h"
+#include "../usb/protobuf/pb_encode.h"
+#include "../utility/support/Button.hpp"
+#include "../utility/support/MillisecondTimer.hpp"
 #include "ChainManager.hpp"
 #include "NUgus.hpp"
 #include "imu.h"
@@ -115,4 +115,4 @@ namespace nusense {
 
 }  // namespace nusense
 
-#endif  // PLATFORM_NUSENSE_NUSENSEIO_HPP
+#endif  // NUSENSE_NUSENSEIO_HPP

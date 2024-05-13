@@ -1,5 +1,5 @@
-#ifndef PLATFORM_SERVOSTATE_HPP
-#define PLATFORM_SERVOSTATE_HPP
+#ifndef NUSENSE_SERVOSTATE_HPP
+#define NUSENSE_SERVOSTATE_HPP
 
 #include <ostream>  // needed for outputting the servo-state
 
@@ -91,4 +91,4 @@ namespace nusense {
 
 }  // namespace nusense
 
-#endif  // PLATFORM_SERVOSTATE_HPP
+#endif  // NUSENSE_SERVOSTATE_HPP

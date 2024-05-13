@@ -1,4 +1,4 @@
-#include "../platform/NUSense/NUgus.hpp"
+#include "../nusense/NUgus.hpp"
 #include "../uart/Port.hpp"
 #include "../utility/support/MicrosecondTimer.hpp"
 #include "Dynamixel.hpp"

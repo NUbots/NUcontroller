@@ -2,8 +2,8 @@
 
 #include <limits>
 
-#include "../../utility/math/angle.hpp"
-#include "../../utility/math/comparison.hpp"
+#include "../utility/math/angle.hpp"
+#include "../utility/math/comparison.hpp"
 
 namespace nusense {
 

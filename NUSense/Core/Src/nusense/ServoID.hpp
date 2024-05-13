@@ -17,8 +17,8 @@
  * Copyright 2013 NUbots <nubots@nubots.net>
  */
 
-#ifndef PLATFORM_SERVOID_HPP
-#define PLATFORM_SERVOID_HPP
+#ifndef NUSENSE_SERVOID_HPP
+#define NUSENSE_SERVOID_HPP
 
 #include <set>
 #include <string>
@@ -123,4 +123,4 @@ namespace nusense {
     };
 }  // namespace nusense
 
-#endif  // PLATFORM_SERVOID_HPP
+#endif  // NUSENSE_SERVOID_HPP

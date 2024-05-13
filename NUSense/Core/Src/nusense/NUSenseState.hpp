@@ -1,5 +1,5 @@
-#ifndef PLATFORM_NUSENSE_NUSENSESTATE_HPP
-#define PLATFORM_NUSENSE_NUSENSESTATE_HPP
+#ifndef NUSENSE_NUSENSESTATE_HPP
+#define NUSENSE_NUSENSESTATE_HPP
 
 namespace nusense {
 
@@ -41,4 +41,4 @@ namespace nusense {
 
 }  // namespace nusense
 
-#endif  // PLATFORM_NUSENSE_NUSENSESTATE_HPP
+#endif  // NUSENSE_NUSENSESTATE_HPP

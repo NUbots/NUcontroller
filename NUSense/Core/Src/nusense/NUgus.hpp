@@ -1,9 +1,9 @@
-#ifndef PLATFORM_NUSENSE_NUGUS_HPP
-#define PLATFORM_NUSENSE_NUGUS_HPP
+#ifndef NUSENSE_NUGUS_HPP
+#define NUSENSE_NUGUS_HPP
 
 #include <array>
 
-#include "../../dynamixel/DynamixelServo.hpp"
+#include "../dynamixel/DynamixelServo.hpp"
 // #include "dynamixel/v2/FSR.hpp"
 
 namespace nusense {
@@ -184,4 +184,4 @@ namespace nusense {
 
 }  // namespace nusense
 
-#endif  // PLATFORM_NUSENSE_NUGUS_HPP
+#endif  // NUSENSE_NUGUS_HPP

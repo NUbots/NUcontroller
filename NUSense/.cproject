@@ -107,7 +107,6 @@
 					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1657339996.421766025" name="PacketHandler.hpp" rcbsApplicability="disable" resourcePath="Core/Src/dynamixel/PacketHandler.hpp" toolsToInvoke=""/>
 					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1657339996.1326535548" name="comparison.hpp" rcbsApplicability="disable" resourcePath="Core/Src/utility/math/comparison.hpp" toolsToInvoke=""/>
 					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1657339996.2011832554" name="angle.hpp" rcbsApplicability="disable" resourcePath="Core/Src/utility/math/angle.hpp" toolsToInvoke=""/>
-					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1657339996.1229033810" name="Convert.hpp" rcbsApplicability="disable" resourcePath="Core/Src/platform/NUSense/Convert.hpp" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry excluding="Src/dynamixel/Packet.hpp|Src/dynamixel/Devices.hpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
@@ -322,7 +321,6 @@
 					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1657339996.923860212.Core/Src/dynamixel/PacketHandler.hpp" name="PacketHandler.hpp" rcbsApplicability="disable" resourcePath="Core/Src/dynamixel/PacketHandler.hpp" toolsToInvoke=""/>
 					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1657339996.923860212.Core/Src/utility/math/comparison.hpp" name="comparison.hpp" rcbsApplicability="disable" resourcePath="Core/Src/utility/math/comparison.hpp" toolsToInvoke=""/>
 					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1657339996.923860212.Core/Src/utility/math/angle.hpp" name="angle.hpp" rcbsApplicability="disable" resourcePath="Core/Src/utility/math/angle.hpp" toolsToInvoke=""/>
-					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.1657339996.923860212.Core/Src/platform/NUSense/Convert.hpp" name="Convert.hpp" rcbsApplicability="disable" resourcePath="Core/Src/platform/NUSense/Convert.hpp" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry excluding="Src/dynamixel/Packet.hpp|Src/dynamixel/Devices.hpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>

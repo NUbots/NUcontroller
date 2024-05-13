@@ -26,7 +26,7 @@
 #include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
-#include "platform/NUSense/NUSenseIO.hpp"
+#include "nusense/NUSenseIO.hpp"
 #include "settings.h"
 #include "test_hw.hpp"
 

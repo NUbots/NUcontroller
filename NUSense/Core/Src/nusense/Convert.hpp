@@ -1,5 +1,5 @@
-#ifndef PLATFORM_NUSENSE_CONVERT_HPP
-#define PLATFORM_NUSENSE_CONVERT_HPP
+#ifndef NUSENSE_CONVERT_HPP
+#define NUSENSE_CONVERT_HPP
 
 #include <array>
 #include <stdexcept>
@@ -148,4 +148,4 @@ namespace nusense {
 
 }  // namespace nusense
 
-#endif  // PLATFORM_NUSENSE_CONVERT_HPP
+#endif  // NUSENSE_CONVERT_HPP

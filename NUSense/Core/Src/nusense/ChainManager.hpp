@@ -1,7 +1,7 @@
 #ifndef DYNAMIXEL_CHAIN_MANAGER_HPP
 #define DYNAMIXEL_CHAIN_MANAGER_HPP
 
-#include "../../dynamixel/Chain.hpp"
+#include "../dynamixel/Chain.hpp"
 
 namespace nusense {
 
