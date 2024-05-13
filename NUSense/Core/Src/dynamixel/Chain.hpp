@@ -41,7 +41,7 @@ namespace dynamixel {
             packet_handler.ready();
 
             // Send a broadcast ping to discover all devices on the chain
-            port.write(PingCommand(static_cast<uint8_t>(platform::NUSense::NUgus::ID::BROADCAST)));
+            port.write(PingCommand(static_cast<uint8_t>(nusense::NUgus::ID::BROADCAST)));
 
             // Start the utility timer for the maximum timeout of 3 ms * 253 devices = 759 ms
             utility_timer.begin(759);
@@ -50,14 +50,14 @@ namespace dynamixel {
         /// @brief  Listen for a response from a broadcast ping to discover all devices on the chain
         /// @note   This is a blocking function, and will wait for the full timeout of 759 ms
         /// @return All devices found on the chain
-        const std::vector<platform::NUSense::NUgus::ID>& discover_broadcast() {
+        const std::vector<nusense::NUgus::ID>& discover_broadcast() {
             // Only do discovery if we're currently discovering
             if (!discovering) {
                 return devices;
             }
 
             // keep listening for packets until we timeout and there are no more packets
-            while (packet_handler.check_sts<3>(platform::NUSense::NUgus::ID::BROADCAST) != PacketHandler::Result::NONE
+            while (packet_handler.check_sts<3>(nusense::NUgus::ID::BROADCAST) != PacketHandler::Result::NONE
                    || !utility_timer.has_timed_out()) {
                 switch (packet_handler.get_result()) {
                     // If we got a good status, extract the ID
@@ -65,9 +65,9 @@ namespace dynamixel {
                     case PacketHandler::Result::SUCCESS: {
                         auto sts = reinterpret_cast<const StatusReturnCommand<3>*>(packet_handler.get_sts_packet());
                         // Add the ID to the chain
-                        devices.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
-                        if (sts->id <= static_cast<uint8_t>(platform::NUSense::NUgus::ID::MAX_SERVO_ID)) {
-                            servos.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
+                        devices.push_back(static_cast<nusense::NUgus::ID>(sts->id));
+                        if (sts->id <= static_cast<uint8_t>(nusense::NUgus::ID::MAX_SERVO_ID)) {
+                            servos.push_back(static_cast<nusense::NUgus::ID>(sts->id));
                         }
                         /// TODO: Potentially use the returned data to store the device model number and firmware
                         /// version.
@@ -75,7 +75,7 @@ namespace dynamixel {
                     // If we got an error, hold onto it for logging
                     case PacketHandler::Result::ERROR: {
                         auto sts = reinterpret_cast<const StatusReturnCommand<3>*>(packet_handler.get_sts_packet());
-                        error_devices.push_back(static_cast<platform::NUSense::NUgus::ID>(sts->id));
+                        error_devices.push_back(static_cast<nusense::NUgus::ID>(sts->id));
                     } break;
                     // Skip the packet handler reset for a partial or none packet
                     case PacketHandler::Result::PARTIAL:
@@ -99,24 +99,24 @@ namespace dynamixel {
 
         /// @brief  Gets all devices in the chain.
         /// @return A reference to the vector of devices in the chain.
-        const std::vector<platform::NUSense::NUgus::ID>& get_devices() const {
+        const std::vector<nusense::NUgus::ID>& get_devices() const {
             return devices;
         };
 
         /// @brief  Gets all servos in the chain.
         /// @retval A reference to the vector of servos in the chain.
-        const std::vector<platform::NUSense::NUgus::ID>& get_servos() const {
+        const std::vector<nusense::NUgus::ID>& get_servos() const {
             return servos;
         };
 
         /// @brief Gets a reference to the list of devices which errored out during discovery
-        const std::vector<platform::NUSense::NUgus::ID>& get_error_devices() const {
+        const std::vector<nusense::NUgus::ID>& get_error_devices() const {
             return error_devices;
         };
 
         /// @brief Whether a device is present in the chain
         /// @param id: The ID of the device to check for
-        bool contains(platform::NUSense::NUgus::ID id) const {
+        bool contains(nusense::NUgus::ID id) const {
             // Due to the response policy we know `devices` is sorted
             return std::binary_search(devices.begin(), devices.end(), id);
         };
@@ -137,12 +137,12 @@ namespace dynamixel {
         };
 
         /// @brief  Return the ID at the current index
-        const platform::NUSense::NUgus::ID& current() const {
+        const nusense::NUgus::ID& current() const {
             return devices[index];
         };
 
         /// @brief Move along the chain
-        const platform::NUSense::NUgus::ID& next() {
+        const nusense::NUgus::ID& next() {
             index = (index + 1) % devices.size();
             return devices[index];
         };
@@ -179,19 +179,19 @@ namespace dynamixel {
         };
 
         /// @brief Allow the chain to be indexed like a vector
-        const platform::NUSense::NUgus::ID& operator[](uint8_t i) const {
+        const nusense::NUgus::ID& operator[](uint8_t i) const {
             return devices[i];
         };
 
 
     private:
         /// @brief  The list of dynamixel devices in the chain.
-        std::vector<platform::NUSense::NUgus::ID> devices;
+        std::vector<nusense::NUgus::ID> devices;
         /// @brief  The list of servos on the chain (i.e. devices with ID <= 20)
         /// @note   For forward compatibility with, e.g. FSRs
-        std::vector<platform::NUSense::NUgus::ID> servos;
+        std::vector<nusense::NUgus::ID> servos;
         /// @brief  Dynamixel devices which error out during discovery
-        std::vector<platform::NUSense::NUgus::ID> error_devices;
+        std::vector<nusense::NUgus::ID> error_devices;
         /// @brief  The port that the chain is connected to.
         uart::Port& port;
         /// @brief  The packet-handler for the chain.

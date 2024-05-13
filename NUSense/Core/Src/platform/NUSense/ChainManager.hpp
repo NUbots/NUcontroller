@@ -3,7 +3,7 @@
 
 #include "../../dynamixel/Chain.hpp"
 
-namespace platform::NUSense {
+namespace nusense {
 
     /**
      * @brief A collection of dynamixel device chains which belong together. There cannot be any shared IDs within a
@@ -46,6 +46,6 @@ namespace platform::NUSense {
     private:
         std::array<dynamixel::Chain, N> chains{};
     };
-};  // namespace platform::NUSense
+};  // namespace nusense
 
 #endif  // DYNAMIXEL_CHAIN_MANAGER_HPP

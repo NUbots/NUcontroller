@@ -1,6 +1,6 @@
 #include "../NUSenseIO.hpp"
 
-namespace platform::NUSense {
+namespace nusense {
     bool NUSenseIO::nusense_to_nuc() {
         // Get a new lot of IMU data
         IMU::ConvertedData converted_data;
@@ -89,4 +89,4 @@ namespace platform::NUSense {
 
         return true;
     }
-}  // namespace platform::NUSense
+}  // namespace nusense

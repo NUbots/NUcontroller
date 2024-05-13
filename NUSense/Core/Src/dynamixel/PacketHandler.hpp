@@ -38,7 +38,7 @@ namespace dynamixel {
          *            #SUCCESS if all the expected packets have been decoded,
          */
         template <uint16_t N>
-        const Result check_sts(const platform::NUSense::NUgus::ID id) {
+        const Result check_sts(const nusense::NUgus::ID id) {
             // Grab a new byte if there isn't a whole packet ready.
             if (!packetiser.is_packet_ready()) {
                 // Attempt to read a byte from the buffer
@@ -72,7 +72,7 @@ namespace dynamixel {
             auto short_sts = reinterpret_cast<const StatusReturnCommand<0>*>(packetiser.get_decoded_packet());
 
             // Perform some checks on the packet
-            bool id_correct = (sts->id == static_cast<uint8_t>(id)) || (id == platform::NUSense::NUgus::ID::BROADCAST);
+            bool id_correct          = (sts->id == static_cast<uint8_t>(id)) || (id == nusense::NUgus::ID::BROADCAST);
             bool packet_kind_correct = (sts->instruction == Instruction::STATUS_RETURN);
 
             // If the CRC, the ID, and the packet-kind are correct, then return any error.

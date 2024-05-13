@@ -18,7 +18,7 @@
 #include "NUgus.hpp"
 #include "imu.h"
 
-namespace platform::NUSense {
+namespace nusense {
     constexpr uint32_t MAX_ENCODE_SIZE = 1600;
     constexpr uint8_t NUM_PORTS        = 6;
     constexpr uint8_t NUM_CHAINS       = NUM_PORTS;
@@ -32,7 +32,7 @@ namespace platform::NUSense {
 
         /// @brief  This is the local storage of each servo's state. This is to be updated
         ///         regularly by polling the servos constantly and to be spammed to the NUC.
-        std::array<platform::ServoState, NUMBER_OF_DEVICES> servo_states{};
+        std::array<nusense::ServoState, NUMBER_OF_DEVICES> servo_states{};
 
         /// @brief  Collection of Chain objects used to interface with the servos.
         ChainManager<NUM_CHAINS> chain_manager;
@@ -113,6 +113,6 @@ namespace platform::NUSense {
         bool nusense_to_nuc();
     };
 
-}  // namespace platform::NUSense
+}  // namespace nusense
 
 #endif  // PLATFORM_NUSENSE_NUSENSEIO_HPP

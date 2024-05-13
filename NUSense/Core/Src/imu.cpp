@@ -12,7 +12,7 @@
 
 #include <cmath>
 
-namespace platform::NUSense {
+namespace nusense {
 
     static volatile uint8_t spi_int_flags;
 
@@ -245,4 +245,4 @@ namespace platform::NUSense {
         return converted_data;
     };
 
-}  // namespace platform::NUSense
+}  // namespace nusense

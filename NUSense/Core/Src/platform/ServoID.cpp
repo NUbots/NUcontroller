@@ -20,7 +20,7 @@
 
 #include <stdexcept>
 
-namespace platform {
+namespace nusense {
 
     ServoID::ServoID(std::string const& str) {
         // clang-format off
@@ -77,4 +77,4 @@ namespace platform {
     std::ostream& operator<<(std::ostream& out, const ServoID& val) {
         return out << static_cast<std::string>(val);
     }
-}  // namespace platform
+}  // namespace nusense

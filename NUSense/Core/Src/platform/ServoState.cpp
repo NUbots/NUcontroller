@@ -2,7 +2,7 @@
 
 #include <iomanip>  // needed to make the output stream nicer
 
-namespace platform {
+namespace nusense {
 
     std::ostream& operator<<(std::ostream& out, const ServoState& servo_state) {
         out << "Torque En. " << std::setw(1) << servo_state.torque_enabled << "\t";
@@ -20,4 +20,4 @@ namespace platform {
         return out;
     }
 
-}  // namespace platform
+}  // namespace nusense

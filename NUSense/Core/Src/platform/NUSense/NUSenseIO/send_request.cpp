@@ -2,7 +2,7 @@
 #include "../Convert.hpp"
 #include "../NUSenseIO.hpp"
 
-namespace platform::NUSense {
+namespace nusense {
 
     void NUSenseIO::send_servo_read_request(dynamixel::Chain& chain) {
         NUgus::ID id = chain.current();
@@ -58,4 +58,4 @@ namespace platform::NUSense {
                                                                   static_cast<uint16_t>(AddressBook::SERVO_WRITE_2),
                                                                   data));
     }
-}  // namespace platform::NUSense
+}  // namespace nusense

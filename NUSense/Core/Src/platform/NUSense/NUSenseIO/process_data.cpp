@@ -1,7 +1,7 @@
 #include "../Convert.hpp"
 #include "../NUSenseIO.hpp"
 
-namespace platform::NUSense {
+namespace nusense {
 
     void NUSenseIO::process_servo_data(const dynamixel::StatusReturnCommand<sizeof(DynamixelServoReadData)> packet) {
         const DynamixelServoReadData data = *(reinterpret_cast<const DynamixelServoReadData*>(packet.data.data()));
@@ -54,4 +54,4 @@ namespace platform::NUSense {
         }
     }
 
-}  // namespace platform::NUSense
+}  // namespace nusense

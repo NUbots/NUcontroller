@@ -6,7 +6,7 @@
 #include "../../dynamixel/DynamixelServo.hpp"
 // #include "dynamixel/v2/FSR.hpp"
 
-namespace platform::NUSense {
+namespace nusense {
 
     struct MX64 : public dynamixel::DynamixelServo {
         MX64(uint8_t ID) : ID(ID) {}
@@ -182,6 +182,6 @@ namespace platform::NUSense {
         // FSR_READ              = uint16_t(FSR::Address::FSR1_L)
     };
 
-}  // namespace platform::NUSense
+}  // namespace nusense
 
 #endif  // PLATFORM_NUSENSE_NUGUS_HPP

@@ -23,7 +23,7 @@
 #include <set>
 #include <string>
 
-namespace platform {
+namespace nusense {
 
     struct ServoID {
         enum Value {
@@ -121,6 +121,6 @@ namespace platform {
     private:
         static const std::set<ServoID> values;
     };
-}  // namespace platform
+}  // namespace nusense
 
 #endif  // PLATFORM_SERVOID_HPP

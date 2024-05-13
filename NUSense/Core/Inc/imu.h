@@ -16,11 +16,11 @@
  * IMU class usage instructions:
  *
  * 1. Create instance:
- *  NUSense::IMU imu{};
+ *  nusense::IMU imu{};
  *
  * 2. Create structs for IMU data (you may not need raw_data)
- *  NUSense::IMU::RawData raw_data;
- *  NUSense::IMU::ConvertedData converted_data;
+ *  nusense::IMU::RawData raw_data;
+ *  nusense::IMU::ConvertedData converted_data;
  *
  * 3. Start the imu:
  *  imu.init();
@@ -56,7 +56,7 @@
 #include "spi.h"
 
 
-namespace platform::NUSense {
+namespace nusense {
 
     //---------------Constants----------------//
     // Masks for the flags for each SPI interface, in this case only one:
@@ -730,6 +730,6 @@ namespace platform::NUSense {
     extern uint8_t SPI_flag;
     extern uint8_t INT_flag;
 
-}  // namespace platform::NUSense
+}  // namespace nusense
 
 #endif  //_IMU_H_

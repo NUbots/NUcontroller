@@ -6,7 +6,7 @@
 #include "signal.h"
 #include "usbd_cdc_if.h"
 
-namespace platform::NUSense {
+namespace nusense {
 
     void NUSenseIO::loop() {
         // For each port, check whether the expected status has been
@@ -17,8 +17,7 @@ namespace platform::NUSense {
             uint8_t current_servo_index = static_cast<uint8_t>(chain.current()) - 1;
 
             dynamixel::PacketHandler::Result result =
-                chain.get_packet_handler().check_sts<sizeof(platform::NUSense::DynamixelServoReadData)>(
-                    chain.current());
+                chain.get_packet_handler().check_sts<sizeof(nusense::DynamixelServoReadData)>(chain.current());
             // If there is a status-response waiting, then handle it.
             if (result == dynamixel::PacketHandler::SUCCESS) {
 
@@ -55,9 +54,10 @@ namespace platform::NUSense {
                     // Parse and convert the read data to the local cache and then send the first
                     // write instruction if the servo is dirty.
                     case StatusState::READ_RESPONSE:
-                        process_servo_data(*reinterpret_cast<const dynamixel::StatusReturnCommand<sizeof(
-                                               platform::NUSense::DynamixelServoReadData)>*>(
-                            chain.get_packet_handler().get_sts_packet()));
+                        process_servo_data(
+                            *reinterpret_cast<
+                                const dynamixel::StatusReturnCommand<sizeof(nusense::DynamixelServoReadData)>*>(
+                                chain.get_packet_handler().get_sts_packet()));
 
                         // Move along the chain.
                         chain.next();
@@ -162,4 +162,4 @@ namespace platform::NUSense {
             }
         }
     }
-}  // namespace platform::NUSense
+}  // namespace nusense

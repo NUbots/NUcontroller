@@ -1,7 +1,7 @@
 #ifndef PLATFORM_NUSENSE_NUSENSESTATE_HPP
 #define PLATFORM_NUSENSE_NUSENSESTATE_HPP
 
-namespace platform::NUSense {
+namespace nusense {
 
     /// @brief  The state of the hardware on the board.
     /// @note   May be used later on for IO, etc.
@@ -39,6 +39,6 @@ namespace platform::NUSense {
         uint8_t blue  = 0x00;
     };
 
-}  // namespace platform::NUSense
+}  // namespace nusense
 
 #endif  // PLATFORM_NUSENSE_NUSENSESTATE_HPP

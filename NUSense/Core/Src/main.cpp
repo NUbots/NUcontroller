@@ -91,7 +91,7 @@ int main(void) {
     HAL_Delay(1000);
 
     /// @brief the instance for running most of the NUSense code.
-    platform::NUSense::NUSenseIO nusenseIO;
+    nusense::NUSenseIO nusenseIO;
 
     nusenseIO.startup();
 
