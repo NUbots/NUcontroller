@@ -14,7 +14,7 @@ namespace nusense {
     public:
         /// @brief Constructs a chain manager for N chains, and starts device discovery on each chain.
         /// @param chains: An array of chains to manage.
-        ChainManager(std::array<dynamixel::Chain, N> chains) : chains(chains) {
+        ChainManager(std::array<dynamixel::Chain, N> chain_array) : chains(chain_array) {
             // Initialise each chain
             for (auto& chain : chains) {
                 // Begin the receiving. This should be done only once if we are using the DMA as a buffer.
