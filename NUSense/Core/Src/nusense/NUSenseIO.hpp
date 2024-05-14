@@ -2,6 +2,7 @@
 #define NUSENSE_NUSENSEIO_HPP
 
 #include <array>
+#include <iterator>
 #include <stdio.h>
 
 #include "ServoState.hpp"
@@ -12,6 +13,7 @@
 #include "../usb/PacketHandler.hpp"
 #include "../usb/protobuf/NUSenseData.pb.h"
 #include "../usb/protobuf/pb_encode.h"
+#include "../utility/message/hash.hpp"
 #include "../utility/support/Button.hpp"
 #include "../utility/support/MillisecondTimer.hpp"
 #include "ChainManager.hpp"
