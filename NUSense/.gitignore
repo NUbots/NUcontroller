@@ -3,5 +3,6 @@
 .settings/
 [Rr]elease/
 [Dd]ebug/
+[Dd]ebug NoOp/
 *.launch
 .mxproject

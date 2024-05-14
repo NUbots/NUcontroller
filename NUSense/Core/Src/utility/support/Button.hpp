@@ -23,12 +23,13 @@ namespace utility::support {
             port->PUPDR |= (0b01 << (pin * 2));
             // Set the pin as an input.
             port->MODER &= ~(0b11 << (pin * 2));
-        };
+        }
+
         /**
          * @brief   Destructs the button.
          * @note    nothing needs to be freed as of yet,
          */
-        virtual ~Button(){};
+        virtual ~Button() {}
 
         /**
          * @brief   Polls the pin.

@@ -16,11 +16,11 @@
  * IMU class usage instructions:
  *
  * 1. Create instance:
- *  NUSense::IMU imu{};
+ *  nusense::IMU imu{};
  *
  * 2. Create structs for IMU data (you may not need raw_data)
- *  NUSense::IMU::RawData raw_data;
- *  NUSense::IMU::ConvertedData converted_data;
+ *  nusense::IMU::RawData raw_data;
+ *  nusense::IMU::ConvertedData converted_data;
  *
  * 3. Start the imu:
  *  imu.init();
@@ -28,18 +28,18 @@
  * 4. The IMU can be read in four ways:
  *  a) Easy and most useful way:
  *      // read *new* data and return in converted form
- *      converted_data = imu.getNewConvertedData();
+ *      converted_data = imu.get_new_converted_data();
  *
  *  c) Getting new data entirely manually:
  *      // get *new* IMU data on each call
- *      imu.getNewRawData();
+ *      imu.get_new_raw_data();
  *      // convert the data within the class
- *      imu.generateConvertedData();
+ *      imu.generate_converted_data();
  *      // get the converted data (*not* a new read)
- *      converted_data = imu.getLastConvertedData();
+ *      converted_data = imu.get_last_converted_data();
  *
  *  d) Getting existing old raw data if you want that for some reason?
- *      raw_data = imu.getLastRawData();
+ *      raw_data = imu.get_last_raw_data();
  *
  */
 
@@ -56,7 +56,7 @@
 #include "spi.h"
 
 
-namespace NUSense {
+namespace nusense {
 
     //---------------Constants----------------//
     // Masks for the flags for each SPI interface, in this case only one:
@@ -76,6 +76,15 @@ namespace NUSense {
 
     class IMU {
     public:
+        /// @brief Constructs and initialises the IMU
+        /// @todo  Add configuration parameters in constructor
+        IMU() {
+            // Initialize the IMU
+            init();
+        };
+
+        virtual ~IMU(){};
+
         // From Table-1, Table-2, and Table-3 from the datasheet.
         const uint16_t ACCEL_SENSITIVTY_2G     = 16384;  // LSB/g
         const uint16_t ACCEL_SENSITIVTY_4G     = 8192;   // LSB/g
@@ -651,7 +660,7 @@ namespace NUSense {
          * @param   the byte to be sent,
          * @return  none
          */
-        void writeReg(Address addr, uint8_t data);
+        void write_reg(Address addr, uint8_t data);
 
         /*
          * @brief   reads a byte from a register.
@@ -660,7 +669,7 @@ namespace NUSense {
          * @param   a pointer to the byte to be read,
          * @return  none
          */
-        void readReg(Address addr, uint8_t* data);
+        void read_reg(Address addr, uint8_t* data);
 
         /*
          * @brief   reads multiple consecutive registers in a burst.
@@ -670,7 +679,7 @@ namespace NUSense {
          * @param   the length, i.e. the number of registers to be read,
          * @return  none
          */
-        void readBurst(Address addr, uint8_t* data, uint16_t length);
+        void read_burst(Address addr, uint8_t* data, uint16_t length);
 
         /*
          * @brief   converts raw integers into floating decimals.
@@ -679,33 +688,33 @@ namespace NUSense {
          * @param   the converted data,
          * @return  none
          */
-        void convertRawData(IMU::RawData* raw_data, IMU::ConvertedData* converted_data);
+        void convert_raw_data(IMU::RawData* raw_data, IMU::ConvertedData* converted_data);
 
         /*
          * @brief   fill converted data based on raw data
          * @return  none
          */
-        void generateConvertedData(void);
+        void generate_converted_data(void);
 
         /*
          * @brief   get new data, return it, donezo
          */
-        RawData getNewRawData(void);
+        RawData get_new_raw_data(void);
 
         /*
          * @brief   get new data, convert it, return it, donezo
          */
-        ConvertedData getNewConvertedData(void);
+        ConvertedData get_new_converted_data(void);
 
         /*
          * @brief   a simple getter for the current stored raw data
          */
-        RawData getLastRawData(void);
+        RawData get_last_raw_data(void);
 
         /*
          * @brief   a simple getter for the current stored converted data
          */
-        ConvertedData getLastConvertedData(void);
+        ConvertedData get_last_converted_data(void);
 
     protected:
     private:
@@ -721,6 +730,6 @@ namespace NUSense {
     extern uint8_t SPI_flag;
     extern uint8_t INT_flag;
 
-}  // namespace NUSense
+}  // namespace nusense
 
 #endif  //_IMU_H_

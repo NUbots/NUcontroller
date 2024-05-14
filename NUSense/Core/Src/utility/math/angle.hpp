@@ -21,7 +21,7 @@
 #define UTILITY_MATH_ANGLE_HPP
 
 // TODO: Eventually, we will need Eigen, but for now, ignore it.
-//#include <Eigen/Core>
+// #include <Eigen/Core>
 #include <cmath>
 
 /**

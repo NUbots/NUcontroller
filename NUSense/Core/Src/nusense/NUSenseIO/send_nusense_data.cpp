@@ -1,10 +1,10 @@
 #include "../NUSenseIO.hpp"
 
-namespace platform::NUSense {
+namespace nusense {
     bool NUSenseIO::nusense_to_nuc() {
         // Get a new lot of IMU data
-        ::NUSense::IMU::ConvertedData converted_data;
-        converted_data = imu.getNewConvertedData();
+        IMU::ConvertedData converted_data;
+        converted_data = imu.get_new_converted_data();
 
         // TODO: (JohanneMontano) Handle IMU read and conversions if it fails
         // Fill the struct with the values we converted from the IMU output
@@ -61,7 +61,7 @@ namespace platform::NUSense {
         pb_ostream_t output_buffer = pb_ostream_from_buffer(&encoding_payload[0], MAX_ENCODE_SIZE);
 
         // TODO (NUSense people) Handle encoding errors properly using this member somehow
-        nanopb_encoding_err = pb_encode(&output_buffer, message_platform_NUSense_fields, &nusense_msg) ? false : true;
+        nanopb_encoding_err = pb_encode(&output_buffer, message_nusense_fields, &nusense_msg) ? false : true;
         if (nanopb_encoding_err) {
             return false;
         }
@@ -101,4 +101,4 @@ namespace platform::NUSense {
 
         return true;
     }
-}  // namespace platform::NUSense
+}  // namespace nusense

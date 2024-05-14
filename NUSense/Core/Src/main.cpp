@@ -26,7 +26,7 @@
 #include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
-#include "platform/NUSense/NUSenseIO.hpp"
+#include "nusense/NUSenseIO.hpp"
 #include "settings.h"
 #include "test_hw.hpp"
 
@@ -91,7 +91,7 @@ int main(void) {
     HAL_Delay(1000);
 
     /// @brief the instance for running most of the NUSense code.
-    platform::NUSense::NUSenseIO nusenseIO;
+    nusense::NUSenseIO nusenseIO;
 
     nusenseIO.startup();
 

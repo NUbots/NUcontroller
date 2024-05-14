@@ -2,10 +2,10 @@
 
 #include <limits>
 
-#include "../../utility/math/angle.hpp"
-#include "../../utility/math/comparison.hpp"
+#include "../utility/math/angle.hpp"
+#include "../utility/math/comparison.hpp"
 
-namespace platform::NUSense {
+namespace nusense {
 
     namespace convert {
 
@@ -218,4 +218,4 @@ namespace platform::NUSense {
 
     }  // namespace convert
 
-}  // namespace platform::NUSense
+}  // namespace nusense

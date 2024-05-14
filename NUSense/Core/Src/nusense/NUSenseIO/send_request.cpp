@@ -2,21 +2,21 @@
 #include "../Convert.hpp"
 #include "../NUSenseIO.hpp"
 
-namespace platform::NUSense {
+namespace nusense {
 
-    void NUSenseIO::send_servo_read_request(const NUgus::ID id, const uint8_t port_i) {
-        packet_handlers[port_i].reset();
-        packet_handlers[port_i].begin();
-        ports[port_i].write(dynamixel::ReadCommand((uint8_t) id,
-                                                   (uint16_t) AddressBook::SERVO_READ,
-                                                   (uint16_t) sizeof(DynamixelServoReadData)));
+    void NUSenseIO::send_servo_read_request(dynamixel::Chain& chain) {
+        NUgus::ID id = chain.current();
+        chain.write(dynamixel::ReadCommand(static_cast<uint8_t>(id),
+                                           static_cast<uint16_t>(AddressBook::SERVO_READ),
+                                           static_cast<uint16_t>(sizeof(DynamixelServoReadData))));
     }
 
-    void NUSenseIO::send_servo_write_1_request(const NUgus::ID id, const uint8_t port_i) {
+    void NUSenseIO::send_servo_write_1_request(dynamixel::Chain& chain) {
 
         DynamixelServoWriteDataPart1 data{};
 
-        uint8_t i = (uint8_t) id - 1;
+        NUgus::ID id = chain.current();
+        uint8_t i    = static_cast<uint8_t>(id) - 1;
 
         // If our torque should be disabled then we disable our torque
         data.torque_enable = uint8_t(servo_states[i].torque != 0 && !std::isnan(servo_states[i].goal_position));
@@ -28,18 +28,19 @@ namespace platform::NUSense {
         data.position_p_gain = convert::p_gain(servo_states[i].position_p_gain);
 
         // Send a write-instruction for the current servo.
-        packet_handlers[port_i].reset();
-        packet_handlers[port_i].begin();
-        ports[port_i].write(dynamixel::WriteCommand<DynamixelServoWriteDataPart1>((uint8_t) id,
-                                                                                  (uint16_t) AddressBook::SERVO_WRITE_1,
-                                                                                  data));
+        // Chain.write readys the packet handler for the response packet and starts the timeout timer.
+        chain.write(
+            dynamixel::WriteCommand<DynamixelServoWriteDataPart1>(static_cast<uint8_t>(id),
+                                                                  static_cast<uint16_t>(AddressBook::SERVO_WRITE_1),
+                                                                  data));
     }
 
-    void NUSenseIO::send_servo_write_2_request(const NUgus::ID id, const uint8_t port_i) {
+    void NUSenseIO::send_servo_write_2_request(dynamixel::Chain& chain) {
 
         DynamixelServoWriteDataPart2 data{};
 
-        uint8_t i = (uint8_t) id - 1;
+        NUgus::ID id = chain.current();
+        uint8_t i    = static_cast<uint8_t>(id) - 1;
 
         data.feedforward_1st_gain = convert::ff_gain(servo_states[i].feedforward_1st_gain);
         data.feedforward_2nd_gain = convert::ff_gain(servo_states[i].feedforward_2nd_gain);
@@ -51,11 +52,10 @@ namespace platform::NUSense {
         data.goal_position        = convert::position(i, servo_states[i].goal_position, {1}, {0});
 
         // Send a write-instruction for the current servo.
-        packet_handlers[port_i].reset();
-        packet_handlers[port_i].begin();
-        ports[port_i].write(dynamixel::WriteCommand<DynamixelServoWriteDataPart2>((uint8_t) id,
-                                                                                  (uint16_t) AddressBook::SERVO_WRITE_2,
-                                                                                  data));
+        // Chain.write readys the packet handler for the response packet and starts the timeout timer.
+        chain.write(
+            dynamixel::WriteCommand<DynamixelServoWriteDataPart2>(static_cast<uint8_t>(id),
+                                                                  static_cast<uint16_t>(AddressBook::SERVO_WRITE_2),
+                                                                  data));
     }
-
-}  // namespace platform::NUSense
+}  // namespace nusense

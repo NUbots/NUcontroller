@@ -1,6 +1,6 @@
 #include "NUgus.hpp"
 
-namespace platform::NUSense {
+namespace nusense {
 
     NUgus::NUgus()
         : R_SHOULDER_PITCH(uint8_t(ID::R_SHOULDER_PITCH))
@@ -24,4 +24,4 @@ namespace platform::NUSense {
         , HEAD_YAW(uint8_t(ID::HEAD_YAW))
         , HEAD_PITCH(uint8_t(ID::HEAD_PITCH)) {}
 
-}  // namespace platform::NUSense
+}  // namespace nusense

@@ -2,14 +2,14 @@
 
 #include <iomanip>  // needed to make the output stream nicer
 
-namespace platform {
+namespace nusense {
 
     std::ostream& operator<<(std::ostream& out, const ServoState& servo_state) {
         out << "Torque En. " << std::setw(1) << servo_state.torque_enabled << "\t";
-        out << "Pk. Err. 0x" << std::setfill('0') << std::setw(4) << std::hex << (uint16_t) servo_state.packet_error
-            << "\t" << std::setfill(' ');
-        out << "Hw. Err. 0x" << std::setfill('0') << std::setw(4) << std::hex << (uint16_t) servo_state.packet_error
-            << "\t" << std::setfill(' ');
+        out << "Pk. Err. 0x" << std::setfill('0') << std::setw(4) << std::hex
+            << static_cast<uint16_t>(servo_state.packet_error) << "\t" << std::setfill(' ');
+        out << "Hw. Err. 0x" << std::setfill('0') << std::setw(4) << std::hex
+            << static_cast<uint16_t>(servo_state.packet_error) << "\t" << std::setfill(' ');
         out << "PWM " << std::fixed << std::setw(6) << std::setprecision(2) << servo_state.present_pwm << "\t";
         out << "Curr. " << std::fixed << std::setw(6) << std::setprecision(2) << servo_state.present_current << "\t";
         out << "Vel. " << std::fixed << std::setw(8) << std::setprecision(2) << servo_state.present_velocity << "\t";
@@ -20,4 +20,4 @@ namespace platform {
         return out;
     }
 
-}  // namespace platform
+}  // namespace nusense

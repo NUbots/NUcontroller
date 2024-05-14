@@ -1,12 +1,12 @@
-#ifndef PLATFORM_SERVOSTATE_HPP
-#define PLATFORM_SERVOSTATE_HPP
+#ifndef NUSENSE_SERVOSTATE_HPP
+#define NUSENSE_SERVOSTATE_HPP
 
 #include <ostream>  // needed for outputting the servo-state
 
 #include "../utility/math/CircularMean.hpp"
 #include "stdint.h"  // needed for explicit type-defines
 
-namespace platform {
+namespace nusense {
     /// @see servo_states
     struct ServoState {
         /// @brief True if we need to write new values to the hardware
@@ -89,6 +89,6 @@ namespace platform {
      */
     std::ostream& operator<<(std::ostream& out, const ServoState& servo_state);
 
-}  // namespace platform
+}  // namespace nusense
 
-#endif  // PLATFORM_SERVOSTATE_HPP
+#endif  // NUSENSE_SERVOSTATE_HPP

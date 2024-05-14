@@ -4,13 +4,6 @@
 
 namespace uart {
 
-    Port::Port(uint8_t uart_number = 1) : rs_link(uart_number), num_bytes_tx(0), comm_state(RX_IDLE) {}
-
-    Port::~Port() {
-        // May do something with this later.
-        // Not really anything to free as of yet.
-    }
-
     uint16_t Port::get_available_rx() {
 #ifdef USE_DMA_RX_BUFFER
         handle_rx();
@@ -66,14 +59,14 @@ namespace uart {
     uint8_t Port::begin_rx() {
 #ifdef USE_DMA_RX_BUFFER
         // Begin the receival of all bytes into a circular buffer.
-        return (uint8_t) rs_link.receive(rx_buffer.data, PORT_BUFFER_SIZE);
+        return static_cast<uint8_t>(rs_link.receive(rx_buffer.data, PORT_BUFFER_SIZE));
 #else
         // Begin the receival of a byte only if there is no transmission.
         switch (comm_state) {
             case TX_DONE:
                 comm_state = RX_IDLE;
                 HAL_GPIO_WritePin(SPARE1_GPIO_Port, SPARE1_Pin, GPIO_PIN_SET);
-                return (uint8_t) rs_link.receive(&received_byte, 1);
+                return static_cast<uint8_t>(rs_link.receive(&received_byte, 1));
             case RX_IDLE: return 0xFE;
             case TX_BUSY:
             default: return 0xFF;

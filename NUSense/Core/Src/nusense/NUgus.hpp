@@ -1,12 +1,12 @@
-#ifndef PLATFORM_NUSENSE_NUGUS_HPP
-#define PLATFORM_NUSENSE_NUGUS_HPP
+#ifndef NUSENSE_NUGUS_HPP
+#define NUSENSE_NUGUS_HPP
 
 #include <array>
 
-#include "../../dynamixel/DynamixelServo.hpp"
+#include "../dynamixel/DynamixelServo.hpp"
 // #include "dynamixel/v2/FSR.hpp"
 
-namespace platform::NUSense {
+namespace nusense {
 
     struct MX64 : public dynamixel::DynamixelServo {
         MX64(uint8_t ID) : ID(ID) {}
@@ -59,7 +59,10 @@ namespace platform::NUSense {
             HEAD_PITCH       = 20,
             R_FSR            = 111,
             L_FSR            = 112,
-            BROADCAST        = 254
+            BROADCAST        = 254,
+            MIN_ID           = R_SHOULDER_PITCH,
+            MAX_ID           = L_FSR,
+            MAX_SERVO_ID     = HEAD_PITCH
         };
 
         MX64 R_SHOULDER_PITCH;
@@ -179,6 +182,6 @@ namespace platform::NUSense {
         // FSR_READ              = uint16_t(FSR::Address::FSR1_L)
     };
 
-}  // namespace platform::NUSense
+}  // namespace nusense
 
-#endif  // PLATFORM_NUSENSE_NUGUS_HPP
+#endif  // NUSENSE_NUGUS_HPP

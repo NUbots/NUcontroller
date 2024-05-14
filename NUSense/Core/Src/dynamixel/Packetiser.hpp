@@ -173,6 +173,8 @@ namespace dynamixel {
 
         /**
          * @brief   Gets the pointer to the decoded packet.
+         * @todo    This might need to check for packet_is_ready before returning the buffer? but what should it return
+         * in that case?
          */
         const uint8_t* get_decoded_packet() const {
             return buffer.data();

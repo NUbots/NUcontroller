@@ -17,13 +17,13 @@
  * Copyright 2013 NUbots <nubots@nubots.net>
  */
 
-#ifndef PLATFORM_SERVOID_HPP
-#define PLATFORM_SERVOID_HPP
+#ifndef NUSENSE_SERVOID_HPP
+#define NUSENSE_SERVOID_HPP
 
 #include <set>
 #include <string>
 
-namespace platform {
+namespace nusense {
 
     struct ServoID {
         enum Value {
@@ -121,6 +121,6 @@ namespace platform {
     private:
         static const std::set<ServoID> values;
     };
-}  // namespace platform
+}  // namespace nusense
 
-#endif  // PLATFORM_SERVOID_HPP
+#endif  // NUSENSE_SERVOID_HPP
