@@ -5,7 +5,6 @@
 #include <iterator>
 #include <stdio.h>
 
-#include "ServoState.hpp"
 #include "../dynamixel/Chain.hpp"
 #include "../dynamixel/Dynamixel.hpp"
 #include "../dynamixel/PacketHandler.hpp"
@@ -18,6 +17,7 @@
 #include "../utility/support/MillisecondTimer.hpp"
 #include "ChainManager.hpp"
 #include "NUgus.hpp"
+#include "ServoState.hpp"
 #include "imu.h"
 
 namespace nusense {
