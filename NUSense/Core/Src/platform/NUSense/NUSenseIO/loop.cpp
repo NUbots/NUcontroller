@@ -127,18 +127,25 @@ namespace platform::NUSense {
 
         // Handle the incoming protobuf messages from the nuc.
         if (nuc.handle_incoming()) {
-            // For every new target, update the state if it is a servo.
-            message_actuation_ServoTargets* new_targets = nuc.get_targets();
-            for (int i = 0; i < new_targets->targets_count; i++) {
-                message_actuation_ServoTarget* new_target = &(new_targets->targets[i]);
-                if ((new_target->id) < NUMBER_OF_DEVICES) {
-                    servo_states[new_target->id].profile_velocity =
-                        std::max(0.0, (float(new_target->time.seconds) * 1000) + (float(new_target->time.nanos) / 1e6));
-                    servo_states[new_target->id].position_p_gain = new_target->gain;
-                    servo_states[new_target->id].goal_position   = new_target->position;
-                    servo_states[new_target->id].torque          = new_target->torque;
-                    // Set the dirty-flag so that the Dynamixel stream writes to the servo.
-                    servo_states[new_target->id].dirty = true;
+            // If we get a message with servo targets, start decoding
+            if (nuc.get_curr_msg_hash() == utility::message::SUBCONTROLLER_SERVO_TARGETS_HASH) {
+                // TODO (JohanneMontano) use below somehow somewhere?
+                //  uint64_t msg_ts = nuc.get_curr_msg_timestamp();
+
+                // For every new target, update the state if it is a servo.
+                message_actuation_SubcontrollerServoTargets* new_targets = nuc.get_targets();
+                for (int i = 0; i < new_targets->targets_count; i++) {
+                    message_actuation_SubcontrollerServoTarget* new_target = &(new_targets->targets[i]);
+                    if ((new_target->id) < NUMBER_OF_DEVICES) {
+                        servo_states[new_target->id].profile_velocity =
+                            std::max(0.0,
+                                     (float(new_target->time.seconds) * 1000) + (float(new_target->time.nanos) / 1e6));
+                        servo_states[new_target->id].position_p_gain = new_target->gain;
+                        servo_states[new_target->id].goal_position   = new_target->position;
+                        servo_states[new_target->id].torque          = new_target->torque;
+                        // Set the dirty-flag so that the Dynamixel stream writes to the servo.
+                        servo_states[new_target->id].dirty = true;
+                    }
                 }
             }
         }

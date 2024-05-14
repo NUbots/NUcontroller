@@ -33,21 +33,23 @@ namespace usb {
                     && (rx_buffer.data[(rx_buffer.front + 1) % RX_BUF_SIZE] == (char) 0x98)
                     && (rx_buffer.data[(rx_buffer.front + 2) % RX_BUF_SIZE] == (char) 0xA2)) {
 
-                    pb_length = static_cast<uint16_t>(rx_buffer.data[(rx_buffer.front + 3) % RX_BUF_SIZE] << 8)
-                                | static_cast<uint16_t>(rx_buffer.data[(rx_buffer.front + 4) % RX_BUF_SIZE]);
+                    pb_length = static_cast<uint32_t>(rx_buffer.data[(rx_buffer.front + 3) % RX_BUF_SIZE] << 0)
+                                | static_cast<uint32_t>(rx_buffer.data[(rx_buffer.front + 4) % RX_BUF_SIZE] << 8)
+                                | static_cast<uint32_t>(rx_buffer.data[(rx_buffer.front + 5) % RX_BUF_SIZE] << 16)
+                                | static_cast<uint32_t>(rx_buffer.data[(rx_buffer.front + 6) % RX_BUF_SIZE] << 24);
 
                     // If the overall packet, including the header, is smaller than
                     // the current size of the buffer, then pop all of the payload.
-                    if ((pb_length + 5) <= rx_buffer.size) {
-                        pop((uint8_t*) pb_packets, pb_length, 5);
+                    if ((pb_length + 7) <= rx_buffer.size) {
+                        pop((uint8_t*) pb_packets, pb_length, 7);
                         is_packet_ready = true;
                     }
                     // Else, work out what the remaining length is, that is the
                     // payload's length minus the buffer's size, excluding the
-                    // five bytes of header.
+                    // three bytes of header and four bytes for size.
                     else {
-                        remaining_length = pb_length - rx_buffer.size + 5;
-                        pop((uint8_t*) pb_packets, rx_buffer.size - 5, 5);
+                        remaining_length = pb_length - rx_buffer.size + 7;
+                        pop((uint8_t*) pb_packets, rx_buffer.size - 7, 7);
                     }
                 }
                 else if (remaining_length != 0) {
@@ -70,24 +72,71 @@ namespace usb {
             if (is_packet_ready) {
                 is_packet_ready = false;
 
+                // Create a buffer to hold our timestamp and hash packets in
+                uint8_t tmp_buf[8] = {0};
+
+                // Fill timestamp
+                memcpy(&tmp_buf[0], &pb_packets[0], sizeof(uint64_t));
+                msg_timestamp = read_le_64(&tmp_buf[0]);
+
+                // Fill hash
+                memcpy(&tmp_buf[0], &pb_packets[sizeof(uint64_t)], sizeof(uint64_t));
+                msg_hash = read_le_64(&tmp_buf[0]);
+
                 // Decoding the protobuf packet
-                pb_istream_t input_stream =
-                    pb_istream_from_buffer(reinterpret_cast<const pb_byte_t*>(&pb_packets[0]), pb_length);
-                pb_decode(&input_stream, message_actuation_ServoTargets_fields, &targets);
-
+                pb_istream_t input_stream = pb_istream_from_buffer(
+                    reinterpret_cast<const pb_byte_t*>(&pb_packets[sizeof(uint64_t) + sizeof(uint64_t)]),
+                    pb_length);
+                
+                pb_decode(&input_stream, message_actuation_SubcontrollerServoTargets_fields, &targets);
                 return true;
-            }
 
+                // TODO (JohanneMontano) nanopb is complaining about something if we handle it using the code below. It seems like the nanopb error
+                // always happens but also always successfully decodes the SubcontrollerServoTargets message anyway. This must be investigated.
+                // nanopb_decoding_err = pb_decode(&input_stream, message_actuation_SubcontrollerServoTargets_fields, &targets) ? false : true;
+                // if (!nanopb_decoding_err) {
+                //     return true;
+                // }
+            }
             return false;
+        }
+
+        /// @brief Getter for the member nanopb_decode_err
+        /// @brief A boolean value that describes the state of the most recent pb_decode() call
+        bool get_nanopb_decoding_status() {
+            return nanopb_decoding_err;
+        }
+
+        /// @brief Get the hash of the most recently decoded message
+        /// @return 64 bit hash of the message type that the NUC sent
+        uint64_t get_curr_msg_hash() {
+            return msg_hash;
+        }
+
+        /// @brief Get the timestamp of the most recently decoded message
+        /// @return 64 bit timestamp of the most recently decoded message
+        uint64_t get_curr_msg_timestamp() {
+            return msg_timestamp;
         }
 
         /// @brief   Gets the targets of the last decoded packet.
         /// @return  The pointer to the targets.
-        message_actuation_ServoTargets* get_targets() {
+        message_actuation_SubcontrollerServoTargets* get_targets() {
             return &targets;
         }
 
     private:
+        /**
+         * @brief Read a 64 byte message from a buffer of uint8_t[8]. Mainly used for timestamps and message hashes.
+         * @param ptr The pointer to the bytes buffer
+         * @return the decoded 64 bit value, either for timestamps or hashes
+         */
+        uint64_t read_le_64(const uint8_t* ptr) {
+            return (uint64_t(ptr[0]) << 0) | (uint64_t(ptr[1]) << 8) | (uint64_t(ptr[2]) << 16)
+                   | (uint64_t(ptr[3]) << 24) | (uint64_t(ptr[4]) << 32) | (uint64_t(ptr[5]) << 40)
+                   | (uint64_t(ptr[6]) << 48) | (uint64_t(ptr[7]) << 56);
+        }
+
         /**
          * @brief   Removes bytes from the ring-buffer of a given length, passing from a given
          *          offset.
@@ -131,17 +180,26 @@ namespace usb {
         char pb_packets[RX_BUF_SIZE]{};
 
         /// @brief  the length of the protobuf packet,
-        uint16_t pb_length = 0;
+        uint32_t pb_length = 0;
+
+        /// @brief the hash of the received message
+        uint64_t msg_hash = 0;
+
+        /// @brief the
+        uint64_t msg_timestamp = 0;
 
         /// @brief  the remaining length of the protobuf packet to be gathered by the lower-level
         ///         firmware, namely CDC_Receive_HS.
-        uint16_t remaining_length = 0;
+        uint32_t remaining_length = 0;
 
         /// @brief  whether a complete protobuf packet has been gathered to be decoded,
         bool is_packet_ready = false;
 
         /// @brief The servo targets to send to the servos
-        message_actuation_ServoTargets targets = message_actuation_ServoTargets_init_zero;
+        message_actuation_SubcontrollerServoTargets targets = message_actuation_SubcontrollerServoTargets_init_zero;
+
+        /// @brief A flag that describes the status of the most recent call to pb_decode
+        bool nanopb_decoding_err = false;
     };
 
 }  // namespace usb

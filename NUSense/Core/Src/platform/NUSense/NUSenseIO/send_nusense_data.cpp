@@ -60,28 +60,40 @@ namespace platform::NUSense {
         // errors.
         pb_ostream_t output_buffer = pb_ostream_from_buffer(&encoding_payload[0], MAX_ENCODE_SIZE);
 
-        if (!pb_encode(&output_buffer, message_platform_NUSense_fields, &nusense_msg)) {
-            // Encoding failed, we won't bother to send a packet
-            nanopb_encoding_err = true;
-
+        // TODO (NUSense people) Handle encoding errors properly using this member somehow
+        nanopb_encoding_err = pb_encode(&output_buffer, message_platform_NUSense_fields, &nusense_msg) ? false : true;
+        if (nanopb_encoding_err) {
             return false;
         }
 
         // Happiness, the encoding succeeded
-        // TODO: Add extra fields so we can actually parse an authentic nbs packet
-        std::vector<uint8_t> full_msg({0xE2, 0x98, 0xA2});
+        std::vector<uint8_t> nbs({0xE2, 0x98, 0xA2});
 
-        // Get the length of the encoded protobuf message
-        int payload_length = output_buffer.bytes_written;
+        // TODO (JohanneMontano) Implement timestamp field correctly, std::chrono is behaving weird and it needs to be
+        // investigated
+        uint64_t ts_u = 0;
+        uint32_t size = uint32_t(output_buffer.bytes_written + sizeof(utility::message::NUSENSE_HASH) + sizeof(ts_u));
 
-        std::vector<uint8_t> length_vector{static_cast<uint8_t>((payload_length >> 8) & 0xFF),
-                                           static_cast<uint8_t>(payload_length & 0xFF)};
+        // Encode size to uint8_t's
+        for (size_t i = 0; i < sizeof(size); ++i) {
+            nbs.push_back(uint8_t((size >> (i * 8)) & 0xFF));
+        }
 
-        full_msg.insert(full_msg.end(), length_vector.begin(), length_vector.end());
-        full_msg.insert(full_msg.end(), std::begin(encoding_payload), std::begin(encoding_payload) + payload_length);
+        // Encode timestamp
+        for (size_t i = 0; i < sizeof(ts_u); ++i) {
+            nbs.push_back(uint8_t((ts_u >> (i * 8)) & 0xFF));
+        }
 
+        // Encode nusense hash
+        for (size_t i = 0; i < sizeof(utility::message::NUSENSE_HASH); ++i) {
+            nbs.push_back(uint8_t((utility::message::NUSENSE_HASH >> (i * 8)) & 0xFF));
+        }
 
-        if (CDC_Transmit_HS(full_msg.data(), full_msg.size()) != USBD_OK) {
+        // Add the protobuf bytes into the nbs vector
+        nbs.insert(nbs.end(), std::begin(encoding_payload), std::begin(encoding_payload) + output_buffer.bytes_written);
+
+        // Attempt to transmit data then handle it accordingly if it fails
+        if (CDC_Transmit_HS(nbs.data(), nbs.size()) != USBD_OK) {
             // Going into this block means that the usb failed to transmit our data
             usb_tx_err = true;
             return false;
