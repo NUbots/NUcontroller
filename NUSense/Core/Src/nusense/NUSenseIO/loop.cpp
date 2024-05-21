@@ -85,6 +85,9 @@ namespace nusense {
             // If there was an error, then just restart the stream.
             else if ((result == dynamixel::PacketHandler::ERROR) || (result == dynamixel::PacketHandler::CRC_ERROR)
                      || (result == dynamixel::PacketHandler::TIMEOUT)) {
+
+                dispatch.log<Dispatch::FAULT>("Something happened.");
+
                 // Move along the chain.
                 chain.next();
                 // update servo index variable
