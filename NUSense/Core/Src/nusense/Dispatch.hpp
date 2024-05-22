@@ -1,17 +1,20 @@
-#ifndef NUSENSE_DISPATCH_HPP
-#define NUSENSE_DISPATCH_HPP
+#ifndef NUSENSE_DISPATCHHANDLER_HPP
+#define NUSENSE_DISPATCHHANDLER_HPP
 
 #include <string>
 #include <set>
 
 namespace nusense {
 
-    constexpr uint16_t STRING_LENGTH = 2048;
+    constexpr uint16_t MAX_DISPATCH_LENGTH = 1024;
+    constexpr uint16_t MAX_TOTAL_LENGTH = 4096;
 
     /**
-     * @brief   A dispatch of messages for the NUC, e.g. errors.
+     * @brief   A handler of dispatches for the NUC, e.g. errors.
+     * @note    This should be used fleetingly for unexpected faults and should not be used for 
+     *          general debugging.
      */
-    class Dispatch {
+    class DispatchHandler {
     public:
         enum Level {
             DETAIL,
@@ -19,48 +22,54 @@ namespace nusense {
             FAULT
         };
 
-        /// @brief  Constructs the dispatch.
-        Dispatch() {};
+        /// @brief  Constructs the dispatch-handler.
+        DispatchHandler() {};
 
-        /// @brief  Destructs the dispatch.
-        virtual ~Dispatch(){};
+        /// @brief  Destructs the dispatch-handler.
+        virtual ~DispatchHandler(){};
 
         /**
-         * @brief   Logs a string.
-         * @param   str the string to be logged.
+         * @brief   Writes a string to the dispatch.
+         * @param   str The string to be dispatched.
          */
-        template<Level level = DETAIL>
-        void log(std::string str) {
-            std::string head = "DETAIL";
-            if constexpr (level == FAULT) {
-                head = "FAULT: ";
+        void write(const std::string& str) {
+            if (dispatch.size() + str.size() + 1 <= MAX_DISPATCH_LENGTH) {
+                dispatch.append(str + "\n");
             }
-            else if constexpr (level == ADVICE) {
-                head = "ADVICE: ";
-            }
-
-            if (message.size() + str.size() + head.size() <= STRING_LENGTH) {
-                std::pair<std::set<std::string>::iterator, bool> ret = logs.insert(str);
-                if (ret.second == true) {
-                    message.append(head.append(str).append("\n"));
-                }
+            else if (total_length + str.size() + 1 <= MAX_TOTAL_LENGTH) {
+                queued_dispatches.push(str + "\n");
+                total_length += str.size() + 1;
             }
         }
 
         /**
-         * @brief   Clears the logs to be written again.
+         * @brief   Gets the latest dispatch as a string.
+         * @return  The dispatch as a string.
          */
-         inline void clear() {
-            logs.clear();
-            message.clear();
+        inline const std::string& dispatch() const {
+            return dispatch;
+        }
+
+        /**
+         * @brief   Clears the message and writes the dispatches to be written again.
+         */
+         inline void update() {
+            dispatch.clear();
+            while ((dispatch.size() <= MAX_DISPATCH_LENGTH) && (queued_dispatches.size() > 0)) {
+                total_length -= queued_dispatches.front().size();
+                dispatch += queued_dispatches.pop();
+            }
          }
 
     private:
         /// @brief  The message as a string.
-        std::string message{};
-        /// @brief  The logs to be gathered. 
-        std::set<std::string> logs{};
+        std::string dispatch{};
+        /// @brief  The dispatches to be gathered before writing. 
+        std::queue<std::string> queued_dispatches{};
+        /// @brief  The total length of all the dispatches queued.
+        /// @note   This is only to limit the amount of memory used.
+        uint16_t total_length = 0;
     };
 };  // namespace nusense
 
-#endif  // NUSENSE_DISPATCH_HPP
+#endif  // NUSENSE_DISPATCHHANDLER_HPP

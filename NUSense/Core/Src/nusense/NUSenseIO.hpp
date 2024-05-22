@@ -19,7 +19,7 @@
 #include "NUgus.hpp"
 #include "ServoState.hpp"
 #include "imu.h"
-#include "Dispatch.hpp"
+#include "DispatchHandler.hpp"
 
 namespace nusense {
     constexpr uint32_t MAX_ENCODE_SIZE = 1600;
@@ -76,7 +76,7 @@ namespace nusense {
         utility::support::Button start_button = utility::support::Button(GPIOH, 0);
 
         /// @brief  The dispatch of logs to the NUC.
-        Dispatch dispatch{};
+        DispatchHandler dispatch_handler{};
 
     public:
         /// @brief   Constructs the instance for NUSense communications.

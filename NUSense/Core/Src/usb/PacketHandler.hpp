@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <iterator>
+#include <string>
 
 #include "protobuf/ServoTarget.pb.h"
 #include "protobuf/pb_decode.h"
@@ -88,23 +89,30 @@ namespace usb {
                     reinterpret_cast<const pb_byte_t*>(&pb_packets[sizeof(uint64_t) + sizeof(uint64_t)]),
                     pb_length);
                 
-                pb_decode(&input_stream, message_actuation_SubcontrollerServoTargets_fields, &targets);
-                return true;
-
                 // TODO (JohanneMontano) nanopb is complaining about something if we handle it using the code below. It seems like the nanopb error
                 // always happens but also always successfully decodes the SubcontrollerServoTargets message anyway. This must be investigated.
-                // nanopb_decoding_err = pb_decode(&input_stream, message_actuation_SubcontrollerServoTargets_fields, &targets) ? false : true;
-                // if (!nanopb_decoding_err) {
-                //     return true;
-                // }
+                nanopb_decoding_err = pb_decode(&input_stream, message_actuation_SubcontrollerServoTargets_fields, &targets);
+
+                if (nanopb_decoding_err) {
+                    error_message = std::string(inputstream.errmsg);
+                }
+
+                return true;
+
             }
             return false;
         }
 
         /// @brief Getter for the member nanopb_decode_err
-        /// @brief A boolean value that describes the state of the most recent pb_decode() call
-        bool get_nanopb_decoding_status() {
+        /// @return A boolean value that describes the state of the most recent pb_decode() call
+        bool is_decoding_error() {
             return nanopb_decoding_err;
+        }
+
+        /// @brief  Gets the 
+        /// @return A boolean value that describes the state of the most recent pb_decode() call
+        const std::string& get_error_message() const {
+            return error_message;
         }
 
         /// @brief Get the hash of the most recently decoded message
@@ -185,7 +193,7 @@ namespace usb {
         /// @brief the hash of the received message
         uint64_t msg_hash = 0;
 
-        /// @brief the
+        /// @brief  the timestamp
         uint64_t msg_timestamp = 0;
 
         /// @brief  the remaining length of the protobuf packet to be gathered by the lower-level
@@ -200,6 +208,9 @@ namespace usb {
 
         /// @brief A flag that describes the status of the most recent call to pb_decode
         bool nanopb_decoding_err = false;
+
+        /// @brief The error-message string if any.
+        std::string error_message = "";
     };
 
 }  // namespace usb

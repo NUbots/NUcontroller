@@ -86,7 +86,7 @@ namespace nusense {
             else if ((result == dynamixel::PacketHandler::ERROR) || (result == dynamixel::PacketHandler::CRC_ERROR)
                      || (result == dynamixel::PacketHandler::TIMEOUT)) {
 
-                dispatch.log<Dispatch::FAULT>("Something happened.");
+                dispatch_handler.write("Something happened.");
 
                 // Move along the chain.
                 chain.next();
@@ -120,6 +120,10 @@ namespace nusense {
 
         // Handle the incoming protobuf messages from the nuc.
         if (nuc.handle_incoming()) {
+            if (nuc.is_decoding_error()) {
+                dispatch_handler.write("Failed to decode: " + nuc.get_error_message());
+            }
+
             // If we get a message with servo targets, start decoding
             if (nuc.get_curr_msg_hash() == utility::message::SUBCONTROLLER_SERVO_TARGETS_HASH) {
                 // TODO (JohanneMontano) use below somehow somewhere?
