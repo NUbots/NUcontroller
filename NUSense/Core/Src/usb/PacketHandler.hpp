@@ -94,7 +94,7 @@ namespace usb {
                 nanopb_decoding_err = pb_decode(&input_stream, message_actuation_SubcontrollerServoTargets_fields, &targets);
 
                 if (nanopb_decoding_err) {
-                    error_message = std::string(inputstream.errmsg);
+                    error_message = std::string(input_stream.errmsg);
                 }
 
                 return true;

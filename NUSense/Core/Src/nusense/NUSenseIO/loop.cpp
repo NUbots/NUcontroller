@@ -21,6 +21,9 @@ namespace nusense {
             // If there is a status-response waiting, then handle it.
             if (result == dynamixel::PacketHandler::SUCCESS) {
 
+                // Log a success.
+                servo_states[current_servo_index].num_successes++;
+
                 switch (status_states[current_servo_index]) {
                     // After a response for the first bank of registers, send a write-instruction
                     // for the second bank of registers.
@@ -30,6 +33,7 @@ namespace nusense {
                         // cool down for 1 ms until the servo decides to behave itself.
                         if ((servo_states[current_servo_index].torque_enabled == false)
                             && (servo_states[current_servo_index].torque != 0.0)) {
+                            chain.get_packet_handler().ready();
                             chain.get_timer().begin(1);
                             status_states[current_servo_index] = WRITE_1_COOLDOWN;
                         }
@@ -86,7 +90,21 @@ namespace nusense {
             else if ((result == dynamixel::PacketHandler::ERROR) || (result == dynamixel::PacketHandler::CRC_ERROR)
                      || (result == dynamixel::PacketHandler::TIMEOUT)) {
 
-                dispatch_handler.write("Something happened.");
+                nuc_dispatcher.write("Something happened.");
+
+                // Log the kind of fault.
+                switch (result) {
+                    case dynamixel::PacketHandler::TIMEOUT:
+                        servo_states[current_servo_index].num_timeouts++;
+                        break;
+                    case dynamixel::PacketHandler::CRC_ERROR:
+                        servo_states[current_servo_index].num_crc_errors++;
+                        break;
+                    default:
+                    case dynamixel::PacketHandler::ERROR:
+                        servo_states[current_servo_index].num_errors++;
+                        break;
+                }
 
                 // Move along the chain.
                 chain.next();
@@ -121,7 +139,7 @@ namespace nusense {
         // Handle the incoming protobuf messages from the nuc.
         if (nuc.handle_incoming()) {
             if (nuc.is_decoding_error()) {
-                dispatch_handler.write("Failed to decode: " + nuc.get_error_message());
+                nuc_dispatcher.write("Failed to decode: " + nuc.get_error_message());
             }
 
             // If we get a message with servo targets, start decoding
@@ -167,6 +185,10 @@ namespace nusense {
                     servo_state.voltage          = 0.0f;
                     servo_state.temperature      = 0.0f;
                     servo_state.mean_present_position.reset();
+                    servo_state.num_successes    = 0;
+                    servo_state.num_timeouts     = 0;
+                    servo_state.num_crc_errors   = 0;
+                    servo_state.num_errors       = 0;
                 }
             }
 

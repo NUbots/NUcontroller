@@ -2,7 +2,7 @@
 #define NUSENSE_DISPATCHHANDLER_HPP
 
 #include <string>
-#include <set>
+#include <queue>
 
 namespace nusense {
 
@@ -14,7 +14,7 @@ namespace nusense {
      * @note    This should be used fleetingly for unexpected faults and should not be used for 
      *          general debugging.
      */
-    class DispatchHandler {
+    class Dispatcher {
     public:
         enum Level {
             DETAIL,
@@ -23,10 +23,10 @@ namespace nusense {
         };
 
         /// @brief  Constructs the dispatch-handler.
-        DispatchHandler() {};
+        Dispatcher() {};
 
         /// @brief  Destructs the dispatch-handler.
-        virtual ~DispatchHandler(){};
+        virtual ~Dispatcher(){};
 
         /**
          * @brief   Writes a string to the dispatch.
@@ -37,7 +37,7 @@ namespace nusense {
                 dispatch.append(str + "\n");
             }
             else if (total_length + str.size() + 1 <= MAX_TOTAL_LENGTH) {
-                queued_dispatches.push(str + "\n");
+                queued_strings.push(str + "\n");
                 total_length += str.size() + 1;
             }
         }
@@ -46,7 +46,7 @@ namespace nusense {
          * @brief   Gets the latest dispatch as a string.
          * @return  The dispatch as a string.
          */
-        inline const std::string& dispatch() const {
+        inline const std::string& get_dispatch() const {
             return dispatch;
         }
 
@@ -55,17 +55,18 @@ namespace nusense {
          */
          inline void update() {
             dispatch.clear();
-            while ((dispatch.size() <= MAX_DISPATCH_LENGTH) && (queued_dispatches.size() > 0)) {
-                total_length -= queued_dispatches.front().size();
-                dispatch += queued_dispatches.pop();
+            while ((dispatch.size() <= MAX_DISPATCH_LENGTH) && (queued_strings.size() > 0)) {
+                total_length -= queued_strings.front().size();
+                dispatch += queued_strings.front();
+                queued_strings.pop();
             }
          }
 
     private:
-        /// @brief  The message as a string.
+        /// @brief  The dispatch as a string.
         std::string dispatch{};
-        /// @brief  The dispatches to be gathered before writing. 
-        std::queue<std::string> queued_dispatches{};
+        /// @brief  The strings to be gathered before writing. 
+        std::queue<std::string> queued_strings{};
         /// @brief  The total length of all the dispatches queued.
         /// @note   This is only to limit the amount of memory used.
         uint16_t total_length = 0;
