@@ -6,7 +6,7 @@
 
 namespace nusense {
 
-    constexpr uint16_t MAX_DISPATCH_LENGTH = 1024;
+    constexpr uint16_t MAX_DISPATCH_LENGTH = 128;
     constexpr uint16_t MAX_TOTAL_LENGTH = 4096;
 
     /**

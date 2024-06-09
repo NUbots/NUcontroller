@@ -1,4 +1,5 @@
 #include "../NUSenseIO.hpp"
+#include <string.h>
 
 namespace nusense {
     bool NUSenseIO::nusense_to_nuc() {
@@ -24,6 +25,9 @@ namespace nusense {
 
         nusense_msg.imu.temperature = converted_data.temperature;
         nusense_msg.has_imu         = true;
+
+        // Write the dispatch-message.
+        strcpy(nusense_msg.dispatch, nuc_dispatcher.get_dispatch().data());
 
         // Fill servo entries using the data in servo_states
         nusense_msg.servo_map_count = NUMBER_OF_DEVICES;
