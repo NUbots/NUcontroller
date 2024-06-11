@@ -1,23 +1,23 @@
 #ifndef NUSENSE_DISPATCHER_HPP
 #define NUSENSE_DISPATCHER_HPP
 
-#include <string>
 #include <queue>
+#include <string>
 
 namespace nusense {
 
     constexpr uint16_t MAX_DISPATCH_LENGTH = 128;
-    constexpr uint16_t MAX_TOTAL_LENGTH = 4096;
+    constexpr uint16_t MAX_TOTAL_LENGTH    = 4096;
 
     /**
      * @brief   A handler of dispatches for the NUC, e.g. errors.
-     * @note    This should be used fleetingly for unexpected faults and should not be used for 
+     * @note    This should be used fleetingly for unexpected faults and should not be used for
      *          general debugging.
      */
     class Dispatcher {
     public:
         /// @brief  Constructs the dispatch-handler.
-        Dispatcher() {};
+        Dispatcher(){};
 
         /// @brief  Destructs the dispatch-handler.
         virtual ~Dispatcher(){};
@@ -49,7 +49,7 @@ namespace nusense {
         /**
          * @brief   Clears the message and writes the dispatches to be written again.
          */
-         inline void update() {
+        inline void update() {
             // Clear the dispatch.
             dispatch.clear();
             // As long as the dispatch's length is still within the maximum, unload from the queue.
@@ -58,12 +58,12 @@ namespace nusense {
                 dispatch += queued_strings.front();
                 queued_strings.pop();
             }
-         }
+        }
 
     private:
         /// @brief  The dispatch as a string.
         std::string dispatch{};
-        /// @brief  The strings to be gathered before writing. 
+        /// @brief  The strings to be gathered before writing.
         std::queue<std::string> queued_strings{};
         /// @brief  The total length of all the dispatches queued.
         /// @note   This is only to limit the amount of memory used.

@@ -92,16 +92,10 @@ namespace nusense {
 
                 // Log the kind of fault.
                 switch (result) {
-                    case dynamixel::PacketHandler::TIMEOUT:
-                        servo_states[current_servo_index].num_timeouts++;
-                        break;
-                    case dynamixel::PacketHandler::CRC_ERROR:
-                        servo_states[current_servo_index].num_crc_errors++;
-                        break;
+                    case dynamixel::PacketHandler::TIMEOUT: servo_states[current_servo_index].num_timeouts++; break;
+                    case dynamixel::PacketHandler::CRC_ERROR: servo_states[current_servo_index].num_crc_errors++; break;
                     default:
-                    case dynamixel::PacketHandler::ERROR:
-                        servo_states[current_servo_index].num_errors++;
-                        break;
+                    case dynamixel::PacketHandler::ERROR: servo_states[current_servo_index].num_errors++; break;
                 }
 
                 // Move along the chain.
@@ -137,7 +131,7 @@ namespace nusense {
         // Handle the incoming protobuf messages from the nuc.
         if (nuc.handle_incoming()) {
             if (nuc.is_decoding_error()) {
-                nuc_dispatcher.write("Failed to decode: " + nuc.get_error_message());
+                nuc_dispatcher.write("Nanopb failed to decode: " + nuc.get_error_message());
             }
 
             // If we get a message with servo targets, start decoding
@@ -183,10 +177,10 @@ namespace nusense {
                     servo_state.voltage          = 0.0f;
                     servo_state.temperature      = 0.0f;
                     servo_state.mean_present_position.reset();
-                    servo_state.num_successes    = 0;
-                    servo_state.num_timeouts     = 0;
-                    servo_state.num_crc_errors   = 0;
-                    servo_state.num_errors       = 0;
+                    servo_state.num_successes  = 0;
+                    servo_state.num_timeouts   = 0;
+                    servo_state.num_crc_errors = 0;
+                    servo_state.num_errors     = 0;
                 }
             }
 

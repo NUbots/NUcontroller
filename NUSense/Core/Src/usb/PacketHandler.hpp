@@ -88,17 +88,18 @@ namespace usb {
                 pb_istream_t input_stream = pb_istream_from_buffer(
                     reinterpret_cast<const pb_byte_t*>(&pb_packets[sizeof(uint64_t) + sizeof(uint64_t)]),
                     pb_length);
-                
-                // TODO (JohanneMontano) nanopb is complaining about something if we handle it using the code below. It seems like the nanopb error
-                // always happens but also always successfully decodes the SubcontrollerServoTargets message anyway. This must be investigated.
-                nanopb_decoding_err = pb_decode(&input_stream, message_actuation_SubcontrollerServoTargets_fields, &targets);
+
+                // TODO (JohanneMontano) nanopb is complaining about something if we handle it using the code below. It
+                // seems like the nanopb error always happens but also always successfully decodes the
+                // SubcontrollerServoTargets message anyway. This must be investigated.
+                nanopb_decoding_err =
+                    pb_decode(&input_stream, message_actuation_SubcontrollerServoTargets_fields, &targets);
 
                 if (nanopb_decoding_err) {
                     error_message = std::string(input_stream.errmsg);
                 }
 
                 return true;
-
             }
             return false;
         }
@@ -109,7 +110,7 @@ namespace usb {
             return nanopb_decoding_err;
         }
 
-        /// @brief  Gets the 
+        /// @brief  Gets the error-message of the latest nanopb decoding.
         /// @return A boolean value that describes the state of the most recent pb_decode() call
         const std::string& get_error_message() const {
             return error_message;

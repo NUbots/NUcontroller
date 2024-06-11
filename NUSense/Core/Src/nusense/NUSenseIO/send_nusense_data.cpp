@@ -1,5 +1,6 @@
-#include "../NUSenseIO.hpp"
 #include <string.h>
+
+#include "../NUSenseIO.hpp"
 
 namespace nusense {
     bool NUSenseIO::nusense_to_nuc() {
@@ -55,11 +56,11 @@ namespace nusense {
 
             nusense_msg.servo_map[i].value.voltage     = servo_states[i].voltage / servo_states[i].filter_count;
             nusense_msg.servo_map[i].value.temperature = servo_states[i].temperature / servo_states[i].filter_count;
-            
-            nusense_msg.servo_map[i].value.num_successes     = servo_states[i].num_successes;
-            nusense_msg.servo_map[i].value.num_timeouts      = servo_states[i].num_timeouts;
-            nusense_msg.servo_map[i].value.num_crc_errors    = servo_states[i].num_crc_errors;
-            nusense_msg.servo_map[i].value.num_errors        = servo_states[i].num_errors;
+
+            nusense_msg.servo_map[i].value.num_successes  = servo_states[i].num_successes;
+            nusense_msg.servo_map[i].value.num_timeouts   = servo_states[i].num_timeouts;
+            nusense_msg.servo_map[i].value.num_crc_errors = servo_states[i].num_crc_errors;
+            nusense_msg.servo_map[i].value.num_errors     = servo_states[i].num_errors;
         }
 
         // Once everything else is filled we send it to the NUC. Just overwrite the bytes within encoding_payload

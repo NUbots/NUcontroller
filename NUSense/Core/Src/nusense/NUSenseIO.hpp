@@ -16,10 +16,10 @@
 #include "../utility/support/Button.hpp"
 #include "../utility/support/MillisecondTimer.hpp"
 #include "ChainManager.hpp"
+#include "Dispatcher.hpp"
 #include "NUgus.hpp"
 #include "ServoState.hpp"
 #include "imu.h"
-#include "Dispatcher.hpp"
 
 namespace nusense {
     constexpr uint32_t MAX_ENCODE_SIZE = 1600;
