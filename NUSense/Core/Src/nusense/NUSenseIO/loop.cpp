@@ -94,8 +94,6 @@ namespace nusense {
                 switch (result) {
                     case dynamixel::PacketHandler::TIMEOUT:
                         servo_states[current_servo_index].num_timeouts++;
-                        SET_SIGNAL_1();
-                        RESET_SIGNAL_1();
                         break;
                     case dynamixel::PacketHandler::CRC_ERROR:
                         servo_states[current_servo_index].num_crc_errors++;

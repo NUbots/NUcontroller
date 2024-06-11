@@ -1,5 +1,5 @@
-#ifndef NUSENSE_DISPATCHHANDLER_HPP
-#define NUSENSE_DISPATCHHANDLER_HPP
+#ifndef NUSENSE_DISPATCHER_HPP
+#define NUSENSE_DISPATCHER_HPP
 
 #include <string>
 #include <queue>
@@ -16,12 +16,6 @@ namespace nusense {
      */
     class Dispatcher {
     public:
-        enum Level {
-            DETAIL,
-            ADVICE,
-            FAULT
-        };
-
         /// @brief  Constructs the dispatch-handler.
         Dispatcher() {};
 
@@ -33,9 +27,11 @@ namespace nusense {
          * @param   str The string to be dispatched.
          */
         void write(const std::string& str) {
+            // If dispatch's length is still within the maximum, then add the new string.
             if (dispatch.size() + str.size() + 1 <= MAX_DISPATCH_LENGTH) {
                 dispatch.append("\n" + str);
             }
+            // Else, if total length of the queue is still within the maximum, then add the new string.
             else if (total_length + str.size() + 1 <= MAX_TOTAL_LENGTH) {
                 queued_strings.push("\n" + str);
                 total_length += str.size() + 1;
@@ -54,7 +50,9 @@ namespace nusense {
          * @brief   Clears the message and writes the dispatches to be written again.
          */
          inline void update() {
+            // Clear the dispatch.
             dispatch.clear();
+            // As long as the dispatch's length is still within the maximum, unload from the queue.
             while ((dispatch.size() <= MAX_DISPATCH_LENGTH) && (queued_strings.size() > 0)) {
                 total_length -= queued_strings.front().size();
                 dispatch += queued_strings.front();
@@ -73,4 +71,4 @@ namespace nusense {
     };
 };  // namespace nusense
 
-#endif  // NUSENSE_DISPATCHHANDLER_HPP
+#endif  // NUSENSE_DISPATCHER_HPP
