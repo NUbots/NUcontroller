@@ -27,7 +27,8 @@ namespace nusense {
         nusense_msg.has_imu         = true;
 
         // Write the dispatch-message.
-        strcpy(nusense_msg.dispatch, nuc_dispatcher.get_dispatch().data());
+        strcpy(nusense_msg.dispatch, nuc_dispatcher.get_dispatch().c_str());
+        nuc_dispatcher.update();
 
         // Fill servo entries using the data in servo_states
         nusense_msg.servo_map_count = NUMBER_OF_DEVICES;

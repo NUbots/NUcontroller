@@ -75,7 +75,7 @@ namespace nusense {
         /// @brief  The SW_START button
         utility::support::Button start_button = utility::support::Button(GPIOH, 0);
 
-        /// @brief  The dispatch of logs to the NUC.
+        /// @brief  The dispatcher to the NUC.
         Dispatcher nuc_dispatcher{};
 
     public:

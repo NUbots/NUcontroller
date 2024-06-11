@@ -34,10 +34,10 @@ namespace nusense {
          */
         void write(const std::string& str) {
             if (dispatch.size() + str.size() + 1 <= MAX_DISPATCH_LENGTH) {
-                dispatch.append(str + "\n");
+                dispatch.append("\n" + str);
             }
             else if (total_length + str.size() + 1 <= MAX_TOTAL_LENGTH) {
-                queued_strings.push(str + "\n");
+                queued_strings.push("\n" + str);
                 total_length += str.size() + 1;
             }
         }

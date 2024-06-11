@@ -90,8 +90,6 @@ namespace nusense {
             else if ((result == dynamixel::PacketHandler::ERROR) || (result == dynamixel::PacketHandler::CRC_ERROR)
                      || (result == dynamixel::PacketHandler::TIMEOUT)) {
 
-                nuc_dispatcher.write("Something happened.");
-
                 // Log the kind of fault.
                 switch (result) {
                     case dynamixel::PacketHandler::TIMEOUT:
