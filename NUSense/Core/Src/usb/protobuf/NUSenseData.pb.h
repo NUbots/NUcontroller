@@ -6,7 +6,7 @@
 #include "pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
-#error Regenerate this file with the current version of nanopb generator.
+    #error Regenerate this file with the current version of nanopb generator.
 #endif
 
 /* Struct definitions */
@@ -106,99 +106,133 @@ extern "C" {
 #endif
 
 /* Initializer values for message structs */
-#define message_platform_Servo_init_default      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-#define message_platform_IMU_init_default        {false, message_platform_IMU_fvec3_init_default, false, message_platform_IMU_fvec3_init_default, 0}
-#define message_platform_IMU_fvec3_init_default  {0, 0, 0}
-#define message_platform_NUSense_init_default    {0, {message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default}, false, message_platform_IMU_init_default, ""}
-#define message_platform_NUSense_ServoMapEntry_init_default {0, false, message_platform_Servo_init_default}
-#define message_platform_Servo_init_zero         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-#define message_platform_IMU_init_zero           {false, message_platform_IMU_fvec3_init_zero, false, message_platform_IMU_fvec3_init_zero, 0}
-#define message_platform_IMU_fvec3_init_zero     {0, 0, 0}
-#define message_platform_NUSense_init_zero       {0, {message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero}, false, message_platform_IMU_init_zero, ""}
-#define message_platform_NUSense_ServoMapEntry_init_zero {0, false, message_platform_Servo_init_zero}
+#define message_platform_Servo_init_default \
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+#define message_platform_IMU_init_default \
+    { false, message_platform_IMU_fvec3_init_default, false, message_platform_IMU_fvec3_init_default, 0 }
+#define message_platform_IMU_fvec3_init_default \
+    { 0, 0, 0 }
+#define message_platform_NUSense_init_default                                                                          \
+    {                                                                                                                  \
+        0, {message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default,  \
+            message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default,  \
+            message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default,  \
+            message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default,  \
+            message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default,  \
+            message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default,  \
+            message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default,  \
+            message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default,  \
+            message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default,  \
+            message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default}, \
+            false, message_platform_IMU_init_default, ""                                                               \
+    }
+#define message_platform_NUSense_ServoMapEntry_init_default \
+    { 0, false, message_platform_Servo_init_default }
+#define message_platform_Servo_init_zero \
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+#define message_platform_IMU_init_zero \
+    { false, message_platform_IMU_fvec3_init_zero, false, message_platform_IMU_fvec3_init_zero, 0 }
+#define message_platform_IMU_fvec3_init_zero \
+    { 0, 0, 0 }
+#define message_platform_NUSense_init_zero                                                                       \
+    {                                                                                                            \
+        0, {message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero,  \
+            message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero,  \
+            message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero,  \
+            message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero,  \
+            message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero,  \
+            message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero,  \
+            message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero,  \
+            message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero,  \
+            message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero,  \
+            message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero}, \
+            false, message_platform_IMU_init_zero, ""                                                            \
+    }
+#define message_platform_NUSense_ServoMapEntry_init_zero \
+    { 0, false, message_platform_Servo_init_zero }
 
 /* Field tags (for use in manual encoding/decoding) */
-#define message_platform_Servo_id_tag            1
-#define message_platform_Servo_hardware_error_tag 2
-#define message_platform_Servo_torque_enabled_tag 3
-#define message_platform_Servo_present_pwm_tag   4
-#define message_platform_Servo_present_current_tag 5
-#define message_platform_Servo_present_velocity_tag 6
-#define message_platform_Servo_present_position_tag 7
-#define message_platform_Servo_goal_pwm_tag      8
-#define message_platform_Servo_goal_current_tag  9
-#define message_platform_Servo_goal_velocity_tag 10
-#define message_platform_Servo_goal_position_tag 11
-#define message_platform_Servo_voltage_tag       12
-#define message_platform_Servo_temperature_tag   13
-#define message_platform_Servo_num_successes_tag 14
-#define message_platform_Servo_num_timeouts_tag  15
-#define message_platform_Servo_num_crc_errors_tag 16
-#define message_platform_Servo_num_errors_tag    17
-#define message_platform_IMU_fvec3_x_tag         1
-#define message_platform_IMU_fvec3_y_tag         2
-#define message_platform_IMU_fvec3_z_tag         3
-#define message_platform_IMU_accel_tag           1
-#define message_platform_IMU_gyro_tag            2
-#define message_platform_IMU_temperature_tag     3
-#define message_platform_NUSense_ServoMapEntry_key_tag 1
+#define message_platform_Servo_id_tag                    1
+#define message_platform_Servo_hardware_error_tag        2
+#define message_platform_Servo_torque_enabled_tag        3
+#define message_platform_Servo_present_pwm_tag           4
+#define message_platform_Servo_present_current_tag       5
+#define message_platform_Servo_present_velocity_tag      6
+#define message_platform_Servo_present_position_tag      7
+#define message_platform_Servo_goal_pwm_tag              8
+#define message_platform_Servo_goal_current_tag          9
+#define message_platform_Servo_goal_velocity_tag         10
+#define message_platform_Servo_goal_position_tag         11
+#define message_platform_Servo_voltage_tag               12
+#define message_platform_Servo_temperature_tag           13
+#define message_platform_Servo_num_successes_tag         14
+#define message_platform_Servo_num_timeouts_tag          15
+#define message_platform_Servo_num_crc_errors_tag        16
+#define message_platform_Servo_num_errors_tag            17
+#define message_platform_IMU_fvec3_x_tag                 1
+#define message_platform_IMU_fvec3_y_tag                 2
+#define message_platform_IMU_fvec3_z_tag                 3
+#define message_platform_IMU_accel_tag                   1
+#define message_platform_IMU_gyro_tag                    2
+#define message_platform_IMU_temperature_tag             3
+#define message_platform_NUSense_ServoMapEntry_key_tag   1
 #define message_platform_NUSense_ServoMapEntry_value_tag 2
-#define message_platform_NUSense_servo_map_tag   1
-#define message_platform_NUSense_imu_tag         2
-#define message_platform_NUSense_dispatch_tag    3
+#define message_platform_NUSense_servo_map_tag           1
+#define message_platform_NUSense_imu_tag                 2
+#define message_platform_NUSense_dispatch_tag            3
 
 /* Struct field encoding specification for nanopb */
-#define message_platform_Servo_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   id,                1) \
-X(a, STATIC,   SINGULAR, UINT32,   hardware_error,    2) \
-X(a, STATIC,   SINGULAR, BOOL,     torque_enabled,    3) \
-X(a, STATIC,   SINGULAR, FLOAT,    present_pwm,       4) \
-X(a, STATIC,   SINGULAR, FLOAT,    present_current,   5) \
-X(a, STATIC,   SINGULAR, FLOAT,    present_velocity,   6) \
-X(a, STATIC,   SINGULAR, FLOAT,    present_position,   7) \
-X(a, STATIC,   SINGULAR, FLOAT,    goal_pwm,          8) \
-X(a, STATIC,   SINGULAR, FLOAT,    goal_current,      9) \
-X(a, STATIC,   SINGULAR, FLOAT,    goal_velocity,    10) \
-X(a, STATIC,   SINGULAR, FLOAT,    goal_position,    11) \
-X(a, STATIC,   SINGULAR, FLOAT,    voltage,          12) \
-X(a, STATIC,   SINGULAR, FLOAT,    temperature,      13) \
-X(a, STATIC,   SINGULAR, UINT32,   num_successes,    14) \
-X(a, STATIC,   SINGULAR, UINT32,   num_timeouts,     15) \
-X(a, STATIC,   SINGULAR, UINT32,   num_crc_errors,   16) \
-X(a, STATIC,   SINGULAR, UINT32,   num_errors,       17)
+#define message_platform_Servo_FIELDLIST(X, a)         \
+    X(a, STATIC, SINGULAR, UINT32, id, 1)              \
+    X(a, STATIC, SINGULAR, UINT32, hardware_error, 2)  \
+    X(a, STATIC, SINGULAR, BOOL, torque_enabled, 3)    \
+    X(a, STATIC, SINGULAR, FLOAT, present_pwm, 4)      \
+    X(a, STATIC, SINGULAR, FLOAT, present_current, 5)  \
+    X(a, STATIC, SINGULAR, FLOAT, present_velocity, 6) \
+    X(a, STATIC, SINGULAR, FLOAT, present_position, 7) \
+    X(a, STATIC, SINGULAR, FLOAT, goal_pwm, 8)         \
+    X(a, STATIC, SINGULAR, FLOAT, goal_current, 9)     \
+    X(a, STATIC, SINGULAR, FLOAT, goal_velocity, 10)   \
+    X(a, STATIC, SINGULAR, FLOAT, goal_position, 11)   \
+    X(a, STATIC, SINGULAR, FLOAT, voltage, 12)         \
+    X(a, STATIC, SINGULAR, FLOAT, temperature, 13)     \
+    X(a, STATIC, SINGULAR, UINT32, num_successes, 14)  \
+    X(a, STATIC, SINGULAR, UINT32, num_timeouts, 15)   \
+    X(a, STATIC, SINGULAR, UINT32, num_crc_errors, 16) \
+    X(a, STATIC, SINGULAR, UINT32, num_errors, 17)
 #define message_platform_Servo_CALLBACK NULL
-#define message_platform_Servo_DEFAULT NULL
+#define message_platform_Servo_DEFAULT  NULL
 
-#define message_platform_IMU_FIELDLIST(X, a) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  accel,             1) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  gyro,              2) \
-X(a, STATIC,   SINGULAR, UINT32,   temperature,       3)
-#define message_platform_IMU_CALLBACK NULL
-#define message_platform_IMU_DEFAULT NULL
+#define message_platform_IMU_FIELDLIST(X, a)  \
+    X(a, STATIC, OPTIONAL, MESSAGE, accel, 1) \
+    X(a, STATIC, OPTIONAL, MESSAGE, gyro, 2)  \
+    X(a, STATIC, SINGULAR, UINT32, temperature, 3)
+#define message_platform_IMU_CALLBACK      NULL
+#define message_platform_IMU_DEFAULT       NULL
 #define message_platform_IMU_accel_MSGTYPE message_platform_IMU_fvec3
-#define message_platform_IMU_gyro_MSGTYPE message_platform_IMU_fvec3
+#define message_platform_IMU_gyro_MSGTYPE  message_platform_IMU_fvec3
 
 #define message_platform_IMU_fvec3_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, FLOAT,    x,                 1) \
-X(a, STATIC,   SINGULAR, FLOAT,    y,                 2) \
-X(a, STATIC,   SINGULAR, FLOAT,    z,                 3)
+    X(a, STATIC, SINGULAR, FLOAT, x, 1)            \
+    X(a, STATIC, SINGULAR, FLOAT, y, 2)            \
+    X(a, STATIC, SINGULAR, FLOAT, z, 3)
 #define message_platform_IMU_fvec3_CALLBACK NULL
-#define message_platform_IMU_fvec3_DEFAULT NULL
+#define message_platform_IMU_fvec3_DEFAULT  NULL
 
-#define message_platform_NUSense_FIELDLIST(X, a) \
-X(a, STATIC,   REPEATED, MESSAGE,  servo_map,         1) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  imu,               2) \
-X(a, STATIC,   SINGULAR, STRING,   dispatch,          3)
-#define message_platform_NUSense_CALLBACK NULL
-#define message_platform_NUSense_DEFAULT NULL
+#define message_platform_NUSense_FIELDLIST(X, a)  \
+    X(a, STATIC, REPEATED, MESSAGE, servo_map, 1) \
+    X(a, STATIC, OPTIONAL, MESSAGE, imu, 2)       \
+    X(a, STATIC, SINGULAR, STRING, dispatch, 3)
+#define message_platform_NUSense_CALLBACK          NULL
+#define message_platform_NUSense_DEFAULT           NULL
 #define message_platform_NUSense_servo_map_MSGTYPE message_platform_NUSense_ServoMapEntry
-#define message_platform_NUSense_imu_MSGTYPE message_platform_IMU
+#define message_platform_NUSense_imu_MSGTYPE       message_platform_IMU
 
 #define message_platform_NUSense_ServoMapEntry_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   key,               1) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  value,             2)
-#define message_platform_NUSense_ServoMapEntry_CALLBACK NULL
-#define message_platform_NUSense_ServoMapEntry_DEFAULT NULL
+    X(a, STATIC, SINGULAR, UINT32, key, 1)                     \
+    X(a, STATIC, OPTIONAL, MESSAGE, value, 2)
+#define message_platform_NUSense_ServoMapEntry_CALLBACK      NULL
+#define message_platform_NUSense_ServoMapEntry_DEFAULT       NULL
 #define message_platform_NUSense_ServoMapEntry_value_MSGTYPE message_platform_Servo
 
 extern const pb_msgdesc_t message_platform_Servo_msg;
@@ -208,19 +242,19 @@ extern const pb_msgdesc_t message_platform_NUSense_msg;
 extern const pb_msgdesc_t message_platform_NUSense_ServoMapEntry_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
-#define message_platform_Servo_fields &message_platform_Servo_msg
-#define message_platform_IMU_fields &message_platform_IMU_msg
-#define message_platform_IMU_fvec3_fields &message_platform_IMU_fvec3_msg
-#define message_platform_NUSense_fields &message_platform_NUSense_msg
+#define message_platform_Servo_fields                 &message_platform_Servo_msg
+#define message_platform_IMU_fields                   &message_platform_IMU_msg
+#define message_platform_IMU_fvec3_fields             &message_platform_IMU_fvec3_msg
+#define message_platform_NUSense_fields               &message_platform_NUSense_msg
 #define message_platform_NUSense_ServoMapEntry_fields &message_platform_NUSense_ServoMapEntry_msg
 
 /* Maximum encoded size of messages (where known) */
-#define MESSAGE_PLATFORM_NUSENSEDATA_PB_H_MAX_SIZE message_platform_NUSense_size
-#define message_platform_IMU_fvec3_size          15
-#define message_platform_IMU_size                40
+#define MESSAGE_PLATFORM_NUSENSEDATA_PB_H_MAX_SIZE  message_platform_NUSense_size
+#define message_platform_IMU_fvec3_size             15
+#define message_platform_IMU_size                   40
 #define message_platform_NUSense_ServoMapEntry_size 98
-#define message_platform_NUSense_size            2172
-#define message_platform_Servo_size              90
+#define message_platform_NUSense_size               2172
+#define message_platform_Servo_size                 90
 
 #ifdef __cplusplus
 } /* extern "C" */
