@@ -6,7 +6,7 @@
 namespace utility::support {
 
     /**
-     * @brief   the timer in microseconds
+     * @brief   the buzzer
      * @note    This is an exercise for the author in bare-metal programming with the SFRs. Let me
      *          know if there are any better C++ paradigms for SFRs.
      */
@@ -14,7 +14,8 @@ namespace utility::support {
     public:
         /**
          * @brief    Constructs the button.
-         * @param    htim the reference to the timer to be counted,
+         * @param    port the reference to the port on which the button is connected,
+         * @param    pin at which the button is connected,
          */
         Button(GPIO_TypeDef* port, uint16_t pin)
             : port(port), pin(pin), is_pressed(false), n_highs(0), n_lows(0), threshold(10) {

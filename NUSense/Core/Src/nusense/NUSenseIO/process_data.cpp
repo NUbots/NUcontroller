@@ -30,21 +30,11 @@ namespace nusense {
 
         servo_states[servo_index].filter_count++;
 
-        // TODO: Implement buzzer for NUSense
         // Buzz if any servo is hot, use the boolean flag to turn the buzzer off once the servo is no longer hot
         // A servo is defined to be hot if the detected temperature exceeds the maximum tolerance in the configuration
-        /*bool any_servo_hot = false;
-        for (const auto& servo : servo_states) {
-            if (servo.temperature > cfg.alarms.temperature.level) {
-                any_servo_hot = true;
-                HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_SET);
-                break;
-            }
+        if (servo_states[servo_index].temperature > 60.0) {
+            any_servo_hot = true;
         }
-
-        if (!any_servo_hot) {
-            HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_RESET);
-        }*/
 
         // If this servo has not been initialised yet, set the goal states to the current states
         if (!servo_states[servo_index].initialised) {

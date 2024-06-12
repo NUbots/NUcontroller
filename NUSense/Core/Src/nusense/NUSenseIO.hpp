@@ -74,6 +74,12 @@ namespace nusense {
         /// @brief  The SW_START button
         utility::support::Button start_button = utility::support::Button(GPIOH, 0);
 
+        /// @brief  The on-board buzzer
+        utility::support::Buzzer buzzer = utility::support::Buzzer(GPIOB, 7);
+
+        /// @brief  Whether any servo is too hot.
+        bool any_servo_hot = false;
+
     public:
         /// @brief   Constructs the instance for NUSense communications.
         NUSenseIO()
