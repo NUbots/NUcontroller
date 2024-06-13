@@ -9,6 +9,9 @@
 PB_BIND(message_platform_Servo, message_platform_Servo, AUTO)
 
 
+PB_BIND(message_platform_Servo_PacketCounts, message_platform_Servo_PacketCounts, AUTO)
+
+
 PB_BIND(message_platform_IMU, message_platform_IMU, AUTO)
 
 
