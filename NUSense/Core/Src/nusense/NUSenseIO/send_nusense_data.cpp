@@ -53,6 +53,7 @@ namespace nusense {
             nusense_msg.servo_map[i].value.voltage     = servo_states[i].voltage / servo_states[i].filter_count;
             nusense_msg.servo_map[i].value.temperature = servo_states[i].temperature / servo_states[i].filter_count;
 
+            nusense_msg.servo_map[i].value.has_packet_counts = true;
             nusense_msg.servo_map[i].value.packet_counts.total =
                 servo_states[i].num_successes + servo_states[i].num_crc_errors + servo_states[i].num_errors;
             nusense_msg.servo_map[i].value.packet_counts.timeouts   = servo_states[i].num_timeouts;
