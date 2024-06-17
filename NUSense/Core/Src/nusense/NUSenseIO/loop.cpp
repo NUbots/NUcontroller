@@ -173,10 +173,10 @@ namespace nusense {
                     servo_state.voltage          = 0.0f;
                     servo_state.temperature      = 0.0f;
                     servo_state.mean_present_position.reset();
-                    servo_state.num_successes  = 0;
-                    servo_state.num_timeouts   = 0;
-                    servo_state.num_crc_errors = 0;
-                    servo_state.num_packet_errors     = 0;
+                    servo_state.num_successes     = 0;
+                    servo_state.num_timeouts      = 0;
+                    servo_state.num_crc_errors    = 0;
+                    servo_state.num_packet_errors = 0;
                 }
             }
 
