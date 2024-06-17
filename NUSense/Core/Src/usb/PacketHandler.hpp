@@ -194,7 +194,7 @@ namespace usb {
         /// @brief  The hash of the received message
         uint64_t msg_hash = 0;
 
-        /// @brief  The timestamp
+        /// @brief  The timestamp when the message was sent.
         uint64_t msg_timestamp = 0;
 
         /// @brief  The remaining length of the protobuf packet to be gathered by the lower-level
