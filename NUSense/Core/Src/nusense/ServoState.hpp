@@ -90,7 +90,7 @@ namespace nusense {
         uint32_t num_crc_errors = 0;
 
         /// @brief The number of packet-errors.
-        uint32_t num_errors = 0;
+        uint32_t num_packet_errors = 0;
     };
 
     /**

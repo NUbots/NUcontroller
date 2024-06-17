@@ -11,14 +11,14 @@
 
 /* Struct definitions */
 typedef struct _message_platform_Servo_PacketCounts {
-    /* / The number of successes. */
+    /* / The total number of packets received. */
     uint32_t total;
     /* / The number of timeouts. */
     uint32_t timeouts;
     /* / The number of CRC-errors. */
     uint32_t crc_errors;
     /* / The number of packet-errors. */
-    uint32_t errors;
+    uint32_t packet_errors;
 } message_platform_Servo_PacketCounts;
 
 /* Message mainly for NUSense <-> NUC communication. NUSense will encode this message via nanopb after it queries all
@@ -161,34 +161,34 @@ extern "C" {
     { 0, false, message_platform_Servo_init_zero }
 
 /* Field tags (for use in manual encoding/decoding) */
-#define message_platform_Servo_PacketCounts_total_tag      1
-#define message_platform_Servo_PacketCounts_timeouts_tag   2
-#define message_platform_Servo_PacketCounts_crc_errors_tag 3
-#define message_platform_Servo_PacketCounts_errors_tag     4
-#define message_platform_Servo_id_tag                      1
-#define message_platform_Servo_hardware_error_tag          2
-#define message_platform_Servo_torque_enabled_tag          3
-#define message_platform_Servo_present_pwm_tag             4
-#define message_platform_Servo_present_current_tag         5
-#define message_platform_Servo_present_velocity_tag        6
-#define message_platform_Servo_present_position_tag        7
-#define message_platform_Servo_goal_pwm_tag                8
-#define message_platform_Servo_goal_current_tag            9
-#define message_platform_Servo_goal_velocity_tag           10
-#define message_platform_Servo_goal_position_tag           11
-#define message_platform_Servo_voltage_tag                 12
-#define message_platform_Servo_temperature_tag             13
-#define message_platform_Servo_packet_counts_tag           14
-#define message_platform_IMU_fvec3_x_tag                   1
-#define message_platform_IMU_fvec3_y_tag                   2
-#define message_platform_IMU_fvec3_z_tag                   3
-#define message_platform_IMU_accel_tag                     1
-#define message_platform_IMU_gyro_tag                      2
-#define message_platform_IMU_temperature_tag               3
-#define message_platform_NUSense_ServoMapEntry_key_tag     1
-#define message_platform_NUSense_ServoMapEntry_value_tag   2
-#define message_platform_NUSense_servo_map_tag             1
-#define message_platform_NUSense_imu_tag                   2
+#define message_platform_Servo_PacketCounts_total_tag         1
+#define message_platform_Servo_PacketCounts_timeouts_tag      2
+#define message_platform_Servo_PacketCounts_crc_errors_tag    3
+#define message_platform_Servo_PacketCounts_packet_errors_tag 4
+#define message_platform_Servo_id_tag                         1
+#define message_platform_Servo_hardware_error_tag             2
+#define message_platform_Servo_torque_enabled_tag             3
+#define message_platform_Servo_present_pwm_tag                4
+#define message_platform_Servo_present_current_tag            5
+#define message_platform_Servo_present_velocity_tag           6
+#define message_platform_Servo_present_position_tag           7
+#define message_platform_Servo_goal_pwm_tag                   8
+#define message_platform_Servo_goal_current_tag               9
+#define message_platform_Servo_goal_velocity_tag              10
+#define message_platform_Servo_goal_position_tag              11
+#define message_platform_Servo_voltage_tag                    12
+#define message_platform_Servo_temperature_tag                13
+#define message_platform_Servo_packet_counts_tag              14
+#define message_platform_IMU_fvec3_x_tag                      1
+#define message_platform_IMU_fvec3_y_tag                      2
+#define message_platform_IMU_fvec3_z_tag                      3
+#define message_platform_IMU_accel_tag                        1
+#define message_platform_IMU_gyro_tag                         2
+#define message_platform_IMU_temperature_tag                  3
+#define message_platform_NUSense_ServoMapEntry_key_tag        1
+#define message_platform_NUSense_ServoMapEntry_value_tag      2
+#define message_platform_NUSense_servo_map_tag                1
+#define message_platform_NUSense_imu_tag                      2
 
 /* Struct field encoding specification for nanopb */
 #define message_platform_Servo_FIELDLIST(X, a)         \
@@ -214,7 +214,7 @@ extern "C" {
     X(a, STATIC, SINGULAR, UINT32, total, 1)                \
     X(a, STATIC, SINGULAR, UINT32, timeouts, 2)             \
     X(a, STATIC, SINGULAR, UINT32, crc_errors, 3)           \
-    X(a, STATIC, SINGULAR, UINT32, errors, 4)
+    X(a, STATIC, SINGULAR, UINT32, packet_errors, 4)
 #define message_platform_Servo_PacketCounts_CALLBACK NULL
 #define message_platform_Servo_PacketCounts_DEFAULT  NULL
 

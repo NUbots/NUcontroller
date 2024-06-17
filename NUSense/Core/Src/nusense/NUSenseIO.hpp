@@ -16,7 +16,6 @@
 #include "../utility/support/Button.hpp"
 #include "../utility/support/MillisecondTimer.hpp"
 #include "ChainManager.hpp"
-#include "Dispatcher.hpp"
 #include "NUgus.hpp"
 #include "ServoState.hpp"
 #include "imu.h"

@@ -95,7 +95,7 @@ namespace nusense {
                     case dynamixel::PacketHandler::TIMEOUT: servo_states[current_servo_index].num_timeouts++; break;
                     case dynamixel::PacketHandler::CRC_ERROR: servo_states[current_servo_index].num_crc_errors++; break;
                     default:
-                    case dynamixel::PacketHandler::ERROR: servo_states[current_servo_index].num_errors++; break;
+                    case dynamixel::PacketHandler::ERROR: servo_states[current_servo_index].num_packet_errors++; break;
                 }
 
                 // Move along the chain.
@@ -176,7 +176,7 @@ namespace nusense {
                     servo_state.num_successes  = 0;
                     servo_state.num_timeouts   = 0;
                     servo_state.num_crc_errors = 0;
-                    servo_state.num_errors     = 0;
+                    servo_state.num_packet_errors     = 0;
                 }
             }
 

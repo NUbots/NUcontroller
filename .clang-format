@@ -75,6 +75,7 @@ IndentCaseLabels: true
 IndentPPDirectives: BeforeHash
 IndentWrappedFunctionNames: true
 IndentWidth: 4
+InsertNewlineAtEOF: true
 KeepEmptyLinesAtTheStartOfBlocks: true
 MaxEmptyLinesToKeep: 2
 NamespaceIndentation: All
