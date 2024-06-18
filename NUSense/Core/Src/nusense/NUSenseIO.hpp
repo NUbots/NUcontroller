@@ -50,7 +50,7 @@ namespace nusense {
 
         /// @brief  This is the nanopb generated struct which will contain all the states
         ///         to serialise and sent to the NUC
-        message_nusense nusense_msg = message_nusense_init_zero;
+        message_platform_NUSense nusense_msg = message_platform_NUSense_init_zero;
 
         /// @brief   The IMU instance
         IMU imu{};
@@ -110,7 +110,7 @@ namespace nusense {
         /// @param   chain the chain of servos to send the write-instruction to.
         void send_servo_write_2_request(dynamixel::Chain& chain);
 
-        /// @brief   Sends a serialised message_nusense to the nuc via usb.
+        /// @brief   Sends a serialised message_platform_nusense to the nuc via usb.
         /// @return  Whether the message was sent successfully.
         bool nusense_to_nuc();
     };

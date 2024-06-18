@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "../NUSenseIO.hpp"
 
 namespace nusense {
@@ -50,6 +52,13 @@ namespace nusense {
 
             nusense_msg.servo_map[i].value.voltage     = servo_states[i].voltage / servo_states[i].filter_count;
             nusense_msg.servo_map[i].value.temperature = servo_states[i].temperature / servo_states[i].filter_count;
+
+            nusense_msg.servo_map[i].value.has_packet_counts = true;
+            nusense_msg.servo_map[i].value.packet_counts.total =
+                servo_states[i].num_successes + servo_states[i].num_crc_errors + servo_states[i].num_packet_errors;
+            nusense_msg.servo_map[i].value.packet_counts.timeouts      = servo_states[i].num_timeouts;
+            nusense_msg.servo_map[i].value.packet_counts.crc_errors    = servo_states[i].num_crc_errors;
+            nusense_msg.servo_map[i].value.packet_counts.packet_errors = servo_states[i].num_packet_errors;
         }
 
         // Once everything else is filled we send it to the NUC. Just overwrite the bytes within encoding_payload
@@ -61,7 +70,7 @@ namespace nusense {
         pb_ostream_t output_buffer = pb_ostream_from_buffer(&encoding_payload[0], MAX_ENCODE_SIZE);
 
         // TODO (NUSense people) Handle encoding errors properly using this member somehow
-        nanopb_encoding_err = pb_encode(&output_buffer, message_nusense_fields, &nusense_msg) ? false : true;
+        nanopb_encoding_err = pb_encode(&output_buffer, message_platform_NUSense_fields, &nusense_msg) ? false : true;
         if (nanopb_encoding_err) {
             return false;
         }
