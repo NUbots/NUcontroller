@@ -20,8 +20,7 @@
 /// @brief The factory default Baud Rate
 /// @details Value is indexed from {9600, 57600, 115200, 1000000, 2000000, 3000000, 4000000, 4500000}
 /// @see dxl_hw_begin(baud) in ../hardware/dxl_hw.cpp
-#define DXL_NODE_OP3_BAUD 3
-
+#define DXL_NODE_OP3_BAUD 5
 
 #ifdef __cplusplus
 extern "C" {
