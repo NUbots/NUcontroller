@@ -70,13 +70,13 @@ namespace nusense {
         utility::support::MillisecondTimer loop_timer{};
 
         /// @brief  The SW_MODE button
-        device::Button mode_button = utility::support::Button(GPIOC, 15);
+        device::Button mode_button = device::Button(GPIOC, 15);
 
         /// @brief  The SW_START button
-        device::Button start_button = utility::support::Button(GPIOH, 0);
+        device::Button start_button = device::Button(GPIOH, 0);
 
         /// @brief  The on-board buzzer
-        device::Buzzer buzzer = utility::support::Buzzer(GPIOB, 7);
+        device::Buzzer buzzer = device::Buzzer(GPIOB, 7);
 
         /// @brief  Whether any servo is too hot.
         bool any_servo_hot = false;
