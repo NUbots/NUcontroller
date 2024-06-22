@@ -6,7 +6,7 @@
 namespace device {
 
     /**
-     * @brief   the buzzer
+     * @brief   The buzzer.
      * @note    This is an exercise for the author in bare-metal programming with the SFRs. Let me
      *          know if there are any better C++ paradigms for SFRs.
      */
@@ -14,8 +14,8 @@ namespace device {
     public:
         /**
          * @brief    Constructs the buzzer.
-         * @param    port the reference to the port on which the buzzer is connected,
-         * @param    pin at which the buzzer is connected,
+         * @param    port The reference to the port on which the buzzer is connected.
+         * @param    pin The pin at which the buzzer is connected.
          */
         Buzzer(GPIO_TypeDef* port, uint16_t pin) : port(port), pin(pin) {
             // Set the resistors to pull up.
@@ -28,7 +28,7 @@ namespace device {
 
         /**
          * @brief   Destructs the buzzer.
-         * @note    nothing needs to be freed as of yet,
+         * @note    Nothing needs to be freed as of yet.
          */
         virtual ~Buzzer() {}
 
@@ -48,9 +48,9 @@ namespace device {
         }
 
     private:
-        /// @brief  the handler of the peripheral port,
+        /// @brief  The handler of the peripheral port.
         GPIO_TypeDef* port;
-        /// @brief  the pin,
+        /// @brief  The pin.
         uint16_t pin;
     };
 

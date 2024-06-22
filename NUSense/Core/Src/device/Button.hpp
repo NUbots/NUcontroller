@@ -6,7 +6,7 @@
 namespace device {
 
     /**
-     * @brief   the buzzer
+     * @brief   The buzzer.
      * @note    This is an exercise for the author in bare-metal programming with the SFRs. Let me
      *          know if there are any better C++ paradigms for SFRs.
      */
@@ -14,8 +14,8 @@ namespace device {
     public:
         /**
          * @brief    Constructs the button.
-         * @param    port the reference to the port on which the button is connected,
-         * @param    pin at which the button is connected,
+         * @param    port The reference to the port on which the button is connected.
+         * @param    pin At which the button is connected.
          */
         Button(GPIO_TypeDef* port, uint16_t pin) : port(port), pin(pin) {
             // Set the resistors to pull up.
@@ -27,13 +27,13 @@ namespace device {
 
         /**
          * @brief   Destructs the button.
-         * @note    nothing needs to be freed as of yet,
+         * @note    Nothing needs to be freed as of yet.
          */
         virtual ~Button() {}
 
         /**
          * @brief   Polls the pin.
-         * @return  whether the pin is high or low,
+         * @return  Whether the pin is high or low.
          */
         inline bool read() {
             return ((port->IDR & (0x0001 << pin)) != 0);
@@ -43,7 +43,7 @@ namespace device {
          * @brief   Handles the debouncing filter.
          * @note    To be honest, I am not fully sure on how this works, some magic with which Trent
          *          came up. Better suggestions for debouncing are welcome.
-         * @return  whether the button has just been pressed, i.e. a single shot of the rising
+         * @return  Whether the button has just been pressed, i.e. a single shot of the rising
          *          active edge.
          */
         bool filter() {
@@ -68,17 +68,17 @@ namespace device {
         }
 
     private:
-        /// @brief  the handler of the peripheral port,
+        /// @brief  The handler of the peripheral port.
         GPIO_TypeDef* port;
-        /// @brief  the pin,
+        /// @brief  The pin.
         uint16_t pin;
-        /// @brief  the debounced state, i.e. whether it has been fully pressed,
+        /// @brief  The debounced state, i.e. whether it has been fully pressed.
         bool is_pressed = false;
-        /// @brief  the number of highs counted,
+        /// @brief  The number of highs counted.
         uint16_t n_highs = 0;
-        /// @brief  the number of lows counted,
+        /// @brief  The number of lows counted.
         uint16_t n_lows = 0;
-        /// @brief  th threshold for debouncing,
+        /// @brief  The threshold for debouncing.
         uint16_t threshold = 0;
     };
 
