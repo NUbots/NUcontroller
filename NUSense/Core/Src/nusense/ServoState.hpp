@@ -1,6 +1,7 @@
 #ifndef NUSENSE_SERVOSTATE_HPP
 #define NUSENSE_SERVOSTATE_HPP
 
+#include <cstdint>
 #include <ostream>  // needed for outputting the servo-state
 
 #include "../utility/math/CircularMean.hpp"
@@ -73,11 +74,23 @@ namespace nusense {
         /// @brief Whether we have initialised this servo yet
         bool initialised = false;
 
-        /// @brief the number of samples filtered so far
+        /// @brief The number of samples filtered so far.
         float filter_count = 0.0f;
 
-        /// @brief the circular mean of the present-position,
+        /// @brief The circular mean of the present-position.
         utility::math::CircularMean mean_present_position;
+
+        /// @brief The number of successes.
+        uint32_t num_successes = 0;
+
+        /// @brief The number of timeouts.
+        uint32_t num_timeouts = 0;
+
+        /// @brief The number of CRC-errors.
+        uint32_t num_crc_errors = 0;
+
+        /// @brief The number of packet-errors.
+        uint32_t num_packet_errors = 0;
     };
 
     /**
