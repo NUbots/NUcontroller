@@ -32,7 +32,7 @@ namespace nusense {
 
         // Buzz if any servo is hot, use the boolean flag to turn the buzzer off once the servo is no longer hot
         // A servo is defined to be hot if the detected temperature exceeds the maximum tolerance in the configuration
-        if (servo_states[servo_index].temperature > 60.0) {
+        if (servo_states[servo_index].temperature / servo_states[servo_index].filter_count > 80.0) {
             any_servo_hot = true;
         }
 

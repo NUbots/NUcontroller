@@ -1,9 +1,9 @@
 #include "stm32h753xx.h"
 
-#ifndef UTILITY_SUPPORT_BUZZER_HPP
-    #define UTILITY_SUPPORT_BUZZER_HPP
+#ifndef DEVICE_BUZZER_HPP
+    #define DEVICE_BUZZER_HPP
 
-namespace utility::support {
+namespace device {
 
     /**
      * @brief   the buzzer
@@ -22,7 +22,8 @@ namespace utility::support {
             port->PUPDR &= ~(0b11 << (pin * 2));
             port->PUPDR |= (0b01 << (pin * 2));
             // Set the pin as an output.
-            port->MODER &= ~(0b01 << (pin * 2));
+            port->MODER |= (0b01 << (pin * 2));
+            port->MODER &= ~(0b10 << (pin * 2));
         }
 
         /**
@@ -36,14 +37,14 @@ namespace utility::support {
          * @note    May introduce beaps and modulated frequencies later.
          */
         inline void turn_on() {
-            port->BSRR = pin;
+            port->BSRR = 1 << pin;
         }
 
         /**
          * @brief   Turns the buzzer off.
          */
         inline void turn_off() {
-            port->BSRR = static_cast<uint32_t>(pin) << 16U;
+            port->BSRR = static_cast<uint32_t>(1 << (pin * 2));
         }
 
     private:
@@ -53,6 +54,6 @@ namespace utility::support {
         uint16_t pin;
     };
 
-}  // namespace utility::support
+}  // namespace device
 
-#endif  // UTILITY_SUPPORT_BUZZER_HPP
+#endif  // DEVICE_BUZZER_HPP

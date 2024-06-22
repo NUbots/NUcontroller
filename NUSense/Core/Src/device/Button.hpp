@@ -1,9 +1,9 @@
 #include "stm32h753xx.h"
 
-#ifndef UTILITY_SUPPORT_BUTTON_HPP
-    #define UTILITY_SUPPORT_BUTTON_HPP
+#ifndef DEVICE_BUTTON_HPP
+    #define DEVICE_BUTTON_HPP
 
-namespace utility::support {
+namespace device {
 
     /**
      * @brief   the buzzer
@@ -17,8 +17,7 @@ namespace utility::support {
          * @param    port the reference to the port on which the button is connected,
          * @param    pin at which the button is connected,
          */
-        Button(GPIO_TypeDef* port, uint16_t pin)
-            : port(port), pin(pin), is_pressed(false), n_highs(0), n_lows(0), threshold(10) {
+        Button(GPIO_TypeDef* port, uint16_t pin) : port(port), pin(pin) {
             // Set the resistors to pull up.
             port->PUPDR &= ~(0b11 << (pin * 2));
             port->PUPDR |= (0b01 << (pin * 2));
@@ -74,15 +73,15 @@ namespace utility::support {
         /// @brief  the pin,
         uint16_t pin;
         /// @brief  the debounced state, i.e. whether it has been fully pressed,
-        bool is_pressed;
+        bool is_pressed = false;
         /// @brief  the number of highs counted,
-        uint16_t n_highs;
+        uint16_t n_highs = 0;
         /// @brief  the number of lows counted,
-        uint16_t n_lows;
+        uint16_t n_lows = 0;
         /// @brief  th threshold for debouncing,
-        uint16_t threshold;
+        uint16_t threshold = 0;
     };
 
-}  // namespace utility::support
+}  // namespace device
 
-#endif  // UTILITY_SUPPORT_BUTTON_HPP
+#endif  // DEVICE_BUTTON_HPP
