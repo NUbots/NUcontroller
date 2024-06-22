@@ -6,7 +6,7 @@
 namespace device {
 
     /**
-     * @brief   The buzzer.
+     * @brief   The button.
      * @note    This is an exercise for the author in bare-metal programming with the SFRs. Let me
      *          know if there are any better C++ paradigms for SFRs.
      */
