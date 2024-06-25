@@ -180,6 +180,14 @@ namespace nusense {
                 }
             }
 
+            // If any servo is hot, then sound the buzzer.
+            if (any_servo_hot) {
+                buzzer.turn_on();
+            }
+            else {
+                buzzer.turn_off();
+            }
+
             if (mode_button.filter()) {
                 SET_SIGNAL_1();
                 RESET_SIGNAL_1();

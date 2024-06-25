@@ -1,12 +1,12 @@
 #include "stm32h753xx.h"
 
-#ifndef UTILITY_SUPPORT_BUTTON_HPP
-    #define UTILITY_SUPPORT_BUTTON_HPP
+#ifndef DEVICE_BUTTON_HPP
+    #define DEVICE_BUTTON_HPP
 
-namespace utility::support {
+namespace device {
 
     /**
-     * @brief   the timer in microseconds
+     * @brief   The button.
      * @note    This is an exercise for the author in bare-metal programming with the SFRs. Let me
      *          know if there are any better C++ paradigms for SFRs.
      */
@@ -14,10 +14,10 @@ namespace utility::support {
     public:
         /**
          * @brief    Constructs the button.
-         * @param    htim the reference to the timer to be counted,
+         * @param    port The reference to the port on which the button is connected.
+         * @param    pin At which the button is connected.
          */
-        Button(GPIO_TypeDef* port, uint16_t pin)
-            : port(port), pin(pin), is_pressed(false), n_highs(0), n_lows(0), threshold(10) {
+        Button(GPIO_TypeDef* port, uint16_t pin) : port(port), pin(pin) {
             // Set the resistors to pull up.
             port->PUPDR &= ~(0b11 << (pin * 2));
             port->PUPDR |= (0b01 << (pin * 2));
@@ -27,13 +27,13 @@ namespace utility::support {
 
         /**
          * @brief   Destructs the button.
-         * @note    nothing needs to be freed as of yet,
+         * @note    Nothing needs to be freed as of yet.
          */
         virtual ~Button() {}
 
         /**
          * @brief   Polls the pin.
-         * @return  whether the pin is high or low,
+         * @return  Whether the pin is high or low.
          */
         inline bool read() {
             return ((port->IDR & (0x0001 << pin)) != 0);
@@ -43,7 +43,7 @@ namespace utility::support {
          * @brief   Handles the debouncing filter.
          * @note    To be honest, I am not fully sure on how this works, some magic with which Trent
          *          came up. Better suggestions for debouncing are welcome.
-         * @return  whether the button has just been pressed, i.e. a single shot of the rising
+         * @return  Whether the button has just been pressed, i.e. a single shot of the rising
          *          active edge.
          */
         bool filter() {
@@ -68,20 +68,20 @@ namespace utility::support {
         }
 
     private:
-        /// @brief  the handler of the peripheral port,
+        /// @brief  The handler of the peripheral port.
         GPIO_TypeDef* port;
-        /// @brief  the pin,
+        /// @brief  The pin.
         uint16_t pin;
-        /// @brief  the debounced state, i.e. whether it has been fully pressed,
-        bool is_pressed;
-        /// @brief  the number of highs counted,
-        uint16_t n_highs;
-        /// @brief  the number of lows counted,
-        uint16_t n_lows;
-        /// @brief  th threshold for debouncing,
-        uint16_t threshold;
+        /// @brief  The debounced state, i.e. whether it has been fully pressed.
+        bool is_pressed = false;
+        /// @brief  The number of highs counted.
+        uint16_t n_highs = 0;
+        /// @brief  The number of lows counted.
+        uint16_t n_lows = 0;
+        /// @brief  The threshold for debouncing.
+        uint16_t threshold = 0;
     };
 
-}  // namespace utility::support
+}  // namespace device
 
-#endif  // UTILITY_SUPPORT_BUTTON_HPP
+#endif  // DEVICE_BUTTON_HPP

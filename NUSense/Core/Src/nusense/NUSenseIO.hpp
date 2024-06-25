@@ -5,6 +5,8 @@
 #include <iterator>
 #include <stdio.h>
 
+#include "../device/Button.hpp"
+#include "../device/Buzzer.hpp"
 #include "../dynamixel/Chain.hpp"
 #include "../dynamixel/Dynamixel.hpp"
 #include "../dynamixel/PacketHandler.hpp"
@@ -13,7 +15,6 @@
 #include "../usb/protobuf/NUSenseData.pb.h"
 #include "../usb/protobuf/pb_encode.h"
 #include "../utility/message/hash.hpp"
-#include "../utility/support/Button.hpp"
 #include "../utility/support/MillisecondTimer.hpp"
 #include "ChainManager.hpp"
 #include "NUgus.hpp"
@@ -69,10 +70,16 @@ namespace nusense {
         utility::support::MillisecondTimer loop_timer{};
 
         /// @brief  The SW_MODE button
-        utility::support::Button mode_button = utility::support::Button(GPIOC, 15);
+        device::Button mode_button = device::Button(GPIOC, 15);
 
         /// @brief  The SW_START button
-        utility::support::Button start_button = utility::support::Button(GPIOH, 0);
+        device::Button start_button = device::Button(GPIOH, 0);
+
+        /// @brief  The on-board buzzer
+        device::Buzzer buzzer = device::Buzzer(GPIOB, 7);
+
+        /// @brief  Whether any servo is too hot.
+        bool any_servo_hot = false;
 
     public:
         /// @brief   Constructs the instance for NUSense communications.
