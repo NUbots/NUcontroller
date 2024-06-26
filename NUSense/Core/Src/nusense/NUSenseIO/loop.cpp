@@ -182,11 +182,10 @@ namespace nusense {
 
             // If any servo is hot, then sound the buzzer.
             if (any_servo_hot) {
-                buzzer.turn_on();
+                buzzer.pulse(5, true, device::Buzzer::Priority::HIGH);
             }
-            else {
-                buzzer.turn_off();
-            }
+
+            buzzer.handle();
 
             if (mode_button.filter()) {
                 SET_SIGNAL_1();

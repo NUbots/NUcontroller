@@ -1,6 +1,8 @@
 #ifndef UTILITY_SUPPORT_MILLISECONDTIMER_HPP
 #define UTILITY_SUPPORT_MILLISECONDTIMER_HPP
 
+#include "stm32h7xx_hal.h"
+
 namespace utility::support {
 
     /**
