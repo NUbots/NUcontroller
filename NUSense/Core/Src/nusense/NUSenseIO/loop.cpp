@@ -185,6 +185,12 @@ namespace nusense {
                 buzzer.pulse(5, true, device::Buzzer::Priority::HIGH);
             }
 
+            // Handle any of the pulser objects.
+            tx_led.handle();
+            rx_led.handle();
+            red_led.handle();
+            blue_led.handle();
+            green_led.handle();
             buzzer.handle();
 
             if (mode_button.filter()) {

@@ -19,9 +19,6 @@ namespace device {
          * @param    pin The pin at which the buzzer is connected.
          */
         Buzzer(GPIO_TypeDef* port, uint16_t pin) : port(port), pin(pin) {
-            // Set the resistors to pull up.
-            port->PUPDR &= ~(0b11 << (pin * 2));
-            port->PUPDR |= (0b01 << (pin * 2));
             // Set the pin as an output.
             port->MODER |= (0b01 << (pin * 2));
             port->MODER &= ~(0b10 << (pin * 2));
@@ -42,7 +39,7 @@ namespace device {
          *          would make a dual-tone, but the higher tone may be pushed to the ultrasonic
          *          band.
          */
-        inline void turn_on() {
+        inline void turn_on() override {
             port->BSRR = 1 << pin;
             Pulser::turn_on();
         }
@@ -50,16 +47,16 @@ namespace device {
         /**
          * @brief   Turns the buzzer off.
          */
-        inline void turn_off() {
+        inline void turn_off() override {
             port->BSRR = static_cast<uint32_t>(1 << (pin + 16));
             Pulser::turn_off();
         }
 
     private:
         /// @brief  The handler of the peripheral port.
-        GPIO_TypeDef* port;
+        GPIO_TypeDef* port = NULL;
         /// @brief  The pin.
-        uint16_t pin;
+        uint16_t pin = 0;
     };
 
 }  // namespace device

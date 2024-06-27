@@ -1,9 +1,9 @@
 #include "stm32h753xx.h"
 
-#ifndef DEVICE_BUTTON_HPP
-    #define DEVICE_BUTTON_HPP
+#ifndef DEVICE_BACK_PANEL_BUTTON_HPP
+    #define DEVICE_BACK_PANEL_BUTTON_HPP
 
-namespace device {
+namespace device::back_panel {
 
     /**
      * @brief   The button.
@@ -82,6 +82,6 @@ namespace device {
         uint16_t threshold = 0;
     };
 
-}  // namespace device
+}  // namespace device::back_panel
 
-#endif  // DEVICE_BUTTON_HPP
+#endif  // DEVICE_BACK_PANEL_BUTTON_HPP

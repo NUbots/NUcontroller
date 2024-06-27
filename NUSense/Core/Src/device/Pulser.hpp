@@ -32,7 +32,7 @@ namespace device {
         /**
          * @brief   Gets the current priority.
          */
-        inline const Priority get_current_priority() const {
+        inline Priority get_current_priority() const {
             return current_priority;
         }
 
@@ -45,9 +45,9 @@ namespace device {
          * @return  Whether the new pulsing task has been taken in, i.e. the priority is high
          *          enough.
          */
-        inline const bool pulse(const uint8_t num_pulses    = 1,
-                                const bool is_repeating     = false,
-                                const Priority new_priority = LOW) {
+        inline bool pulse(const uint8_t num_pulses    = 1,
+                          const bool is_repeating     = false,
+                          const Priority new_priority = LOW) {
             // If the wanted priority is less than the current priority, then return early.
             if (new_priority < current_priority) {
                 return false;
@@ -60,7 +60,7 @@ namespace device {
 
             // Store the number of pulses if repeating.
             num_pulses_left = num_pulses;
-            if (is_repeating == true) {
+            if (is_repeating) {
                 num_pulses_in_burst = num_pulses;
             }
             else {
@@ -96,7 +96,7 @@ namespace device {
             // If there are still pulses left to do, and the half-pause has timed out, then toggle
             // the output.
             if ((num_pulses_left != 0) && (halfpulse_timer.has_timed_out())) {
-                if (is_on == true) {
+                if (is_on) {
                     // If this is a falling edge, then a full pulse has been done, and decrease the
                     // number of pulses left.
                     num_pulses_left--;
