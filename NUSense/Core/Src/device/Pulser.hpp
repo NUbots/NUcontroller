@@ -39,6 +39,8 @@ namespace device {
         /**
          * @brief   Pulses the device.
          * @note    This should ideally not be overridden.
+         * @note    The priority is a basic way to stop calls overwriting important pulses like
+         *          the one for overheating. It does not queue or shelved tasks.
          * @param   num_pulses The number of pulses to show.
          * @param   is_repeating Whether the burst of pulses is repeating with some dead time in
          *          between each.

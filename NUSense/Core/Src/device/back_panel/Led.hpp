@@ -22,7 +22,8 @@ namespace device::back_panel {
             // Set the pin as an output.
             port->MODER |= (0b01 << (pin * 2));
             port->MODER &= ~(0b10 << (pin * 2));
-            // Set the output to be open-drain since the LED is electrically pulled high; see the schematic:
+            // Set the output to be open-drain since the LED is electrically pulled high; see the
+            // schematic:
             // https://github.com/ROBOTIS-GIT/ROBOTIS-OP-Series-Data/blob/master/ROBOTIS-OP%2C%20ROBOTIS-OP2/Hardware/Electronics/Boards/DARwIn-OP_Interface_rev3.pdf
             port->OTYPER |= (0b1 << pin);
             // Set the pin to high at first.
@@ -39,7 +40,7 @@ namespace device::back_panel {
          * @brief   Turns the LED on.
          */
         inline void turn_on() override {
-            // The pin is reset since the LED is electrically pulled high; see the schematic above.
+            // The pin is reset since the LED is electrically pulled high.
             port->BSRR = static_cast<uint32_t>(1 << (pin + 16));
             Pulser::turn_on();
         }
@@ -48,7 +49,7 @@ namespace device::back_panel {
          * @brief   Turns the LED off.
          */
         inline void turn_off() override {
-            // The pin is set since the LED is electrically pulled high; see the schematic above.
+            // The pin is set since the LED is electrically pulled high.
             port->BSRR = 1 << pin;
             Pulser::turn_off();
         }

@@ -32,12 +32,7 @@ namespace device {
 
         /**
          * @brief   Turns the buzzer on.
-         * @note    May introduce modulated frequencies later. Since the buzzer is only on and off
-         *          with a single frequency, different frequencies cannot be done like the OpenCR,
-         *          at least not purely. However, different frequencies may be spoofed by
-         *          modulating around the centre-frequency with a square wave. Technically, this
-         *          would make a dual-tone, but the higher tone may be pushed to the ultrasonic
-         *          band.
+         * @note    May introduce modulated frequencies later with a timer.
          */
         inline void turn_on() override {
             port->BSRR = 1 << pin;
