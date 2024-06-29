@@ -236,6 +236,10 @@ namespace nusense {
         // Begin the 100-Hz timer.
         loop_timer.begin(10);
 
+        // Begin an initial pulse as a heartbeat.
+        right_rgb.set_value(0xFFFF00);
+        right_rgb.pulse(1, true, device::back_panel::Led::Priority::LOW);
+
         // Set the state of each expect status as a response to a write-instruction.
         status_states.fill(StatusState::WRITE_1_RESPONSE);
 

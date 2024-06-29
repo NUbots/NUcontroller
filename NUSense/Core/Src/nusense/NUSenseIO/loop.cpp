@@ -191,6 +191,8 @@ namespace nusense {
             red_led.handle();
             blue_led.handle();
             green_led.handle();
+            left_rgb.handle();
+            right_rgb.handle();
             buzzer.handle();
 
             if (mode_button.filter()) {

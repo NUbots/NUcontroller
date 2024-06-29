@@ -8,6 +8,7 @@
 #include "../device/Buzzer.hpp"
 #include "../device/back_panel/Button.hpp"
 #include "../device/back_panel/Led.hpp"
+#include "../device/back_panel/RgbLed.hpp"
 #include "../dynamixel/Chain.hpp"
 #include "../dynamixel/Dynamixel.hpp"
 #include "../dynamixel/PacketHandler.hpp"
@@ -77,11 +78,15 @@ namespace nusense {
         device::back_panel::Button start_button = device::back_panel::Button(GPIOH, 0);
 
         /// @brief  The LEDs on the back-panel, arranged in the order from left to right.
-        device::back_panel::Led tx_led    = device::back_panel::Led(GPIOC, 14);
-        device::back_panel::Led rx_led    = device::back_panel::Led(GPIOC, 13);
-        device::back_panel::Led red_led   = device::back_panel::Led(GPIOE, 6);
-        device::back_panel::Led blue_led  = device::back_panel::Led(GPIOE, 5);
-        device::back_panel::Led green_led = device::back_panel::Led(GPIOE, 4);
+        device::back_panel::Led tx_led      = device::back_panel::Led(GPIOC, 14);
+        device::back_panel::Led rx_led      = device::back_panel::Led(GPIOC, 13);
+        device::back_panel::Led red_led     = device::back_panel::Led(GPIOE, 6);
+        device::back_panel::Led blue_led    = device::back_panel::Led(GPIOE, 5);
+        device::back_panel::Led green_led   = device::back_panel::Led(GPIOE, 4);
+        device::back_panel::RgbLed left_rgb = device::back_panel::RgbLed(
+            {device::back_panel::Led{GPIOE, 3}, device::back_panel::Led{GPIOE, 1}, device::back_panel::Led{GPIOE, 2}});
+        device::back_panel::RgbLed right_rgb = device::back_panel::RgbLed(
+            {device::back_panel::Led{GPIOE, 0}, device::back_panel::Led{GPIOB, 8}, device::back_panel::Led{GPIOB, 9}});
 
         /// @brief  The on-board buzzer
         device::Buzzer buzzer = device::Buzzer(GPIOB, 7);
