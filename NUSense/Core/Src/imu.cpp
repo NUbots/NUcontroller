@@ -53,11 +53,14 @@ namespace nusense {
         // Set the full-scale for the accelerometer.
         write_reg(Address::ACCEL_CONFIG, ACCEL_CONFIG1_FS_SEL_CHOSEN);
 
-        // Set the accelerometer's LPF to 218 Hz and the lowest number of samples.
-        write_reg(Address::ACCEL_CONFIG2, ACCEL_CONFIG2_DEC2_CFG_4SAMPLES | ACCEL_CONFIG2_ACCEL_FCHOICE_B_FALSE | 0x00);
+        // Set the accelerometer's LPF to 45 Hz and the lowest number of samples.
+        write_reg(
+            Address::ACCEL_CONFIG2,
+            ACCEL_CONFIG2_DEC2_CFG_4SAMPLES | ACCEL_CONFIG2_ACCEL_FCHOICE_B_FALSE | ACCEL_CONFIG2_ACCEL_DLPF_CFG_45HZ);
 
-        // Set the gyroscope's LPF to 250 Hz.
-        write_reg(Address::CONFIG, CONFIG_FIFO_MODE_OVERFLOW_WAIT);
+        // Set the FIFO to wait when full, disable the FSYNC pin, and set the gyro's LPF to 41 Hz.
+        write_reg(Address::CONFIG,
+                  CONFIG_FIFO_MODE_OVERFLOW_WAIT | CONFIG_EXT_SYNC_SET_DISABLED | CONFIG_DLPF_CFG_41HZ);
 
         // Set the sample-rate to 1 kHz.
         write_reg(Address::SMPLRT_DIV, 0x00);

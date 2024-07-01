@@ -83,7 +83,7 @@ namespace nusense {
             init();
         };
 
-        virtual ~IMU(){};
+        virtual ~IMU() {};
 
         // From Table-1, Table-2, and Table-3 from the datasheet.
         const uint16_t ACCEL_SENSITIVTY_2G     = 16384;  // LSB/g
@@ -220,6 +220,25 @@ namespace nusense {
          */
         // 6:
         const uint8_t CONFIG_FIFO_MODE_OVERFLOW_WAIT = BIT_6;
+        const uint8_t CONFIG_FIFO_MODE_OVERWRITE     = BLANK;
+        // 5-3
+        const uint8_t CONFIG_EXT_SYNC_SET_DISABLED   = BLANK;
+        const uint8_t CONFIG_EXT_SYNC_SET_TEMP_OUT   = BIT_3;
+        const uint8_t CONFIG_EXT_SYNC_SET_GYRO_XOUT  = BIT_4;
+        const uint8_t CONFIG_EXT_SYNC_SET_GYRO_YOUT  = BIT_4 | BIT_3;
+        const uint8_t CONFIG_EXT_SYNC_SET_GYRO_ZOUT  = BIT_5;
+        const uint8_t CONFIG_EXT_SYNC_SET_ACCEL_XOUT = BIT_5 | BIT_3;
+        const uint8_t CONFIG_EXT_SYNC_SET_ACCEL_YOUT = BIT_5 | BIT_4;
+        const uint8_t CONFIG_EXT_SYNC_SET_ACCEL_ZOUT = BIT_5 | BIT_4 | BIT_3;
+        // 2-0
+        const uint8_t CONFIG_DLPF_CFG_250HZ  = BLANK;
+        const uint8_t CONFIG_DLPF_CFG_176HZ  = BIT_0;
+        const uint8_t CONFIG_DLPF_CFG_92HZ   = BIT_1;
+        const uint8_t CONFIG_DLPF_CFG_41HZ   = BIT_1 | BIT_0;
+        const uint8_t CONFIG_DLPF_CFG_20HZ   = BIT_2;
+        const uint8_t CONFIG_DLPF_CFG_10HZ   = BIT_2 | BIT_0;
+        const uint8_t CONFIG_DLPF_CFG_5HZ    = BIT_2 | BIT_1;
+        const uint8_t CONFIG_DLPF_CFG_3281HZ = BIT_2 | BIT_1 | BIT_0;
 
         //-------------------------------------------
         // GYRO Configuration R/W
@@ -239,6 +258,8 @@ namespace nusense {
         const uint8_t GYRO_CONFIG_FS_SEL_1000DPS = BIT_4;
         const uint8_t GYRO_CONFIG_FS_SEL_2000DPS = BIT_3 | BIT_4;
         // 1-0
+        const uint8_t GYRO_CONFIG_FCHOICE_B_TRUE  = BIT_0;
+        const uint8_t GYRO_CONFIG_FCHOICE_B_FALSE = BLANK;
         // Refer to IMU data-sheet
 
         //-------------------------------------------
@@ -280,6 +301,14 @@ namespace nusense {
         const uint8_t ACCEL_CONFIG2_ACCEL_FCHOICE_B_TRUE  = BIT_3;
         const uint8_t ACCEL_CONFIG2_ACCEL_FCHOICE_B_FALSE = BLANK;
         // 2-0
+        const uint8_t ACCEL_CONFIG2_ACCEL_DLPF_CFG_1046HZ = BLANK;
+        const uint8_t ACCEL_CONFIG2_ACCEL_DLPF_CFG_218HZ  = BIT_0;
+        const uint8_t ACCEL_CONFIG2_ACCEL_DLPF_CFG_99HZ   = BIT_1;
+        const uint8_t ACCEL_CONFIG2_ACCEL_DLPF_CFG_45HZ   = BIT_1 | BIT_0;
+        const uint8_t ACCEL_CONFIG2_ACCEL_DLPF_CFG_21HZ   = BIT_2;
+        const uint8_t ACCEL_CONFIG2_ACCEL_DLPF_CFG_10HZ   = BIT_2 | BIT_0;
+        const uint8_t ACCEL_CONFIG2_ACCEL_DLPF_CFG_5HZ    = BIT_2 | BIT_1;
+        const uint8_t ACCEL_CONFIG2_ACCEL_DLPF_CFG_420HZ  = BIT_2 | BIT_1 | BIT_0;
         // Refer to data-sheet page 41
 
         //-------------------------------------------
