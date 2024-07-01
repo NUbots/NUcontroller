@@ -28,6 +28,8 @@ extern dxl_mem_op3_t* p_dxl_mem;
 uint8_t debug_state = 0;
 // have we forced debug mode on?
 uint8_t debug_override = 0;
+// do we want to stream IMU data?
+uint8_t stream_imu = 0;
 // character to force debug mode
 const char override_char = '`';  // grave (`)
 
@@ -40,6 +42,7 @@ static bool dxl_debug_menu_shwo_ctrltbl();
 static void dxl_debug_send_write_command(void);
 static void dxl_debug_test_gpio(void);
 static void dxl_debug_view_imu();
+static void dxl_debug_stream_imu();
 
 
 /*---------------------------------------------------------------------------
@@ -79,6 +82,9 @@ void dxl_debug_loop(void) {
             default: break;
         }
     }
+    else if (stream_imu) {
+        dxl_debug_stream_imu();
+    }
 }
 
 
@@ -94,6 +100,7 @@ void dxl_debug_menu_show_list(void) {
     DEBUG_SERIAL.println("s - send dynamixel write command");
     DEBUG_SERIAL.println("g - test gpio (buttons)");
     DEBUG_SERIAL.println("i - show imu data");
+    DEBUG_SERIAL.println("t - stream imu data");
     DEBUG_SERIAL.println("q - exit menu");
     DEBUG_SERIAL.println("---------------------------");
 }
@@ -104,7 +111,7 @@ void dxl_debug_menu_show_list(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 void dxl_debug_menu_show_cmdline(void) {
-    DEBUG_SERIAL.print(">>");
+    DEBUG_SERIAL.print(">> ");
 }
 
 
@@ -124,6 +131,8 @@ bool dxl_debug_menu_loop(uint8_t ch) {
             exit_menu = true;
             // disable override on menu exit
             debug_override = 0;
+            // disable imu streaming
+            stream_imu = 0;
             DEBUG_SERIAL.println(" ");
             DEBUG_SERIAL.println("exit menu...");
             break;
@@ -148,6 +157,11 @@ bool dxl_debug_menu_loop(uint8_t ch) {
         case 'i':
             DEBUG_SERIAL.println(" ");
             dxl_debug_view_imu();
+            break;
+
+        case 't':
+            DEBUG_SERIAL.println(" ");
+            dxl_debug_stream_imu();
             break;
 
 
@@ -618,4 +632,98 @@ void dxl_debug_view_imu() {
     DEBUG_SERIAL.print(p_dxl_mem->Pitch);
     DEBUG_SERIAL.print(", ");
     DEBUG_SERIAL.println(p_dxl_mem->Yaw);
+}
+
+/**
+ * @brief Stream imu data to the serial port
+ */
+void dxl_debug_stream_imu() {
+    // toggle the stream
+    if (stream_imu == 0) {
+        // Open selection menu for what to stream
+        DEBUG_SERIAL.println("---------------------------");
+        DEBUG_SERIAL.println("> Select IMU data to stream:");
+        DEBUG_SERIAL.println("a - Accel");
+        DEBUG_SERIAL.println("g - Gyro");
+        DEBUG_SERIAL.println("r - RPY");
+        DEBUG_SERIAL.println("e - Everything");
+        DEBUG_SERIAL.println("q - exit");
+        DEBUG_SERIAL.println("---------------------------");
+        DEBUG_SERIAL.print(">> ");
+
+        // read the character (blocking)
+        while (!DEBUG_SERIAL.available())
+            ;
+        char ch = DEBUG_SERIAL.read();
+
+        // set the stream based on the character, and print the header as csv cols
+        switch (ch) {
+            case 'a':
+                stream_imu = 1;
+                DEBUG_SERIAL.println("Acc_X, Acc_Y, Acc_Z");
+                break;
+            case 'g':
+                stream_imu = 2;
+                DEBUG_SERIAL.println("Gyro_X, Gyro_Y, Gyro_Z");
+                break;
+            case 'r':
+                stream_imu = 3;
+                DEBUG_SERIAL.println("Roll, Pitch, Yaw");
+                break;
+            case 'e':
+                stream_imu = 4;
+                DEBUG_SERIAL.println("Acc_X, Acc_Y, Acc_Z, Gyro_X, Gyro_Y, Gyro_Z, Roll, Pitch, Yaw");
+                break;
+            case 'q':
+            default: stream_imu = 0; break;
+        }
+    }
+
+    // Selectively stream the data
+    char delim = ',';
+
+    switch (stream_imu) {
+        case 0: return;
+        case 1:
+            DEBUG_SERIAL.print(p_dxl_mem->Acc_X);
+            DEBUG_SERIAL.print(delim);
+            DEBUG_SERIAL.print(p_dxl_mem->Acc_Y);
+            DEBUG_SERIAL.print(delim);
+            DEBUG_SERIAL.println(p_dxl_mem->Acc_Z);
+            break;
+        case 2:
+            DEBUG_SERIAL.print(p_dxl_mem->Gyro_X);
+            DEBUG_SERIAL.print(delim);
+            DEBUG_SERIAL.print(p_dxl_mem->Gyro_Y);
+            DEBUG_SERIAL.print(delim);
+            DEBUG_SERIAL.println(p_dxl_mem->Gyro_Z);
+            break;
+        case 3:
+            DEBUG_SERIAL.print(p_dxl_mem->Roll);
+            DEBUG_SERIAL.print(delim);
+            DEBUG_SERIAL.print(p_dxl_mem->Pitch);
+            DEBUG_SERIAL.print(delim);
+            DEBUG_SERIAL.println(p_dxl_mem->Yaw);
+            break;
+        case 4:
+            DEBUG_SERIAL.print(p_dxl_mem->Acc_X);
+            DEBUG_SERIAL.print(delim);
+            DEBUG_SERIAL.print(p_dxl_mem->Acc_Y);
+            DEBUG_SERIAL.print(delim);
+            DEBUG_SERIAL.print(p_dxl_mem->Acc_Z);
+            DEBUG_SERIAL.print(delim);
+            DEBUG_SERIAL.print(p_dxl_mem->Gyro_X);
+            DEBUG_SERIAL.print(delim);
+            DEBUG_SERIAL.print(p_dxl_mem->Gyro_Y);
+            DEBUG_SERIAL.print(delim);
+            DEBUG_SERIAL.print(p_dxl_mem->Gyro_Z);
+            DEBUG_SERIAL.print(delim);
+            DEBUG_SERIAL.print(p_dxl_mem->Roll);
+            DEBUG_SERIAL.print(delim);
+            DEBUG_SERIAL.print(p_dxl_mem->Pitch);
+            DEBUG_SERIAL.print(delim);
+            DEBUG_SERIAL.println(p_dxl_mem->Yaw);
+            break;
+        default: break;
+    }
 }
