@@ -40,7 +40,6 @@ static bool dxl_debug_menu_shwo_ctrltbl();
 static void dxl_debug_send_write_command(void);
 static void dxl_debug_test_gpio(void);
 static void dxl_debug_buzzer();
-static void dxl_debug_buzzer_no_end();
 
 
 /*---------------------------------------------------------------------------
@@ -94,7 +93,7 @@ void dxl_debug_menu_show_list(void) {
     DEBUG_SERIAL.println("l - show control table");
     DEBUG_SERIAL.println("s - send dynamixel write command");
     DEBUG_SERIAL.println("g - test gpio (buttons)");
-    DEBUG_SERIAL.println("b - test buzzer (or v for alt)");
+    DEBUG_SERIAL.println("b - test buzzer");
     DEBUG_SERIAL.println("q - exit menu");
     DEBUG_SERIAL.println("---------------------------");
 }
@@ -149,11 +148,6 @@ bool dxl_debug_menu_loop(uint8_t ch) {
         case 'b':
             DEBUG_SERIAL.println(" ");
             dxl_debug_buzzer();
-            break;
-
-        case 'v':
-            DEBUG_SERIAL.println(" ");
-            dxl_debug_buzzer_no_end();
             break;
 
         default: exit_menu = true; break;
@@ -613,7 +607,7 @@ void dxl_debug_buzzer() {
         ;
     int dur = DEBUG_SERIAL.parseInt();
 
-    // End if frequency is 0
+    // End if frequency is 0, delayed by duration
     if (freq == 0) {
         delay(dur);
         noTone(BDPIN_BUZZER);
@@ -629,52 +623,6 @@ void dxl_debug_buzzer() {
     if (dur == 0) {
         DEBUG_SERIAL.println(" indefinitely.");
         tone(BDPIN_BUZZER, freq);
-        return;
-    }
-
-    // Confirm duration
-    DEBUG_SERIAL.print(" for ");
-    DEBUG_SERIAL.print(dur);
-    DEBUG_SERIAL.println("ms");
-
-    // Play the tone normally
-    tone(BDPIN_BUZZER, freq, dur);
-    delay(dur);
-    noTone(BDPIN_BUZZER);
-}
-
-/**
- * @brief Sound the buzzer at a given frequency and duration but WITHOUT the final delay and noTime
- */
-void dxl_debug_buzzer_no_end() {
-    DEBUG_SERIAL.print("[>] Frequency (Hz): ");
-    while (!DEBUG_SERIAL.available())
-        ;
-    int freq = DEBUG_SERIAL.parseInt();
-
-    DEBUG_SERIAL.print("[>] Duration (ms): ");
-    while (!DEBUG_SERIAL.available())
-        ;
-    int dur = DEBUG_SERIAL.parseInt();
-
-    // End if frequency is 0
-    if (freq == 0) {
-        delay(dur);
-        noTone(BDPIN_BUZZER);
-        return;
-    }
-
-    // Confirm frequency
-    DEBUG_SERIAL.print("[*] Playing tone at ");
-    DEBUG_SERIAL.print(freq);
-    DEBUG_SERIAL.print("Hz");
-
-    // Test without duration if duration is 0
-    if (dur == 0) {
-        DEBUG_SERIAL.println(" indefinitely.");
-        tone(BDPIN_BUZZER, freq);
-        // testing: what happens if we add a blocking delay here?
-        delay(100);
 
         return;
     }
