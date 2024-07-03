@@ -39,7 +39,7 @@ static uint32_t button_pin_num[BUTTON_PIN_MAX] = {PIN_BUTTON_S1, PIN_BUTTON_S2, 
 
 
 static uint8_t battery_voltage   = 0;
-static float battery_valtage_raw = 0;
+static float battery_voltage_raw = 0;
 static uint8_t battery_state     = BATTERY_POWER_STARTUP;
 
 
@@ -254,7 +254,7 @@ void dxl_hw_op3_voltage_update(void) {
     static bool startup    = false;
     static int adc_index   = 0;
     static int prev_state  = 0;
-    static int alram_state = 0;
+    static int alarm_state = 0;
     static int check_index = 0;
 
     int i;
@@ -287,13 +287,13 @@ void dxl_hw_op3_voltage_update(void) {
         }
         adc_value           = adc_sum / 10;
         vol_value           = map(adc_value, 0, 1023, 0, 331 * 57 / 10);
-        battery_valtage_raw = vol_value / 100;
+        battery_voltage_raw = vol_value / 100;
 
-        battery_valtage_raw += 0.5;
+        battery_voltage_raw += 0.5;
 
         // /// Serial.println(vol_value);
 
-        vol_value       = battery_valtage_raw * 10;
+        vol_value       = battery_voltage_raw * 10;
         vol_value       = constrain(vol_value, 0, 255);
         battery_voltage = vol_value;
     }
@@ -305,15 +305,15 @@ void dxl_hw_op3_voltage_update(void) {
 
         switch (battery_state) {
             case BATTERY_POWER_OFF:
-                alram_state = 0;
-                if (battery_valtage_raw > voltage_ref * 0.20) {
+                alarm_state = 0;
+                if (battery_voltage_raw > voltage_ref * 0.20) {
                     prev_state    = battery_state;
                     battery_state = BATTERY_POWER_STARTUP;
                 }
                 break;
 
             case BATTERY_POWER_STARTUP:
-                if (battery_valtage_raw > voltage_ref) {
+                if (battery_voltage_raw > voltage_ref) {
                     prev_state    = battery_state;
                     battery_state = BATTERY_POWER_NORMAL;
                 }
@@ -324,8 +324,8 @@ void dxl_hw_op3_voltage_update(void) {
                 break;
 
             case BATTERY_POWER_NORMAL:
-                alram_state = 0;
-                if (battery_valtage_raw < voltage_ref) {
+                alarm_state = 0;
+                if (battery_voltage_raw < voltage_ref) {
                     prev_state    = battery_state;
                     battery_state = BATTERY_POWER_CHECK;
                     check_index   = 0;
@@ -337,12 +337,12 @@ void dxl_hw_op3_voltage_update(void) {
                     check_index++;
                 }
                 else {
-                    if (battery_valtage_raw < voltage_ref) {
+                    if (battery_voltage_raw < voltage_ref) {
                         prev_state    = battery_state;
                         battery_state = BATTERY_POWER_WARNNING;
                     }
                 }
-                if (battery_valtage_raw >= voltage_ref) {
+                if (battery_voltage_raw >= voltage_ref) {
                     prev_state    = battery_state;
                     battery_state = BATTERY_POWER_NORMAL;
                 }
@@ -355,11 +355,11 @@ void dxl_hw_op3_voltage_update(void) {
                 //   tone(BDPIN_BUZZER, 1000, 500);
                 // }
 
-                if (battery_valtage_raw > voltage_ref) {
+                if (battery_voltage_raw > voltage_ref) {
                     prev_state    = battery_state;
                     battery_state = BATTERY_POWER_NORMAL;
                 }
-                if (battery_valtage_raw < voltage_ref * 0.20) {
+                if (battery_voltage_raw < voltage_ref * 0.20) {
                     prev_state    = battery_state;
                     battery_state = BATTERY_POWER_OFF;
                 }
