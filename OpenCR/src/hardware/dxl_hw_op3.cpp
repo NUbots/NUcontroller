@@ -31,11 +31,11 @@ static uint8_t button_value[BUTTON_PIN_MAX];
 static uint32_t button_pin_num[BUTTON_PIN_MAX] = {PIN_BUTTON_S1, PIN_BUTTON_S2, PIN_BUTTON_S3, PIN_BUTTON_S4};
 
 
-#define BATTERY_POWER_OFF      0
-#define BATTERY_POWER_STARTUP  1
-#define BATTERY_POWER_NORMAL   2
-#define BATTERY_POWER_CHECK    3
-#define BATTERY_POWER_WARNNING 4
+#define BATTERY_POWER_OFF     0
+#define BATTERY_POWER_STARTUP 1
+#define BATTERY_POWER_NORMAL  2
+#define BATTERY_POWER_CHECK   3
+#define BATTERY_POWER_WARNING 4
 
 
 static uint8_t battery_voltage   = 0;
@@ -339,7 +339,7 @@ void dxl_hw_op3_voltage_update(void) {
                 else {
                     if (battery_voltage_raw < voltage_ref) {
                         prev_state    = battery_state;
-                        battery_state = BATTERY_POWER_WARNNING;
+                        battery_state = BATTERY_POWER_WARNING;
                     }
                 }
                 if (battery_voltage_raw >= voltage_ref) {
@@ -348,9 +348,9 @@ void dxl_hw_op3_voltage_update(void) {
                 }
                 break;
 
-            case BATTERY_POWER_WARNNING:
-                // alram_state ^= 1;
-                // if(alram_state)
+            case BATTERY_POWER_WARNING:
+                // alarm_state ^= 1;
+                // if(alarm_state)
                 //{
                 //   tone(BDPIN_BUZZER, 1000, 500);
                 // }
@@ -369,7 +369,7 @@ void dxl_hw_op3_voltage_update(void) {
         }
     }
 
-    if (battery_state == BATTERY_POWER_WARNNING) {
+    if (battery_state == BATTERY_POWER_WARNING) {
         if (millis() - process_time[2] >= 200) {
             process_time[2] = millis();
 
