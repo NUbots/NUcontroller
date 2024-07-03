@@ -43,14 +43,14 @@
  *          > sets global for PWM value
  *      - handler_led(void)
  *          > Triggered by interrupt, sets values based on globals
- *
+ * 
  * - The interface board has:
  *     S1 -> Silkscreen GPIO 9  (TEST_PIN7)
  *     S2 -> Silkscreen GPIO 10 (TEST_PIN8)
  *     S3 -> Silkscreen GPIO 11 (TEST_PIN9)
  *     Short Silkscreen GPIO 9 and 12 (TEST_PIN7 and TEST_PIN_10)
- *      - This shorts S1 and S4, because S1 is our red button but the
- *        default firmware uses S4 for Dynamixel power disable. Avoids
+ *      - This shorts S1 and S4, because S1 is our red button but the 
+ *        default firmware uses S4 for Dynamixel power disable. Avoids 
  *        potential problems in the future.
  */
 
@@ -70,9 +70,6 @@
 #define HW_INTERFACE_LED_R BDPIN_GPIO_1  // 50
 #define HW_INTERFACE_LED_G BDPIN_GPIO_2  // 51
 #define HW_INTERFACE_LED_B BDPIN_GPIO_3  // 52
-
-// Add a second buzzer on a GPIO pin because the OpenCR buzzer won't play nice
-#define HW_ALT_BUZZER_PIN BDPIN_GPIO_18
 
 #endif  // DXL_HW_INTERFACE_H
 

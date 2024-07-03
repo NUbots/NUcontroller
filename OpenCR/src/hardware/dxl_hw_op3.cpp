@@ -106,7 +106,6 @@ void dxl_hw_op3_init(void) {
     pinMode(PIN_BUTTON_S3, INPUT_PULLUP);
     pinMode(PIN_BUTTON_S4, INPUT_PULLUP);
 
-    pinMode(HW_ALT_BUZZER_PIN, OUTPUT);
 
     dxl_hw_op3_led_set(PIN_LED_1, 1);  // R
     dxl_hw_op3_led_set(PIN_LED_2, 1);  // G

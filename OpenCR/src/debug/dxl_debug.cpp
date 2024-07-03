@@ -617,7 +617,6 @@ void dxl_debug_buzzer() {
     if (freq == 0) {
         delay(dur);
         noTone(BDPIN_BUZZER);
-        digitalWriteFast(HW_ALT_BUZZER_PIN, LOW);
         return;
     }
 
@@ -630,7 +629,6 @@ void dxl_debug_buzzer() {
     if (dur == 0) {
         DEBUG_SERIAL.println(" indefinitely.");
         tone(BDPIN_BUZZER, freq);
-        digitalWriteFast(HW_ALT_BUZZER_PIN, HIGH);
         return;
     }
 

@@ -461,14 +461,10 @@ void dxl_node_write_byte(uint16_t addr, uint8_t data) {
     }
 
     if (RANGE_CHECK(addr, p_dxl_mem->Buzzer)) {
-        if (p_dxl_mem->Buzzer > 0) {
+        if (p_dxl_mem->Buzzer > 0)
             tone(BDPIN_BUZZER, p_dxl_mem->Buzzer);
-            digitalWriteFast(HW_ALT_BUZZER_PIN, HIGH);
-        }
-        else {
+        else
             noTone(BDPIN_BUZZER);
-            digitalWriteFast(HW_ALT_BUZZER_PIN, LOW);
-        }
     }
 }
 
