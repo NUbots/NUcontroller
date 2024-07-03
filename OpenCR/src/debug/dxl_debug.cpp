@@ -41,7 +41,6 @@ static bool dxl_debug_menu_shwo_ctrltbl();
 
 static void dxl_debug_send_write_command(void);
 static void dxl_debug_test_gpio(void);
-static void dxl_debug_view_imu();
 static void dxl_debug_stream_imu();
 
 
@@ -99,8 +98,7 @@ void dxl_debug_menu_show_list(void) {
     DEBUG_SERIAL.println("l - show control table");
     DEBUG_SERIAL.println("s - send dynamixel write command");
     DEBUG_SERIAL.println("g - test gpio (buttons)");
-    DEBUG_SERIAL.println("i - show imu data");
-    DEBUG_SERIAL.println("t - stream imu data");
+    DEBUG_SERIAL.println("i - stream imu data");
     DEBUG_SERIAL.println("q - exit menu");
     DEBUG_SERIAL.println("---------------------------");
 }
@@ -155,11 +153,6 @@ bool dxl_debug_menu_loop(uint8_t ch) {
             break;
 
         case 'i':
-            DEBUG_SERIAL.println(" ");
-            dxl_debug_view_imu();
-            break;
-
-        case 't':
             DEBUG_SERIAL.println(" ");
             dxl_debug_stream_imu();
             break;
@@ -607,31 +600,6 @@ void dxl_debug_test_gpio(void) {
     while (ch != 'm');
     // show menu
     dxl_debug_menu_show_list();
-}
-
-/**
- * @brief Stream imu data to the serial port
- */
-void dxl_debug_view_imu() {
-    // print the imu data
-    DEBUG_SERIAL.print("Acc: ");
-    DEBUG_SERIAL.print(p_dxl_mem->Acc_X);
-    DEBUG_SERIAL.print(", ");
-    DEBUG_SERIAL.print(p_dxl_mem->Acc_Y);
-    DEBUG_SERIAL.print(", ");
-    DEBUG_SERIAL.println(p_dxl_mem->Acc_Z);
-    DEBUG_SERIAL.print("Gyro: ");
-    DEBUG_SERIAL.print(p_dxl_mem->Gyro_X);
-    DEBUG_SERIAL.print(", ");
-    DEBUG_SERIAL.print(p_dxl_mem->Gyro_Y);
-    DEBUG_SERIAL.print(", ");
-    DEBUG_SERIAL.println(p_dxl_mem->Gyro_Z);
-    DEBUG_SERIAL.print("RPY: ");
-    DEBUG_SERIAL.print(p_dxl_mem->Roll);
-    DEBUG_SERIAL.print(", ");
-    DEBUG_SERIAL.print(p_dxl_mem->Pitch);
-    DEBUG_SERIAL.print(", ");
-    DEBUG_SERIAL.println(p_dxl_mem->Yaw);
 }
 
 /**
