@@ -311,9 +311,6 @@ void dxl_hw_op3_voltage_update(void) {
                     prev_state    = battery_state;
                     battery_state = BATTERY_POWER_STARTUP;
                 }
-                else {
-                    noTone(BDPIN_BUZZER);
-                }
                 break;
 
             case BATTERY_POWER_STARTUP:
