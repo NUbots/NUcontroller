@@ -461,13 +461,19 @@ void dxl_node_write_byte(uint16_t addr, uint8_t data) {
     }
 
     if (RANGE_CHECK(addr, p_dxl_mem->Buzzer)) {
+        /* debug */
+        Serial.print("[#] Setting buzzer value from control table");
+
         if (p_dxl_mem->Buzzer > 0)
             tone(BDPIN_BUZZER, p_dxl_mem->Buzzer);
         else
             noTone(BDPIN_BUZZER);
     }
 }
-
+// This is a wrapper so that we can call this function from the debug module
+void dxl_debug_write_byte_wrapper(uint16_t addr, uint8_t data) {
+    dxl_node_write_byte(addr, data);
+}
 
 /*---------------------------------------------------------------------------
      TITLE   : dxl_node_check_range
@@ -475,13 +481,37 @@ void dxl_node_write_byte(uint16_t addr, uint8_t data) {
 ---------------------------------------------------------------------------*/
 BOOL dxl_node_check_range(uint16_t addr, uint32_t addr_ptr, uint8_t length) {
 
+    // Calculate the offset of the address in the control table
     uint32_t addr_offset = addr_ptr - (uint32_t) p_dxl_mem;
 
+    /* debug */
+    if (debug_state) {
+        Serial.print("[#] Checking range: ");
+        Serial.print(addr);
+        Serial.print(" @ 0x");
+        Serial.print(addr_ptr, HEX);
+        Serial.print(" (offset ");
+        Serial.print(addr_offset);
+        if (addr_offset < 10)
+            Serial.print(")  len ");
+        else
+            Serial.print(") len ");
+        Serial.println(length);
+    }
+
+    // Equivalent to:
+    //   length - <= (addr - addr_offset) < length
+    // i.e. addr is within the range of the control table value
     if (addr >= (addr_offset + length - 1) && addr < (addr_offset + length)) {
+        /* debug */
+        if (debug_state)
+            Serial.println(" -> [#] PASS");
         return TRUE;
     }
 
-
+    /* debug */
+    if (debug_state)
+        Serial.println(" -> [#] FAIL");
     return FALSE;
 }
 

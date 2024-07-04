@@ -68,4 +68,6 @@ typedef struct {
 void dxl_node_op3_init(void);
 void dxl_node_op3_loop(void);
 
+void dxl_debug_write_byte_wrapper(uint16_t addr, uint8_t data);
+
 #endif
