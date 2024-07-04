@@ -129,8 +129,7 @@ void dxlAddInstFunc(dxl_t* p_packet, uint8_t inst, dxl_error_t (*func)(dxl_t* p_
 dxl_error_t dxlProcessInst(dxl_t* p_packet) {
     dxl_error_t ret = DXL_RET_OK;
     uint8_t inst;
-    dxl_error_t (*func)(dxl_t * p_dxl);
-
+    dxl_error_t (*func)(dxl_t* p_dxl);
 
     inst = p_packet->rx.cmd;
     func = NULL;
@@ -168,9 +167,15 @@ dxl_error_t dxlProcessInst(dxl_t* p_packet) {
         return DXL_RET_EMPTY;
     }
 
-    // check the packet ID belongs to the OpenCR or is broadcast/global IS
+    // check the packet ID belongs to the OpenCR or is broadcast/global ID
     if (p_packet->rx.id != dxlGetId(p_packet) && p_packet->rx.id != DXL_GLOBAL_ID) {
         return DXL_RET_ERROR_NO_ID;
+    }
+
+    // Ignore broadcast sync read/write instructions because we assume they are
+    // meant for servos in the chain. This stops the logs from clogging up.
+    if (p_packet->rx.id == DXL_GLOBAL_ID && (inst == INST_SYNC_READ || inst == INST_SYNC_WRITE)) {
+        return DXL_RET_EMPTY;
     }
 
     // checks passed, call function
