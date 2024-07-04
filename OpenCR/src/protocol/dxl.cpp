@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 
+#include "../debug/dxl_debug.h"
 #include "../dxl_def.h"
 #include "../hardware/dxl_hw.h"
 
@@ -162,6 +163,8 @@ dxl_error_t dxlProcessInst(dxl_t* p_packet) {
 
     // check the function was recognised/exists
     if (func == NULL) {
+        if (debug_state)
+            Serial.println("[!] dxlProcessInst: No function found for instruction");
         return DXL_RET_EMPTY;
     }
 
