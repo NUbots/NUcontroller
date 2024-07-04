@@ -35,7 +35,7 @@ const char override_char = '`';  // grave (`)
 static void dxl_debug_menu_show_list(void);
 static bool dxl_debug_menu_loop(uint8_t ch);
 static void dxl_debug_menu_show_cmdline(void);
-static bool dxl_debug_menu_shwo_ctrltbl();
+static bool dxl_debug_menu_show_ctrltbl();
 
 static void dxl_debug_send_write_command(void);
 static void dxl_debug_test_gpio(void);
@@ -91,6 +91,7 @@ void dxl_debug_menu_show_list(void) {
     DEBUG_SERIAL.println("m - show menu");
     DEBUG_SERIAL.println("d - show step");
     DEBUG_SERIAL.println("l - show control table");
+    DEBUG_SERIAL.println("c - write to control table");
     DEBUG_SERIAL.println("s - send dynamixel write command");
     DEBUG_SERIAL.println("g - test gpio (buttons)");
     DEBUG_SERIAL.println("b - test buzzer");
@@ -132,7 +133,7 @@ bool dxl_debug_menu_loop(uint8_t ch) {
 
         case 'l':
             DEBUG_SERIAL.println(" ");
-            dxl_debug_menu_shwo_ctrltbl();
+            dxl_debug_menu_show_ctrltbl();
             break;
 
         case 's':
@@ -163,10 +164,10 @@ bool dxl_debug_menu_loop(uint8_t ch) {
 
 
 /*---------------------------------------------------------------------------
-     TITLE   : dxl_debug_menu_shwo_ctrltbl
+     TITLE   : dxl_debug_menu_show_ctrltbl
      WORK    :
 ---------------------------------------------------------------------------*/
-bool dxl_debug_menu_shwo_ctrltbl() {
+bool dxl_debug_menu_show_ctrltbl() {
     uint32_t addr;
 
 
