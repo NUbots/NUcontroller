@@ -462,7 +462,7 @@ void dxl_node_write_byte(uint16_t addr, uint8_t data) {
 
     if (RANGE_CHECK(addr, data, p_dxl_mem->Buzzer)) {
         /* debug */
-        Serial.println("[#] Setting buzzer value from control table change");
+        // Serial.printf("[#] Setting buzzer (%d) to %d\n", addr, data);
 
         if (p_dxl_mem->Buzzer > 0)
             tone(BDPIN_BUZZER, p_dxl_mem->Buzzer);
@@ -504,7 +504,7 @@ void processRead(uint16_t addr, uint8_t* p_data, uint16_t length) {
 }
 
 void processWrite(uint16_t addr, uint8_t* p_data, uint16_t length) {
-    /// Serial.printf("Writing to memory address 0x%02x (%d): ", addr, addr);
+    // Serial.printf("[#] Writing %d bytes to memory address 0x%02x (%d):\n ->", length, addr, addr);
 
     for (uint32_t i = 0; i < length; i++) {
         if (mem.attr[addr] & DXL_MEM_ATTR_WO || mem.attr[addr] & DXL_MEM_ATTR_RW) {
@@ -512,11 +512,11 @@ void processWrite(uint16_t addr, uint8_t* p_data, uint16_t length) {
             if (mem.attr[addr] & DXL_MEM_ATTR_EEPROM) {
                 EEPROM[addr] = mem.data[addr];
             }
-            /// Serial.printf("%02x ", p_data[i]);
+            // Serial.printf(" %02x", p_data[i]);
         }
         addr++;
     }
-    /// Serial.println(" ");
+    // Serial.println(" ");
 }
 
 
@@ -607,7 +607,7 @@ dxl_error_t write(dxl_t* p_dxl) {
         return DXL_RET_EMPTY;
     }
 
-    /// Serial.print(" write");
+    // Serial.print("[#] Processing");
 
     addr   = (p_dxl->rx.p_param[1] << 8) | p_dxl->rx.p_param[0];
     p_data = &p_dxl->rx.p_param[2];
@@ -616,23 +616,23 @@ dxl_error_t write(dxl_t* p_dxl) {
         length = p_dxl->rx.param_length - 2;
     }
     else {
-        /// Serial.println(" error");
+        // Serial.println(" invalid write command");
         dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
 
     if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
-        /// Serial.println(" error");
+        // Serial.println(" invalid write command");
         dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_ACCESS, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
     if (length > DXL_MAX_BUFFER - 10) {
-        /// Serial.println(" error");
+        // Serial.println(" invalid write command");
         dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
 
-    /// Serial.println(" success");
+    // Serial.println(" valid write command");
 
     dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_NONE, NULL, 0);
 
