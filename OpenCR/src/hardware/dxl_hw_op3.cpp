@@ -291,7 +291,6 @@ void dxl_hw_op3_voltage_update(void) {
 
         battery_voltage_raw += 0.5;
 
-        // /// Serial.println(vol_value);
 
         vol_value       = battery_voltage_raw * 10;
         vol_value       = constrain(vol_value, 0, 255);
