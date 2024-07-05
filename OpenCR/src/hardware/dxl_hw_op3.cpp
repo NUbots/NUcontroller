@@ -163,7 +163,7 @@ void dxl_hw_op3_button_update() {
 
     // keep button state as "down" for longer before resetting
     const uint8_t debounce_time_ms = 30;
-    const uint8_t release_time_ms  = 200;
+    const uint8_t release_time_ms  = 120;
 
     enum btn_state { BTN_INACTIVE, BTN_ACTIVE };
 
