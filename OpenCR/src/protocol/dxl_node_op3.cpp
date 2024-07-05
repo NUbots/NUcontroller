@@ -68,7 +68,7 @@ void dxl_node_op3_init(void) {
     dxl_hw_op3_init();
     dxl_node_op3_reset();
 
-    if (p_dxl_mem->Model_Number != DXL_NODE_OP3_MODLE_NUMBER) {
+    if (p_dxl_mem->Model_Number != DXL_NODE_OP3_MODEL_NUMBER) {
         dxl_node_op3_factory_reset();
         dxl_node_op3_reset();
     }
@@ -220,7 +220,7 @@ void dxl_process_packet() {
         // waits to return the ping until either the ID before us returned, or
         // until we poll through all IDs waiting 3ms on each ID.
         case DXL_PROCESS_BROAD_PING:
-            // Recieve a packet if there's one waiting
+            // Receive a packet if there's one waiting
             dxl_ret = dxlRxPacket(&dxl_sp);
             // If it's a status packet, then that's almost certainly a ping from
             // a device before us in the queue
@@ -247,7 +247,7 @@ void dxl_process_packet() {
         // same story here as for ping, wait for other devices to return before
         // we do.
         case DXL_PROCESS_BROAD_READ:
-            // Recieve a packet if there's one waiting
+            // Receive a packet if there's one waiting
             dxl_ret = dxlRxPacket(&dxl_sp);
             // If it's a status packet, then that's almost certainly a the read
             // response from a device before us
@@ -271,7 +271,7 @@ void dxl_process_packet() {
                     /// Serial.println(dxl_sp.rx.id, HEX);
                 }
             }
-            // If we havent had a status packet in 50ms then timeout
+            // If we haven't had a status packet in 50ms then timeout
             else if (micros() - pre_time >= 50000) {
                 process_state = DXL_PROCESS_INST;
                 /// Serial.println(" Bulk Read timeout");
@@ -285,7 +285,7 @@ void dxl_process_packet() {
 
 
 /**
- * @brief Detect red button press and disable dymnamixel power.
+ * @brief Detect red button press and disable Dynamixel power.
  * @note Dynamixel power is never turned back on again, that must be done
  *       externally by the host device. (in our case, HardwareIO on the NUC)
  */
@@ -375,7 +375,7 @@ void dxl_node_op3_factory_reset(void) {
     uint16_t i;
 
 
-    p_dxl_mem->Model_Number        = DXL_NODE_OP3_MODLE_NUMBER;
+    p_dxl_mem->Model_Number        = DXL_NODE_OP3_MODEL_NUMBER;
     p_dxl_mem->Firmware_Version    = DXL_NODE_OP3_FW_VER;
     p_dxl_mem->ID                  = DXL_NODE_OP3_ID;
     p_dxl_mem->Baud                = DXL_NODE_OP3_BAUD;
