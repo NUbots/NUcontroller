@@ -348,11 +348,6 @@ void dxl_hw_op3_voltage_update(void) {
                 break;
 
             case BATTERY_POWER_WARNING:
-                // alarm_state ^= 1;
-                // if(alarm_state)
-                //{
-                //   tone(BDPIN_BUZZER, 1000, 500);
-                // }
 
                 if (battery_voltage_raw > voltage_ref) {
                     prev_state    = battery_state;
