@@ -16,20 +16,32 @@
 #include "../protocol/dxl_node_op3.h"
 
 
-#define DEBUG_SERIAL Serial
-#define DEBUG_BAUD   115200
-#define DEBUG_SWITCH BDPIN_DIP_SW_1
-#define DEBUG_LED    BDPIN_LED_USER_3
+#define DEBUG_SERIAL       Serial
+#define DEBUG_BAUD         115200
+#define DEBUG_SWITCH       BDPIN_DIP_SW_1
+#define DEBUG_LED          BDPIN_LED_USER_3  // red
+#define DEBUG_OVERRIDE_LED BDPIN_LED_USER_2  // orange
+#define AUDIBLE_DEBUG_LED  BDPIN_LED_USER_4  // green
 
 
 extern dxl_mem_op3_t* p_dxl_mem;
 
 // are we in debug mode (generally set by DIP switch)
-uint8_t debug_state = 0;
+uint8_t debug_state          = 0;
+uint8_t prefer_audible_debug = 0;  // use the buzzer for some debug messages
 // have we forced debug mode on?
 uint8_t debug_override = 0;
 // character to force debug mode
 const char override_char = '`';  // grave (`)
+
+// are we wanting to stream button debug info atm?
+typedef enum {
+    BUTTON_LOG_OFF     = 0b00,
+    BUTTON_LOG_PRINT   = 0b01,
+    BUTTON_LOG_AUDIBLE = 0b10,
+    BUTTON_LOG_BOTH    = 0b11
+} button_log_t;
+button_log_t button_debug_enable = BUTTON_LOG_OFF;
 
 
 static void dxl_debug_menu_show_list(void);
@@ -41,6 +53,8 @@ static void dxl_debug_write_ctrltbl(void);
 static void dxl_debug_send_write_command(void);
 static void dxl_debug_test_gpio(void);
 static void dxl_debug_buzzer();
+static void dxl_debug_menu_button_toggle(button_log_t which);
+static void dxl_debug_button_stream(uint16_t interval_ms);
 
 
 /*---------------------------------------------------------------------------
@@ -57,13 +71,53 @@ void dxl_debug_init(void) {
      WORK    :
 ---------------------------------------------------------------------------*/
 void dxl_debug_loop(void) {
+    /* Handle onboard push switches */
+    static uint8_t lastSW1 = dxl_hw_op3_button_read(BDPIN_PUSH_SW_1);
+    static uint8_t lastSW2 = dxl_hw_op3_button_read(BDPIN_PUSH_SW_2);
+    uint8_t currentSW1     = dxl_hw_op3_button_read(BDPIN_PUSH_SW_1);
+    uint8_t currentSW2     = dxl_hw_op3_button_read(BDPIN_PUSH_SW_2);
 
-    /* Activate debug mode if dip switch active */
-    uint8_t dip = digitalReadFast(DEBUG_SWITCH);
-    // show debug state with LED
-    digitalWriteFast(DEBUG_LED, dip);
-    // set state (dip switch pulled up), or override if needed
-    debug_state = !dip | debug_override;
+    /* and dip switch */
+    static uint8_t lastDip1 = !digitalReadFast(DEBUG_SWITCH);
+    uint8_t currentDip1     = !digitalReadFast(DEBUG_SWITCH);
+
+    /* Flip flop for state transition of onboard push switch 1 */
+    static uint8_t sw1_override;
+    sw1_override ^= (lastSW1 && !currentSW1);  // state transition 0->1 signifies press down
+
+    /* Log if override occurs */
+    if (!debug_state && (debug_override | sw1_override)) {
+        DEBUG_SERIAL.println("[*] Debug mode activated by override.");
+    }
+
+    /* If we disable the dip switch, that should decisively disable debug mode
+     * for now (but we can still later override it).
+     */
+    if (lastDip1 && !currentDip1 && (debug_override | sw1_override)) {
+        debug_override = 0;
+        sw1_override   = 0;
+        DEBUG_SERIAL.println("[*] Debug overrides disabled with dip switch.");
+    }
+
+    /* activate debug mode with dip switch, or override if needed from either character or switch */
+    debug_state = currentDip1 | debug_override | sw1_override;
+
+    /* Toggle audible debug mode with onboard push sw 2 */
+    // state transition 0->1 signifies press down
+    if (lastSW2 && !currentSW2) {
+        prefer_audible_debug ^= 1;
+        button_debug_enable = (button_log_t) (button_debug_enable ^ BUTTON_LOG_AUDIBLE);
+    }
+
+    /* update onboard push and dip switch states */
+    lastSW1  = currentSW1;
+    lastSW2  = currentSW2;
+    lastDip1 = currentDip1;
+
+    // show debug states with onboard OpenCR LEDs
+    digitalWriteFast(DEBUG_LED, !debug_state);                               // 0 is LED on
+    digitalWriteFast(DEBUG_OVERRIDE_LED, !(debug_override | sw1_override));  // 0 is LED on
+    digitalWriteFast(AUDIBLE_DEBUG_LED, !prefer_audible_debug);              // 0 is LED on
 
     if (DEBUG_SERIAL.available()) {
         uint8_t ch = DEBUG_SERIAL.read();
@@ -80,6 +134,11 @@ void dxl_debug_loop(void) {
             default: break;
         }
     }
+
+    // stream the button state if enabled
+    if (button_debug_enable != BUTTON_LOG_OFF) {
+        dxl_debug_button_stream(100);
+    }
 }
 
 
@@ -93,9 +152,10 @@ void dxl_debug_menu_show_list(void) {
     DEBUG_SERIAL.println("d - show step");
     DEBUG_SERIAL.println("l - show control table");
     DEBUG_SERIAL.println("c - write to control table");
-    DEBUG_SERIAL.println("s - send dynamixel write command");
-    DEBUG_SERIAL.println("g - test gpio (buttons)");
-    DEBUG_SERIAL.println("b - test buzzer");
+    DEBUG_SERIAL.println("x - send dynamixel write command");
+    DEBUG_SERIAL.println("g - test gpio");
+    DEBUG_SERIAL.println("b - toggle btn logging (B for audible)");
+    DEBUG_SERIAL.println("z - test buzzer");
     DEBUG_SERIAL.println("q - exit menu");
     DEBUG_SERIAL.println("---------------------------");
 }
@@ -142,7 +202,7 @@ bool dxl_debug_menu_loop(uint8_t ch) {
             dxl_debug_write_ctrltbl();
             break;
 
-        case 's':
+        case 'x':
             DEBUG_SERIAL.println(" ");
             dxl_debug_send_write_command();
             break;
@@ -152,9 +212,19 @@ bool dxl_debug_menu_loop(uint8_t ch) {
             dxl_debug_test_gpio();
             break;
 
-        case 'b':
+        case 'z':
             DEBUG_SERIAL.println(" ");
             dxl_debug_buzzer();
+            break;
+
+        case 'b':
+            DEBUG_SERIAL.println(" ");
+            dxl_debug_menu_button_toggle(BUTTON_LOG_PRINT);
+            break;
+
+        case 'B':
+            DEBUG_SERIAL.println(" ");
+            dxl_debug_menu_button_toggle(BUTTON_LOG_AUDIBLE);
             break;
 
         default: exit_menu = true; break;
@@ -739,4 +809,69 @@ void dxl_debug_buzzer() {
 
     // Play the tone normally
     tone(BDPIN_BUZZER, freq, dur);
+}
+
+/**
+ * @brief Toggle button debug stream mode
+ */
+void dxl_debug_menu_button_toggle(button_log_t which) {
+    // toggle button debug mode
+    // button_debug_enable = (button_log_t) ((uint8_t) button_debug_enable ^ (uint8_t) which);
+    button_debug_enable = (button_log_t) (button_debug_enable ^ which);
+    // print status
+    DEBUG_SERIAL.print("[>] button state stream ");
+    switch (button_debug_enable) {
+        case BUTTON_LOG_OFF: DEBUG_SERIAL.println("off"); break;
+        case BUTTON_LOG_PRINT: DEBUG_SERIAL.println("print"); break;
+        case BUTTON_LOG_AUDIBLE: DEBUG_SERIAL.println("audible"); break;
+        case BUTTON_LOG_BOTH: DEBUG_SERIAL.println("print and audible"); break;
+        default: DEBUG_SERIAL.println("unknown"); break;
+    }
+}
+
+/**
+ * @brief Stream the button state every X ms
+ */
+void dxl_debug_button_stream(uint16_t interval_ms) {
+    static uint32_t last_time = millis();
+
+    // only stream if the interval has passed
+    if ((millis() - last_time) > interval_ms) {
+        if (button_debug_enable & BUTTON_LOG_PRINT) {
+            DEBUG_SERIAL.print("[*] Buttons 1-6:");
+            DEBUG_SERIAL.printf(" (%c) (%c) (%c) (%c) [%c] [%c]\n",
+                                p_dxl_mem->Button & (1 << 0) ? '*' : ' ',
+                                p_dxl_mem->Button & (1 << 1) ? '*' : ' ',
+                                p_dxl_mem->Button & (1 << 2) ? '*' : ' ',
+                                p_dxl_mem->Button & (1 << 3) ? '*' : ' ',
+                                !dxl_hw_op3_button_read(BDPIN_PUSH_SW_1) ? '*' : ' ',
+                                !dxl_hw_op3_button_read(BDPIN_PUSH_SW_2) ? '*' : ' ');
+        }
+
+        // Play a tone for each button, if audible debug is enabled
+        if (button_debug_enable & BUTTON_LOG_AUDIBLE) {
+            // play a tone for each button
+            if (p_dxl_mem->Button & (1 << 0)) {
+                tone(BDPIN_BUZZER, 440, interval_ms + 10);
+            }
+            if (p_dxl_mem->Button & (1 << 1)) {
+                tone(BDPIN_BUZZER, 523, interval_ms + 10);
+            }
+            if (p_dxl_mem->Button & (1 << 2)) {
+                tone(BDPIN_BUZZER, 659, interval_ms + 10);
+            }
+            if (p_dxl_mem->Button & (1 << 3)) {
+                tone(BDPIN_BUZZER, 784, interval_ms + 10);
+            }
+            if (!dxl_hw_op3_button_read(BDPIN_PUSH_SW_1)) {
+                tone(BDPIN_BUZZER, 988, interval_ms + 10);
+            }
+            if (!dxl_hw_op3_button_read(BDPIN_PUSH_SW_2)) {
+                tone(BDPIN_BUZZER, 1175, interval_ms + 10);
+            }
+        }
+
+        // update the last time
+        last_time = millis();
+    }
 }
