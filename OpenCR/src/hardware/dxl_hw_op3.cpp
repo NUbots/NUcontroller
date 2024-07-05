@@ -15,7 +15,7 @@
 #define LED_PWM_PIN_MAX 3
 #define LED_PWM_PWM_MAX 31
 
-#define BUTTON_PIN_MAX 4
+#define BUTTON_PIN_MAX 6  // 4 default + 2 added onboard push buttons
 
 #define IMU_CALI_MAX_COUNT 512
 
@@ -28,7 +28,8 @@ static int16_t imu_cali_count[3];
 static float imu_cali_sum[3];
 
 static uint8_t button_value[BUTTON_PIN_MAX];
-static uint32_t button_pin_num[BUTTON_PIN_MAX] = {PIN_BUTTON_S1, PIN_BUTTON_S2, PIN_BUTTON_S3, PIN_BUTTON_S4};
+static uint32_t button_pin_num[BUTTON_PIN_MAX] =
+    {PIN_BUTTON_S1, PIN_BUTTON_S2, PIN_BUTTON_S3, PIN_BUTTON_S4, BDPIN_PUSH_SW_1, BDPIN_PUSH_SW_2};
 
 
 #define BATTERY_POWER_OFF     0
@@ -105,6 +106,9 @@ void dxl_hw_op3_init(void) {
     pinMode(PIN_BUTTON_S2, INPUT_PULLUP);
     pinMode(PIN_BUTTON_S3, INPUT_PULLUP);
     pinMode(PIN_BUTTON_S4, INPUT_PULLUP);
+
+    pinMode(BDPIN_PUSH_SW_1, INPUT_PULLUP);
+    pinMode(BDPIN_PUSH_SW_2, INPUT_PULLUP);
 
 
     dxl_hw_op3_led_set(PIN_LED_1, 1);  // R
