@@ -17,9 +17,6 @@
 #include "dxl.h"
 
 
-#define RANGE_CHECK(addr, data, x) dxl_node_check_range(addr, (uint32_t) & (x), sizeof(data), sizeof(x))
-
-
 static dxl_t dxl_sp;
 
 
@@ -49,7 +46,10 @@ void dxl_process_packet();
 static uint8_t dxl_node_read_byte(uint16_t addr);
 static void dxl_node_write_byte(uint16_t addr, uint8_t data);
 
-static BOOL dxl_node_check_range(uint16_t addr, uint32_t addr_ptr, uint8_t data_size, uint8_t field_size);
+static BOOL dxl_node_check_range(uint16_t usr_write_addr,
+                                 uint8_t data_size,
+                                 uint32_t p_ctrl_tbl_field,
+                                 uint8_t field_size);
 void dxl_node_op3_change_baud(void);
 
 static void dxl_node_update_tx_rx_led();
@@ -424,14 +424,17 @@ void dxl_node_write_byte(uint16_t addr, uint8_t data) {
     mem.data[addr] = data;
 
 
-    if (RANGE_CHECK(addr, data, p_dxl_mem->Dynamixel_Power)) {
+    if (dxl_node_check_range(addr,
+                             sizeof(data),
+                             (uint32_t) & (p_dxl_mem->Dynamixel_Power),
+                             sizeof(p_dxl_mem->Dynamixel_Power))) {
         if (p_dxl_mem->Dynamixel_Power == 1)
             dxl_hw_power_enable();
         else
             dxl_hw_power_disable();
     }
 
-    if (RANGE_CHECK(addr, data, p_dxl_mem->LED)) {
+    if (dxl_node_check_range(addr, sizeof(data), (uint32_t) & (p_dxl_mem->LED), sizeof(p_dxl_mem->LED))) {
         if (data & (1 << 0))
             dxl_hw_op3_led_set(PIN_LED_1, 0);
         else
@@ -446,7 +449,7 @@ void dxl_node_write_byte(uint16_t addr, uint8_t data) {
             dxl_hw_op3_led_set(PIN_LED_3, 1);
     }
 
-    if (RANGE_CHECK(addr, data, p_dxl_mem->LED_RGB)) {
+    if (dxl_node_check_range(addr, sizeof(data), (uint32_t) & (p_dxl_mem->LED_RGB), sizeof(p_dxl_mem->LED_RGB))) {
         pwm_value[0] = (p_dxl_mem->LED_RGB >> 0) & 0x1F;
         pwm_value[1] = (p_dxl_mem->LED_RGB >> 5) & 0x1F;
         pwm_value[2] = (p_dxl_mem->LED_RGB >> 10) & 0x1F;
@@ -456,11 +459,11 @@ void dxl_node_write_byte(uint16_t addr, uint8_t data) {
         dxl_hw_op3_led_pwm(PIN_LED_B, pwm_value[2]);
     }
 
-    if (RANGE_CHECK(addr, data, p_dxl_mem->Baud)) {
+    if (dxl_node_check_range(addr, sizeof(data), (uint32_t) & (p_dxl_mem->Baud), sizeof(p_dxl_mem->Baud))) {
         dxl_node_op3_change_baud();
     }
 
-    if (RANGE_CHECK(addr, data, p_dxl_mem->Buzzer)) {
+    if (dxl_node_check_range(addr, sizeof(data), (uint32_t) & (p_dxl_mem->Buzzer), sizeof(p_dxl_mem->Buzzer))) {
         /* debug */
         // Serial.printf("[#] Setting buzzer (%d) to %d\n", addr, data);
 
@@ -479,17 +482,23 @@ void dxl_debug_write_byte_wrapper(uint16_t addr, uint8_t data) {
      TITLE   : dxl_node_check_range
      WORK    :
 ---------------------------------------------------------------------------*/
-BOOL dxl_node_check_range(uint16_t addr, uint32_t addr_ptr, uint8_t data_size, uint8_t field_size) {
+BOOL dxl_node_check_range(uint16_t usr_write_addr, uint8_t data_size, uint32_t p_ctrl_tbl_field, uint8_t field_size) {
     // Calculate the offset of the address in the control table
-    uint32_t addr_offset = addr_ptr - (uint32_t) p_dxl_mem;
-    uint16_t addr_delta  = addr - addr_offset;
+    uint32_t addr_offset = p_ctrl_tbl_field - (uint32_t) p_dxl_mem;
+    uint16_t addr_delta  = usr_write_addr - addr_offset;
     uint8_t size_delta   = field_size - data_size;
 
+    // print debug info and result
+    Serial.printf("[#] Checking range: %d B to addr %d (offset %d -> d%d), Size delta %d : PASS %d\n",
+                  data_size,
+                  usr_write_addr,
+                  addr_offset,
+                  addr_delta,
+                  size_delta,
+                  (addr_delta >= 0) && (addr_delta <= size_delta));
+
     // Check that addr is within the range of the control table value
-    if (addr_delta >= 0 && addr_delta <= size_delta)
-        return TRUE;
-    else
-        return FALSE;
+    return (addr_delta >= 0) && (addr_delta <= size_delta);
 }
 
 
