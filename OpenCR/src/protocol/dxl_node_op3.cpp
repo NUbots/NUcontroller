@@ -489,13 +489,13 @@ BOOL dxl_node_check_range(uint16_t usr_write_addr, uint8_t data_size, uint32_t p
     uint8_t size_delta   = field_size - data_size;
 
     // print debug info and result
-    Serial.printf("[#] Checking range: %d B to addr %d (offset %d -> d%d), Size delta %d : PASS %d\n",
-                  data_size,
-                  usr_write_addr,
-                  addr_offset,
-                  addr_delta,
-                  size_delta,
-                  (addr_delta >= 0) && (addr_delta <= size_delta));
+    // Serial.printf("[#] Checking range: %d B to addr %d (offset %d -> d%d), Size delta %d : PASS %d\n",
+    //               data_size,
+    //               usr_write_addr,
+    //               addr_offset,
+    //               addr_delta,
+    //               size_delta,
+    //               (addr_delta >= 0) && (addr_delta <= size_delta));
 
     // Check that addr is within the range of the control table value
     return (addr_delta >= 0) && (addr_delta <= size_delta);
