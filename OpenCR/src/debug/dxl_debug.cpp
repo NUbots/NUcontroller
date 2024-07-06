@@ -16,12 +16,12 @@
 #include "../protocol/dxl_node_op3.h"
 
 
-#define DEBUG_SERIAL       Serial
-#define DEBUG_BAUD         115200
-#define DEBUG_SWITCH       BDPIN_DIP_SW_1
-#define DEBUG_LED          BDPIN_LED_USER_3  // red
-#define DEBUG_OVERRIDE_LED BDPIN_LED_USER_2  // orange
-#define AUDIBLE_DEBUG_LED  BDPIN_LED_USER_4  // green
+#define DEBUG_SERIAL             Serial
+#define DEBUG_BAUD               115200
+#define DEBUG_SWITCH             BDPIN_DIP_SW_1
+#define DEBUG_LED                BDPIN_LED_USER_3  // red
+#define serial_char_override_LED BDPIN_LED_USER_2  // orange
+#define AUDIBLE_DEBUG_LED        BDPIN_LED_USER_4  // green
 
 
 extern dxl_mem_op3_t* p_dxl_mem;
@@ -30,7 +30,8 @@ extern dxl_mem_op3_t* p_dxl_mem;
 uint8_t debug_state          = 0;
 uint8_t prefer_audible_debug = 0;  // use the buzzer for some debug messages
 // have we forced debug mode on?
-uint8_t debug_override = 0;
+uint8_t serial_char_override = 0;  // send ~ on serial to force debug mode
+uint8_t sw1_override         = 0;  // toggle with onboard push switch 1
 // character to force debug mode
 const char override_char = '`';  // grave (`)
 
@@ -43,6 +44,7 @@ typedef enum {
 } button_log_t;
 button_log_t button_debug_enable = BUTTON_LOG_OFF;
 
+static void dxl_debug_button_state_handling(void);
 
 static void dxl_debug_menu_show_list(void);
 static bool dxl_debug_menu_loop(uint8_t ch);
@@ -65,12 +67,7 @@ void dxl_debug_init(void) {
     DEBUG_SERIAL.begin(DEBUG_BAUD);
 }
 
-
-/*---------------------------------------------------------------------------
-     TITLE   : dxl_debug_loop
-     WORK    :
----------------------------------------------------------------------------*/
-void dxl_debug_loop(void) {
+void dxl_debug_button_state_handling(void) {
     /* Handle onboard push switches */
     static uint8_t lastSW1 = dxl_hw_op3_button_read(BDPIN_PUSH_SW_1);
     static uint8_t lastSW2 = dxl_hw_op3_button_read(BDPIN_PUSH_SW_2);
@@ -81,26 +78,30 @@ void dxl_debug_loop(void) {
     static uint8_t lastDip1 = !digitalReadFast(DEBUG_SWITCH);
     uint8_t currentDip1     = !digitalReadFast(DEBUG_SWITCH);
 
+    /* and back panel buttons */
+    uint8_t redButton   = p_dxl_mem->Button & (1 << 0);
+    uint8_t greenButton = p_dxl_mem->Button & (1 << 1);
+    uint8_t blackButton = p_dxl_mem->Button & (1 << 2);
+
     /* Flip flop for state transition of onboard push switch 1 */
-    static uint8_t sw1_override;
     sw1_override ^= (lastSW1 && !currentSW1);  // state transition 0->1 signifies press down
 
     /* Log if override occurs */
-    if (!debug_state && (debug_override | sw1_override)) {
+    if (!debug_state && (serial_char_override | sw1_override)) {
         DEBUG_SERIAL.println("[*] Debug mode activated by override.");
     }
 
     /* If we disable the dip switch, that should decisively disable debug mode
      * for now (but we can still later override it).
      */
-    if (lastDip1 && !currentDip1 && (debug_override | sw1_override)) {
-        debug_override = 0;
-        sw1_override   = 0;
+    if (lastDip1 && !currentDip1 && (serial_char_override | sw1_override)) {
+        serial_char_override = 0;
+        sw1_override         = 0;
         DEBUG_SERIAL.println("[*] Debug overrides disabled with dip switch.");
     }
 
     /* activate debug mode with dip switch, or override if needed from either character or switch */
-    debug_state = currentDip1 | debug_override | sw1_override;
+    debug_state = currentDip1 | serial_char_override | sw1_override;
 
     /* Toggle audible debug mode with onboard push sw 2 */
     // state transition 0->1 signifies press down
@@ -109,15 +110,37 @@ void dxl_debug_loop(void) {
         button_debug_enable = (button_log_t) (button_debug_enable ^ BUTTON_LOG_AUDIBLE);
     }
 
+    /* latch audible debug mode with green and black button */
+    if (greenButton && blackButton) {
+        prefer_audible_debug = 1;
+        button_debug_enable  = (button_log_t) (button_debug_enable | BUTTON_LOG_AUDIBLE);
+    }
+
+    /* unlatch audible debug mode with green and red button */
+    if (greenButton && redButton) {
+        prefer_audible_debug = 0;
+        button_debug_enable  = (button_log_t) (button_debug_enable & ~BUTTON_LOG_AUDIBLE);
+    }
+
     /* update onboard push and dip switch states */
     lastSW1  = currentSW1;
     lastSW2  = currentSW2;
     lastDip1 = currentDip1;
+}
+
+
+/*---------------------------------------------------------------------------
+     TITLE   : dxl_debug_loop
+     WORK    :
+---------------------------------------------------------------------------*/
+void dxl_debug_loop(void) {
+    // handle button state changes
+    dxl_debug_button_state_handling();
 
     // show debug states with onboard OpenCR LEDs
-    digitalWriteFast(DEBUG_LED, !debug_state);                               // 0 is LED on
-    digitalWriteFast(DEBUG_OVERRIDE_LED, !(debug_override | sw1_override));  // 0 is LED on
-    digitalWriteFast(AUDIBLE_DEBUG_LED, !prefer_audible_debug);              // 0 is LED on
+    digitalWriteFast(DEBUG_LED, !debug_state);                                           // 0 is LED on
+    digitalWriteFast(serial_char_override_LED, !(serial_char_override | sw1_override));  // 0 is LED on
+    digitalWriteFast(AUDIBLE_DEBUG_LED, !prefer_audible_debug);                          // 0 is LED on
 
     if (DEBUG_SERIAL.available()) {
         uint8_t ch = DEBUG_SERIAL.read();
@@ -126,7 +149,7 @@ void dxl_debug_loop(void) {
         switch (debug_state) {
             case 0:
                 // force debug on if override is sent, regardless of dip switch.
-                debug_override = (ch == override_char);
+                serial_char_override = (ch == override_char);
                 break;
 
             case 1: dxl_debug_menu_loop(ch); break;
@@ -185,7 +208,7 @@ bool dxl_debug_menu_loop(uint8_t ch) {
         case 'q':
             exit_menu = true;
             // disable override on menu exit
-            debug_override = 0;
+            serial_char_override = 0;
             DEBUG_SERIAL.println(" ");
             DEBUG_SERIAL.println("exit menu...");
             break;
