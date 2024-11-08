@@ -81,7 +81,7 @@ namespace utility::support {
             }
         }
 
-        // private:
+    private:
         /// @brief  The handler of the peripheral timer.
         TIM_HandleTypeDef* htim;
         /// @brief  The time at which the count began.
