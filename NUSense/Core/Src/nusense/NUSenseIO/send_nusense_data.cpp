@@ -31,34 +31,41 @@ namespace nusense {
         nusense_msg.servo_map_count = NUMBER_OF_DEVICES;
 
         for (size_t i = 0; i < NUMBER_OF_DEVICES; ++i) {
-            nusense_msg.servo_map[i].key       = i;
-            nusense_msg.servo_map[i].has_value = true;
+            // If no new data have been accumulated in the filter, then keep the existing values in the message.
+            if (servo_states[i].filter_count != 0.0) {
+                nusense_msg.servo_map[i].key       = i;
+                nusense_msg.servo_map[i].has_value = true;
 
-            nusense_msg.servo_map[i].value.id             = i + 1;
-            nusense_msg.servo_map[i].value.hardware_error = servo_states[i].hardware_error;
-            nusense_msg.servo_map[i].value.torque_enabled = servo_states[i].torque_enabled;
+                nusense_msg.servo_map[i].value.id             = i + 1;
+                nusense_msg.servo_map[i].value.hardware_error = servo_states[i].hardware_error;
+                nusense_msg.servo_map[i].value.torque_enabled = servo_states[i].torque_enabled;
 
-            nusense_msg.servo_map[i].value.present_pwm = servo_states[i].present_pwm / servo_states[i].filter_count;
-            nusense_msg.servo_map[i].value.present_current =
-                servo_states[i].present_current / servo_states[i].filter_count;
-            nusense_msg.servo_map[i].value.present_velocity =
-                servo_states[i].present_velocity / servo_states[i].filter_count;
-            nusense_msg.servo_map[i].value.present_position = servo_states[i].mean_present_position.get_mean();
+                nusense_msg.servo_map[i].value.present_pwm = servo_states[i].present_pwm / servo_states[i].filter_count;
+                nusense_msg.servo_map[i].value.present_current =
+                    servo_states[i].present_current / servo_states[i].filter_count;
+                nusense_msg.servo_map[i].value.present_velocity =
+                    servo_states[i].present_velocity / servo_states[i].filter_count;
+                nusense_msg.servo_map[i].value.present_position = servo_states[i].mean_present_position.get_mean();
+                volatile uint8_t frederic_chopin                = 0;
+                if (nusense_msg.servo_map[i].value.present_position == 0.0) {
+                    frederic_chopin = 1;
+                }
 
-            nusense_msg.servo_map[i].value.goal_pwm      = servo_states[i].goal_pwm;
-            nusense_msg.servo_map[i].value.goal_current  = servo_states[i].goal_current;
-            nusense_msg.servo_map[i].value.goal_velocity = servo_states[i].goal_velocity;
-            nusense_msg.servo_map[i].value.goal_position = servo_states[i].goal_position;
+                nusense_msg.servo_map[i].value.goal_pwm      = servo_states[i].goal_pwm;
+                nusense_msg.servo_map[i].value.goal_current  = servo_states[i].goal_current;
+                nusense_msg.servo_map[i].value.goal_velocity = servo_states[i].goal_velocity;
+                nusense_msg.servo_map[i].value.goal_position = servo_states[i].goal_position;
 
-            nusense_msg.servo_map[i].value.voltage     = servo_states[i].voltage / servo_states[i].filter_count;
-            nusense_msg.servo_map[i].value.temperature = servo_states[i].temperature / servo_states[i].filter_count;
+                nusense_msg.servo_map[i].value.voltage     = servo_states[i].voltage / servo_states[i].filter_count;
+                nusense_msg.servo_map[i].value.temperature = servo_states[i].temperature / servo_states[i].filter_count;
 
-            nusense_msg.servo_map[i].value.has_packet_counts = true;
-            nusense_msg.servo_map[i].value.packet_counts.total =
-                servo_states[i].num_successes + servo_states[i].num_crc_errors + servo_states[i].num_packet_errors;
-            nusense_msg.servo_map[i].value.packet_counts.timeouts      = servo_states[i].num_timeouts;
-            nusense_msg.servo_map[i].value.packet_counts.crc_errors    = servo_states[i].num_crc_errors;
-            nusense_msg.servo_map[i].value.packet_counts.packet_errors = servo_states[i].num_packet_errors;
+                nusense_msg.servo_map[i].value.has_packet_counts = true;
+                nusense_msg.servo_map[i].value.packet_counts.total =
+                    servo_states[i].num_successes + servo_states[i].num_crc_errors + servo_states[i].num_packet_errors;
+                nusense_msg.servo_map[i].value.packet_counts.timeouts      = servo_states[i].num_timeouts;
+                nusense_msg.servo_map[i].value.packet_counts.crc_errors    = servo_states[i].num_crc_errors;
+                nusense_msg.servo_map[i].value.packet_counts.packet_errors = servo_states[i].num_packet_errors;
+            }
         }
 
         // Once everything else is filled we send it to the NUC. Just overwrite the bytes within encoding_payload
