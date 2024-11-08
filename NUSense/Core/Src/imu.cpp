@@ -186,12 +186,18 @@ namespace nusense {
                                                    .y = static_cast<int16_t>(gyro.y.l | (gyro.y.h << 8)),
                                                    .z = static_cast<int16_t>(gyro.z.l | (gyro.z.h << 8))}};
         // convert from big to little endian and then scale
-        converted_data->accelerometer.x = static_cast<float>(combined.accelerometer.x) / ACCEL_SENSITIVITY_CHOSEN;
-        converted_data->accelerometer.y = static_cast<float>(combined.accelerometer.y) / ACCEL_SENSITIVITY_CHOSEN;
-        converted_data->accelerometer.z = static_cast<float>(combined.accelerometer.z) / ACCEL_SENSITIVITY_CHOSEN;
-        converted_data->gyroscope.x = static_cast<float>(combined.gyroscope.x) / GYRO_SENSITIVITY_CHOSEN * M_PI / 180.0;
-        converted_data->gyroscope.y = static_cast<float>(combined.gyroscope.y) / GYRO_SENSITIVITY_CHOSEN * M_PI / 180.0;
-        converted_data->gyroscope.z = static_cast<float>(combined.gyroscope.z) / GYRO_SENSITIVITY_CHOSEN * M_PI / 180.0;
+        converted_data->accelerometer.x =
+            static_cast<float>(combined.accelerometer.x) / ACCEL_SENSITIVITY_CHOSEN / 2 * 9.8;
+        converted_data->accelerometer.y =
+            static_cast<float>(combined.accelerometer.y) / ACCEL_SENSITIVITY_CHOSEN / 2 * 9.8;
+        converted_data->accelerometer.z =
+            static_cast<float>(combined.accelerometer.z) / ACCEL_SENSITIVITY_CHOSEN / 2 * 9.8;
+        converted_data->gyroscope.x =
+            static_cast<float>(combined.gyroscope.x) / GYRO_SENSITIVITY_CHOSEN / 2 * M_PI / 180.0;
+        converted_data->gyroscope.y =
+            static_cast<float>(combined.gyroscope.y) / GYRO_SENSITIVITY_CHOSEN / 2 * M_PI / 180.0;
+        converted_data->gyroscope.z =
+            static_cast<float>(combined.gyroscope.z) / GYRO_SENSITIVITY_CHOSEN / 2 * M_PI / 180.0;
         converted_data->temperature = (static_cast<float>(combined.temperature) - ROOM_TEMP_OFFSET) / TEMP_SENSITIVITY
                                       + 25.0;  // from Section-11.25 from the datasheet
     }
