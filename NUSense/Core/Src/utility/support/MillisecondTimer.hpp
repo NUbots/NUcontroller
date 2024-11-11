@@ -67,7 +67,8 @@ namespace utility::support {
             // If the time elapsed is greater than the timeout, then stop and return true.
             // Only check this if the timer is counting so that the processor is not needlessly checking the inequality
             // in a loop.
-            // The 32-bit arithmetic should handle overwrapping.
+            // The 32-bit arithmetic should handle overwrapping. E.g. if count = 0x1000, and start = 0x3000, then
+            // static_cast<uint16_t>(count - start) = 0xE000 which is the correct elapsed time.
             if ((is_counting) && (static_cast<uint32_t>(count - start) > timeout)) {
                 stop();
                 return true;
