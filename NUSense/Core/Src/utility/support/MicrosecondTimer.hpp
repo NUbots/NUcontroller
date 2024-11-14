@@ -18,7 +18,7 @@ namespace utility::support {
          * @brief    Constructs the timer.
          * @param    htim the reference to the timer to be counted,
          */
-        MicrosecondTimer(TIM_HandleTypeDef* htim = &htim4) : htim(htim), threshold(0), is_counting(false) {}
+        MicrosecondTimer(TIM_HandleTypeDef* htim = &htim4) : htim(htim), start(0), timeout(0), is_counting(false) {}
 
         /**
          * @brief   Destructs the timer.
@@ -31,16 +31,14 @@ namespace utility::support {
          * @param   timeout the timeout in microseconds, at most 65535,
          * @return  whether the timer is ready, i.e. is not currently counting,
          */
-        bool begin(uint16_t timeout) {
+        bool begin(uint16_t input_timeout) {
             // If the timer is already counting, then return false before changing anything.
             if (is_counting)
                 return false;
 
-            // Get the current tick and calculate the necessary threshold.
-            uint16_t first_tick = __HAL_TIM_GET_COUNTER(htim);
-            threshold           = first_tick + timeout;
-            // The 16-bit overflow should handle wrapping.
-
+            // Get the current tick.
+            start       = __HAL_TIM_GET_COUNTER(htim);
+            timeout     = input_timeout;
             is_counting = true;
 
             return true;
@@ -57,9 +55,9 @@ namespace utility::support {
          * @brief   Restarts the timer.
          * @param   timeout the timeout in microseconds, at most 65535.
          */
-        void restart(uint16_t timeout) {
+        void restart(uint16_t input_timeout) {
             stop();
-            begin(timeout);
+            begin(input_timeout);
         }
 
         /**
@@ -70,27 +68,28 @@ namespace utility::support {
         inline bool has_timed_out() {
             // Copy the count-register of the timer so that it is stable for debugging.
             uint16_t count = __HAL_TIM_GET_COUNTER(htim);
-            if ((is_counting) && (count > threshold)) {
-                // This is a very hacky way to ignore overflowing on the sharp edge of the
-                // saw-tooth wave.
-                if (!((count - threshold) & 0x8000)) {
-                    // Since the timer has timed out, it is no longer counting.
-                    stop();
-                    return true;
-                }
-                else
-                    return false;
+            // If the time elapsed is greater than the timeout, then stop and return true.
+            // Only check this if the timer is counting so that the processor is not needlessly checking the inequality
+            // in a loop.
+            // The 16-bit arithmetic should handle overwrapping. E.g. if count = 0x1000, and start = 0x3000, then
+            // static_cast<uint16_t>(count - start) = 0xE000 which is the correct elapsed time.
+            if ((is_counting) && (static_cast<uint16_t>(count - start) > timeout)) {
+                stop();
+                return true;
             }
-            else
+            else {
                 return false;
+            }
         }
 
     private:
-        /// @brief  the handler of the peripheral timer,
+        /// @brief  The handler of the peripheral timer.
         TIM_HandleTypeDef* htim;
-        /// @brief  the threshold to compare the count thereagainst,
-        uint16_t threshold;
-        /// @brief  whether the timer is in use,
+        /// @brief  The time at which the count began.
+        uint16_t start;
+        /// @brief  The timeout to count towards.
+        uint16_t timeout;
+        /// @brief  Whether the timer is in use.
         bool is_counting;
     };
 
