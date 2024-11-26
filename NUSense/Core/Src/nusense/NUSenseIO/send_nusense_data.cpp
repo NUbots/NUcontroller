@@ -51,6 +51,8 @@ namespace nusense {
                 nusense_msg.servo_map[i].value.voltage     = servo_states[i].voltage / servo_states[i].filter_count;
                 nusense_msg.servo_map[i].value.temperature = servo_states[i].temperature / servo_states[i].filter_count;
             }
+
+            // If any of these are filtered in later revisions of the code, then move them under the above if-condition.
             nusense_msg.servo_map[i].value.goal_pwm      = servo_states[i].goal_pwm;
             nusense_msg.servo_map[i].value.goal_current  = servo_states[i].goal_current;
             nusense_msg.servo_map[i].value.goal_velocity = servo_states[i].goal_velocity;
