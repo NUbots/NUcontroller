@@ -35,10 +35,11 @@ namespace nusense {
     void IMU::init() {
         // Select the first PLL as the clock and do a soft reset.
         // This may fix the problem of the power-up sequence in Section-4.19 of the IMU's datasheet.
-        // write_reg(Address::PWR_MGMT_1,     PWR_MGMT_1_CLKSEL_AUTO);
         write_reg(Address::PWR_MGMT_1, PWR_MGMT_1_DEVICE_RESET | PWR_MGMT_1_CLKSEL_AUTO);
         HAL_Delay(1);
+        // Ensure that the first PLL is chosen.
         write_reg(Address::PWR_MGMT_1, PWR_MGMT_1_CLKSEL_AUTO);
+        // For some reason, a delay of at least 1 ms is needed afterwards lest the registers are not written to.
         HAL_Delay(10);
 
         // Make sure that we are in SPI-mode.
