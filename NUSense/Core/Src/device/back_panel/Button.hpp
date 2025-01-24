@@ -79,7 +79,7 @@ namespace device::back_panel {
         /// @brief  The number of lows counted.
         uint16_t n_lows = 0;
         /// @brief  The threshold for debouncing.
-        uint16_t threshold = 0;
+        uint16_t threshold = 10;
     };
 
 }  // namespace device::back_panel

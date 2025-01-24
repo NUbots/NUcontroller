@@ -9,6 +9,22 @@ namespace device {
     static constexpr uint16_t HALFPULSE_PERIOD = 500;
     /// @brief  The time between burst of pulses in milliseconds if the pulser is repeating.
     static constexpr uint16_t DEAD_PERIOD = 2000;
+    /*
+
+             |<---->|                                   |<------- . . . ------->|
+             Halfpulse                                         Dead period
+
+
+    XX        ------        ------                ------                         ----
+    XX\ off  /  on  \      /      \  . . .       /      \         . . .         /     . . .
+    XX ------        ------        -       ------        --------       --------
+
+       |<---------->|<----------->|       |<----------->|
+          1st pulse    2nd pulse              N-th pulse
+
+       |<--------------------------- . . . ------------>|                       |<--- . . .
+                                Burst                                           Repeated burst
+    */
 
     /**
      * @brief   The pulser.
@@ -60,8 +76,11 @@ namespace device {
             halfpulse_timer.begin(HALFPULSE_PERIOD);
             turn_off();
 
-            // Store the number of pulses if repeating.
+            // Store the number of pulses in a single burst. This will behave as a counter for how
+            // ever many pulses are left.
             num_pulses_left = num_pulses;
+
+            // If repeating, then keep the total number of pulses for the next burst.
             if (is_repeating) {
                 num_pulses_in_burst = num_pulses;
             }
@@ -98,6 +117,7 @@ namespace device {
             // If there are still pulses left to do, and the half-pause has timed out, then toggle
             // the output.
             if ((num_pulses_left != 0) && (halfpulse_timer.has_timed_out())) {
+                // Toggle the output.
                 if (is_on) {
                     // If this is a falling edge, then a full pulse has been done, and decrease the
                     // number of pulses left.
@@ -112,13 +132,14 @@ namespace device {
                 if (num_pulses_left != 0) {
                     halfpulse_timer.begin(HALFPULSE_PERIOD);
                 }
-                // Else, if it is at least repeating, then time both the dead period and the first
+                // Else, if it is repeating, then time both the dead period and the first 
                 // half-pulse and repeat the task.
                 else if (num_pulses_in_burst != 0) {
                     num_pulses_left = num_pulses_in_burst;
                     halfpulse_timer.begin(DEAD_PERIOD + HALFPULSE_PERIOD);
                 }
-                // Else, then there is no longer a current pulsing task.
+                // Else, then there is no longer a current pulsing task. Reset the priority and do
+                // nothing.
                 else {
                     current_priority = NONE;
                 }
@@ -136,11 +157,11 @@ namespace device {
         ///         task.
         Priority current_priority = NONE;
         /// @brief  The number of pulses left to show on the device.
-        /// @note   Behaves as a counter to decrease therefrom.
+        /// @note   Behaves as a counter from which to decrease.
         /// @note   A pulse is both a on-period and an off-period.
         uint8_t num_pulses_left = 0;
         /// @brief  The total number of pulses in a burst.
-        /// @note   Unlike num_pulses_left, stores a fixed value to refer back to which.
+        /// @note   Unlike num_pulses_left, stores a fixed value to which to refer back.
         /// @note   If this is set to zero, then the pulser does not repeat, and there is only one
         ///         burst.
         uint8_t num_pulses_in_burst = 0;

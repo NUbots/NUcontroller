@@ -19,8 +19,7 @@ namespace device::back_panel {
     public:
         /**
          * @brief    Constructs the RGB-LED.
-         * @param    port The reference to the port on which the buzzer is connected.
-         * @param    pin The pin at which the buzzer is connected.
+         * @param    leds an array of the three LEDs, red, green, and blue.
          */
         RgbLed(std::array<Led, 3> leds) : leds(leds) {}
 

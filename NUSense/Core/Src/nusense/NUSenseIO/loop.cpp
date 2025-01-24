@@ -196,8 +196,7 @@ namespace nusense {
             buzzer.handle();
 
             if (mode_button.filter()) {
-                SET_SIGNAL_1();
-                RESET_SIGNAL_1();
+                buzzer.pulse(1, false, device::Buzzer::Priority::LOW);
             }
         }
     }
