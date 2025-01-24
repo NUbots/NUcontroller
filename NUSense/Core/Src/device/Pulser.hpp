@@ -146,6 +146,17 @@ namespace device {
             }
         }
 
+        /**
+         * @brief   Stops the current pulsing task if any.
+         */
+        void stop() {
+            halfpulse_timer.stop();
+            num_pulses_left = 0;
+            num_pulses_in_burst = 0;
+            turn_off();
+            current_priority = NONE;
+        }
+
     private:
         /// @brief  The state of the device, i.e. the output.
         bool is_on = false;
