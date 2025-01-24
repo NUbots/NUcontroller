@@ -180,11 +180,6 @@ namespace nusense {
                 }
             }
 
-            // If any servo is hot, then sound the buzzer.
-            if (any_servo_hot) {
-                buzzer.pulse(5, true, device::Buzzer::Priority::HIGH);
-            }
-
             // Handle any of the pulser objects.
             tx_led.handle();
             rx_led.handle();
