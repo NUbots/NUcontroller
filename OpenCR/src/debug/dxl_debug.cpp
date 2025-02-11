@@ -35,10 +35,12 @@ const char override_char = '`';  // grave (`)
 static void dxl_debug_menu_show_list(void);
 static bool dxl_debug_menu_loop(uint8_t ch);
 static void dxl_debug_menu_show_cmdline(void);
-static bool dxl_debug_menu_shwo_ctrltbl();
+static bool dxl_debug_menu_show_ctrltbl();
 
+static void dxl_debug_write_ctrltbl(void);
 static void dxl_debug_send_write_command(void);
 static void dxl_debug_test_gpio(void);
+static void dxl_debug_buzzer();
 
 
 /*---------------------------------------------------------------------------
@@ -90,8 +92,10 @@ void dxl_debug_menu_show_list(void) {
     DEBUG_SERIAL.println("m - show menu");
     DEBUG_SERIAL.println("d - show step");
     DEBUG_SERIAL.println("l - show control table");
+    DEBUG_SERIAL.println("c - write to control table");
     DEBUG_SERIAL.println("s - send dynamixel write command");
     DEBUG_SERIAL.println("g - test gpio (buttons)");
+    DEBUG_SERIAL.println("b - test buzzer");
     DEBUG_SERIAL.println("q - exit menu");
     DEBUG_SERIAL.println("---------------------------");
 }
@@ -130,7 +134,12 @@ bool dxl_debug_menu_loop(uint8_t ch) {
 
         case 'l':
             DEBUG_SERIAL.println(" ");
-            dxl_debug_menu_shwo_ctrltbl();
+            dxl_debug_menu_show_ctrltbl();
+            break;
+
+        case 'c':
+            DEBUG_SERIAL.println(" ");
+            dxl_debug_write_ctrltbl();
             break;
 
         case 's':
@@ -143,6 +152,10 @@ bool dxl_debug_menu_loop(uint8_t ch) {
             dxl_debug_test_gpio();
             break;
 
+        case 'b':
+            DEBUG_SERIAL.println(" ");
+            dxl_debug_buzzer();
+            break;
 
         default: exit_menu = true; break;
     }
@@ -157,10 +170,10 @@ bool dxl_debug_menu_loop(uint8_t ch) {
 
 
 /*---------------------------------------------------------------------------
-     TITLE   : dxl_debug_menu_shwo_ctrltbl
+     TITLE   : dxl_debug_menu_show_ctrltbl
      WORK    :
 ---------------------------------------------------------------------------*/
-bool dxl_debug_menu_shwo_ctrltbl() {
+bool dxl_debug_menu_show_ctrltbl() {
     uint32_t addr;
 
 
@@ -338,6 +351,104 @@ bool dxl_debug_menu_shwo_ctrltbl() {
     DEBUG_SERIAL.print(p_dxl_mem->IMU_Control);
     DEBUG_SERIAL.print("\t 0x");
     DEBUG_SERIAL.println(p_dxl_mem->IMU_Control, HEX);
+}
+
+/**
+ * @brief Write a value to the control table at a given address
+ */
+void dxl_debug_write_ctrltbl(void) {
+    DEBUG_SERIAL.print("[>] Address: ");
+    while (!DEBUG_SERIAL.available())
+        ;
+    int addr = DEBUG_SERIAL.parseInt();
+
+    // Match address to control table
+    uint8_t known;
+    switch (addr) {
+        case 0:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 16:
+        case 18:
+        case 20:
+        case 22:
+        case 24:
+        case 25:
+        case 26:
+        case 28:
+        case 30:
+        case 31:
+        case 32:
+        case 34:
+        case 36:
+        case 38:
+        case 40:
+        case 42:
+        case 44:
+        case 46:
+        case 48:
+        case 50: known = 1; break;
+        default: known = 0; break;
+    }
+
+    // Confirm if the address isn't a known address
+    if (!known) {
+        DEBUG_SERIAL.print("[!] Address ");
+        DEBUG_SERIAL.print(addr);
+        DEBUG_SERIAL.println(" is not a known control table field. Proceed? (y/N)");
+        while (!DEBUG_SERIAL.available())
+            ;
+        char c = DEBUG_SERIAL.read();
+        if (c != 'y')
+            return;
+    }
+
+    DEBUG_SERIAL.print("[>] Value: ");
+    while (!DEBUG_SERIAL.available())
+        ;
+    int val = DEBUG_SERIAL.parseInt();
+
+    // Print confirmation with name of address if possible
+    DEBUG_SERIAL.print("[*] Writing value ");
+    // Print in hex for easy reading and simple validation
+    // DEBUG_SERIAL.print("0x");
+    // DEBUG_SERIAL.print(val, HEX);
+    DEBUG_SERIAL.print(val);
+    DEBUG_SERIAL.print(" to ");
+    switch (addr) {
+        case 0: DEBUG_SERIAL.print("Model_Number"); break;
+        case 2: DEBUG_SERIAL.print("Firmware_Version"); break;
+        case 3: DEBUG_SERIAL.print("ID"); break;
+        case 4: DEBUG_SERIAL.print("Baud"); break;
+        case 5: DEBUG_SERIAL.print("Return_Delay_Time"); break;
+        case 16: DEBUG_SERIAL.print("Status_Return_Level"); break;
+        case 18: DEBUG_SERIAL.print("Roll_Offset"); break;
+        case 20: DEBUG_SERIAL.print("Pitch_Offset"); break;
+        case 22: DEBUG_SERIAL.print("Yaw_Offset"); break;
+        case 24: DEBUG_SERIAL.print("Dynamixel_Power"); break;
+        case 25: DEBUG_SERIAL.print("LED"); break;
+        case 26: DEBUG_SERIAL.print("LED_RGB"); break;
+        case 28: DEBUG_SERIAL.print("Buzzer"); break;
+        case 30: DEBUG_SERIAL.print("Button"); break;
+        case 31: DEBUG_SERIAL.print("Voltage"); break;
+        case 32: DEBUG_SERIAL.print("Gyro_X"); break;
+        case 34: DEBUG_SERIAL.print("Gyro_Y"); break;
+        case 36: DEBUG_SERIAL.print("Gyro_Z"); break;
+        case 38: DEBUG_SERIAL.print("Acc_X"); break;
+        case 40: DEBUG_SERIAL.print("Acc_Y"); break;
+        case 42: DEBUG_SERIAL.print("Acc_Z"); break;
+        case 44: DEBUG_SERIAL.print("Roll"); break;
+        case 46: DEBUG_SERIAL.print("Pitch"); break;
+        case 48: DEBUG_SERIAL.print("Yaw"); break;
+        case 50: DEBUG_SERIAL.print("IMU_Control"); break;
+        default: DEBUG_SERIAL.print("Unknown"); break;
+    }
+    DEBUG_SERIAL.println(".");
+
+    // get the address of the value in the control table
+    dxl_debug_write_byte_wrapper(addr, val);
 }
 
 /**
@@ -586,4 +697,46 @@ void dxl_debug_test_gpio(void) {
     while (ch != 'm');
     // show menu
     dxl_debug_menu_show_list();
+}
+/**
+ * @brief Sound the buzzer at a given frequency and duration
+ */
+void dxl_debug_buzzer() {
+    DEBUG_SERIAL.print("[>] Frequency (Hz): ");
+    while (!DEBUG_SERIAL.available())
+        ;
+    int freq = DEBUG_SERIAL.parseInt();
+
+    DEBUG_SERIAL.print("[>] Duration (ms): ");
+    while (!DEBUG_SERIAL.available())
+        ;
+    int dur = DEBUG_SERIAL.parseInt();
+
+    // End if frequency is 0, delayed by duration
+    if (freq == 0) {
+        delay(dur);
+        noTone(BDPIN_BUZZER);
+        return;
+    }
+
+    // Confirm frequency
+    DEBUG_SERIAL.print("[*] Playing tone at ");
+    DEBUG_SERIAL.print(freq);
+    DEBUG_SERIAL.print("Hz");
+
+    // Test without duration if duration is 0
+    if (dur == 0) {
+        DEBUG_SERIAL.println(" indefinitely.");
+        tone(BDPIN_BUZZER, freq);
+
+        return;
+    }
+
+    // Confirm duration
+    DEBUG_SERIAL.print(" for ");
+    DEBUG_SERIAL.print(dur);
+    DEBUG_SERIAL.println("ms");
+
+    // Play the tone normally
+    tone(BDPIN_BUZZER, freq, dur);
 }

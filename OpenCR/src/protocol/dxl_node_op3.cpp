@@ -17,9 +17,6 @@
 #include "dxl.h"
 
 
-#define RANGE_CHECK(addr, x) dxl_node_check_range(addr, (uint32_t) & (x), sizeof(x))
-
-
 static dxl_t dxl_sp;
 
 
@@ -49,7 +46,10 @@ void dxl_process_packet();
 static uint8_t dxl_node_read_byte(uint16_t addr);
 static void dxl_node_write_byte(uint16_t addr, uint8_t data);
 
-static BOOL dxl_node_check_range(uint16_t addr, uint32_t addr_ptr, uint8_t length);
+static BOOL dxl_node_check_range(uint16_t usr_write_addr,
+                                 uint8_t data_size,
+                                 uint32_t p_ctrl_tbl_field,
+                                 uint8_t field_size);
 void dxl_node_op3_change_baud(void);
 
 static void dxl_node_update_tx_rx_led();
@@ -68,7 +68,7 @@ void dxl_node_op3_init(void) {
     dxl_hw_op3_init();
     dxl_node_op3_reset();
 
-    if (p_dxl_mem->Model_Number != DXL_NODE_OP3_MODLE_NUMBER) {
+    if (p_dxl_mem->Model_Number != DXL_NODE_OP3_MODEL_NUMBER) {
         dxl_node_op3_factory_reset();
         dxl_node_op3_reset();
     }
@@ -220,7 +220,7 @@ void dxl_process_packet() {
         // waits to return the ping until either the ID before us returned, or
         // until we poll through all IDs waiting 3ms on each ID.
         case DXL_PROCESS_BROAD_PING:
-            // Recieve a packet if there's one waiting
+            // Receive a packet if there's one waiting
             dxl_ret = dxlRxPacket(&dxl_sp);
             // If it's a status packet, then that's almost certainly a ping from
             // a device before us in the queue
@@ -247,7 +247,7 @@ void dxl_process_packet() {
         // same story here as for ping, wait for other devices to return before
         // we do.
         case DXL_PROCESS_BROAD_READ:
-            // Recieve a packet if there's one waiting
+            // Receive a packet if there's one waiting
             dxl_ret = dxlRxPacket(&dxl_sp);
             // If it's a status packet, then that's almost certainly a the read
             // response from a device before us
@@ -271,7 +271,7 @@ void dxl_process_packet() {
                     /// Serial.println(dxl_sp.rx.id, HEX);
                 }
             }
-            // If we havent had a status packet in 50ms then timeout
+            // If we haven't had a status packet in 50ms then timeout
             else if (micros() - pre_time >= 50000) {
                 process_state = DXL_PROCESS_INST;
                 /// Serial.println(" Bulk Read timeout");
@@ -285,7 +285,7 @@ void dxl_process_packet() {
 
 
 /**
- * @brief Detect red button press and disable dymnamixel power.
+ * @brief Detect red button press and disable Dynamixel power.
  * @note Dynamixel power is never turned back on again, that must be done
  *       externally by the host device. (in our case, HardwareIO on the NUC)
  */
@@ -294,7 +294,7 @@ void dxl_node_op3_btn_loop(void) {
     if (dxl_hw_op3_button_read(DXL_POWER_DISABLE_BUTTON)) {
         /* Log if in debug mode and power is currently on */
         if (debug_state && dxl_node_read_byte(24))
-            Serial.print("DXL Power disabled");
+            Serial.println("[!] DXL Power disabled (red button pressed)");
         /* Control table 24 = DXL Power */
         dxl_node_write_byte(24, 0);
     }
@@ -375,7 +375,7 @@ void dxl_node_op3_factory_reset(void) {
     uint16_t i;
 
 
-    p_dxl_mem->Model_Number        = DXL_NODE_OP3_MODLE_NUMBER;
+    p_dxl_mem->Model_Number        = DXL_NODE_OP3_MODEL_NUMBER;
     p_dxl_mem->Firmware_Version    = DXL_NODE_OP3_FW_VER;
     p_dxl_mem->ID                  = DXL_NODE_OP3_ID;
     p_dxl_mem->Baud                = DXL_NODE_OP3_BAUD;
@@ -424,14 +424,17 @@ void dxl_node_write_byte(uint16_t addr, uint8_t data) {
     mem.data[addr] = data;
 
 
-    if (RANGE_CHECK(addr, p_dxl_mem->Dynamixel_Power)) {
+    if (dxl_node_check_range(addr,
+                             sizeof(data),
+                             (uint32_t) & (p_dxl_mem->Dynamixel_Power),
+                             sizeof(p_dxl_mem->Dynamixel_Power))) {
         if (p_dxl_mem->Dynamixel_Power == 1)
             dxl_hw_power_enable();
         else
             dxl_hw_power_disable();
     }
 
-    if (RANGE_CHECK(addr, p_dxl_mem->LED)) {
+    if (dxl_node_check_range(addr, sizeof(data), (uint32_t) & (p_dxl_mem->LED), sizeof(p_dxl_mem->LED))) {
         if (data & (1 << 0))
             dxl_hw_op3_led_set(PIN_LED_1, 0);
         else
@@ -446,7 +449,7 @@ void dxl_node_write_byte(uint16_t addr, uint8_t data) {
             dxl_hw_op3_led_set(PIN_LED_3, 1);
     }
 
-    if (RANGE_CHECK(addr, p_dxl_mem->LED_RGB)) {
+    if (dxl_node_check_range(addr, sizeof(data), (uint32_t) & (p_dxl_mem->LED_RGB), sizeof(p_dxl_mem->LED_RGB))) {
         pwm_value[0] = (p_dxl_mem->LED_RGB >> 0) & 0x1F;
         pwm_value[1] = (p_dxl_mem->LED_RGB >> 5) & 0x1F;
         pwm_value[2] = (p_dxl_mem->LED_RGB >> 10) & 0x1F;
@@ -456,33 +459,46 @@ void dxl_node_write_byte(uint16_t addr, uint8_t data) {
         dxl_hw_op3_led_pwm(PIN_LED_B, pwm_value[2]);
     }
 
-    if (RANGE_CHECK(addr, p_dxl_mem->Baud)) {
+    if (dxl_node_check_range(addr, sizeof(data), (uint32_t) & (p_dxl_mem->Baud), sizeof(p_dxl_mem->Baud))) {
         dxl_node_op3_change_baud();
     }
 
-    if (RANGE_CHECK(addr, p_dxl_mem->Buzzer)) {
+    if (dxl_node_check_range(addr, sizeof(data), (uint32_t) & (p_dxl_mem->Buzzer), sizeof(p_dxl_mem->Buzzer))) {
+        /* debug */
+        // Serial.printf("[#] Setting buzzer (%d) to %d\n", addr, data);
+
         if (p_dxl_mem->Buzzer > 0)
             tone(BDPIN_BUZZER, p_dxl_mem->Buzzer);
         else
             noTone(BDPIN_BUZZER);
     }
 }
-
+// This is a wrapper so that we can call this function from the debug module
+void dxl_debug_write_byte_wrapper(uint16_t addr, uint8_t data) {
+    dxl_node_write_byte(addr, data);
+}
 
 /*---------------------------------------------------------------------------
      TITLE   : dxl_node_check_range
      WORK    :
 ---------------------------------------------------------------------------*/
-BOOL dxl_node_check_range(uint16_t addr, uint32_t addr_ptr, uint8_t length) {
+BOOL dxl_node_check_range(uint16_t usr_write_addr, uint8_t data_size, uint32_t p_ctrl_tbl_field, uint8_t field_size) {
+    // Calculate the offset of the address in the control table
+    uint32_t addr_offset = p_ctrl_tbl_field - (uint32_t) p_dxl_mem;
+    uint16_t addr_delta  = usr_write_addr - addr_offset;
+    uint8_t size_delta   = field_size - data_size;
 
-    uint32_t addr_offset = addr_ptr - (uint32_t) p_dxl_mem;
+    // print debug info and result
+    // Serial.printf("[#] Checking range: %d B to addr %d (offset %d -> d%d), Size delta %d : PASS %d\n",
+    //               data_size,
+    //               usr_write_addr,
+    //               addr_offset,
+    //               addr_delta,
+    //               size_delta,
+    //               (addr_delta >= 0) && (addr_delta <= size_delta));
 
-    if (addr >= (addr_offset + length - 1) && addr < (addr_offset + length)) {
-        return TRUE;
-    }
-
-
-    return FALSE;
+    // Check that addr is within the range of the control table value
+    return (addr_delta >= 0) && (addr_delta <= size_delta);
 }
 
 
@@ -497,7 +513,7 @@ void processRead(uint16_t addr, uint8_t* p_data, uint16_t length) {
 }
 
 void processWrite(uint16_t addr, uint8_t* p_data, uint16_t length) {
-    /// Serial.printf("Writing to memory address 0x%02x (%d): ", addr, addr);
+    // Serial.printf("[#] Writing %d bytes to memory address 0x%02x (%d):\n ->", length, addr, addr);
 
     for (uint32_t i = 0; i < length; i++) {
         if (mem.attr[addr] & DXL_MEM_ATTR_WO || mem.attr[addr] & DXL_MEM_ATTR_RW) {
@@ -505,11 +521,11 @@ void processWrite(uint16_t addr, uint8_t* p_data, uint16_t length) {
             if (mem.attr[addr] & DXL_MEM_ATTR_EEPROM) {
                 EEPROM[addr] = mem.data[addr];
             }
-            /// Serial.printf("%02x ", p_data[i]);
+            // Serial.printf(" %02x", p_data[i]);
         }
         addr++;
     }
-    /// Serial.println(" ");
+    // Serial.println(" ");
 }
 
 
@@ -600,7 +616,7 @@ dxl_error_t write(dxl_t* p_dxl) {
         return DXL_RET_EMPTY;
     }
 
-    /// Serial.print(" write");
+    // Serial.print("[#] Processing");
 
     addr   = (p_dxl->rx.p_param[1] << 8) | p_dxl->rx.p_param[0];
     p_data = &p_dxl->rx.p_param[2];
@@ -609,23 +625,23 @@ dxl_error_t write(dxl_t* p_dxl) {
         length = p_dxl->rx.param_length - 2;
     }
     else {
-        /// Serial.println(" error");
+        // Serial.println(" invalid write command");
         dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
 
     if (addr >= sizeof(dxl_mem_op3_t) || (addr + length) > sizeof(dxl_mem_op3_t)) {
-        /// Serial.println(" error");
+        // Serial.println(" invalid write command");
         dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_ACCESS, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
     if (length > DXL_MAX_BUFFER - 10) {
-        /// Serial.println(" error");
+        // Serial.println(" invalid write command");
         dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_DATA_LENGTH, NULL, 0);
         return DXL_RET_ERROR_LENGTH;
     }
 
-    /// Serial.println(" success");
+    // Serial.println(" valid write command");
 
     dxlTxPacketStatus(p_dxl, p_dxl->id, DXL_ERR_NONE, NULL, 0);
 

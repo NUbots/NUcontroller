@@ -154,6 +154,10 @@ namespace dynamixel {
             // Prepare the packet handler for the response packet.
             packet_handler.ready();
 
+            // Flush the port for any received bytes. Since we are starting a new request-response exchange, any bytes
+            // that happen to be in the buffer are not needed.
+            port.flush_rx();
+
             // Send the packet
             const uint16_t len = port.write(data);
 
