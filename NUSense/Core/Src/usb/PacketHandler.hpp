@@ -4,6 +4,7 @@
 #include <string>
 
 #include "protobuf/ServoTarget.pb.h"
+#include "protobuf/NUSenseData.pb.h"
 #include "protobuf/pb_decode.h"
 #include "protobuf/pb_encode.h"
 #include "usbd_cdc_if.h"
@@ -25,7 +26,7 @@ namespace usb {
 
         /// @brief   Handles outgoing bytes from the ring-buffer, parses any packet, and decodes it.
         /// @return  Whether the packet has been decoded.
-        bool handle_incoming() {
+        bool handle_incoming(const bool& expect_handshake = false) {
 
             if (rx_buffer.size != 0) {
                 HAL_NVIC_DisableIRQ(OTG_HS_IRQn);
@@ -92,7 +93,7 @@ namespace usb {
                 // TODO (JohanneMontano) nanopb is complaining about something if we handle it using the code below. It
                 // seems like the nanopb error always happens but also always successfully decodes the
                 // SubcontrollerServoTargets message anyway. This must be investigated.
-                nanopb_decoding_err =
+                nanopb_decoding_err = expect_handshake ? pb_decode(&input_stream, message_platform_NUSenseHandshake_fields, &handshake_msg) :
                     pb_decode(&input_stream, message_actuation_SubcontrollerServoTargets_fields, &targets);
 
                 if (nanopb_decoding_err) {
@@ -206,6 +207,9 @@ namespace usb {
 
         /// @brief  The servo targets to send to the servos
         message_actuation_SubcontrollerServoTargets targets = message_actuation_SubcontrollerServoTargets_init_zero;
+
+        /// @brief Handshake message container
+        message_platform_NUSenseHandshake handshake_msg = message_platform_NUSenseHandshake_init_zero;
 
         /// @brief  A flag that describes the status of the most recent call to pb_decode
         bool nanopb_decoding_err = false;
