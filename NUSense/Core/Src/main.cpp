@@ -82,8 +82,12 @@ int main(void) {
 #ifdef RUN_MAIN
     nusense::NUSenseIO nusenseIO;
     
+    // Wait for the initial handshake message from NUC
     while (!nusenseIO.handshake_received()) {}
 
+    // Once NUSense has acknowledged the handshake message, the GPIO for Dynamixel power can now be set
+    // Pressing reset (red button) would mean that the NUC's binary would have to be rerun again in order to set
+    // the power to the motors
     HAL_GPIO_WritePin(DXL_PWR_EN_GPIO_Port, DXL_PWR_EN_Pin, GPIO_PIN_SET);
     
     // Delay for a bit to give the motor time to boot up. Without this delay, I found that the
