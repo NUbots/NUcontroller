@@ -5,7 +5,7 @@ namespace nusense {
     bool NUSenseIO::handshake_received() {
         bool expect_handshake = true;
         if (nuc.handle_incoming(expect_handshake)) {
-            if (nuc.get_curr_msg_hash() == utility::message::SUBCONTROLLER_SERVO_TARGETS_HASH) {
+            if (nuc.get_curr_msg_hash() == utility::message::HANDSHAKE_HASH) {
                 // Send reply to NUSense
                 strcpy(handshake_msg.msg, "Hello NUC!");
 
