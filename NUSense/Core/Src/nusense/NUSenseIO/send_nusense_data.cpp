@@ -27,6 +27,13 @@ namespace nusense {
         nusense_msg.imu.temperature = converted_data.temperature;
         nusense_msg.has_imu         = true;
 
+        // Poll the buttons and include their states.
+        nusense_msg.back_panel.has_buttons = true;
+        nusense_msg.back_panel.buttons.left = 0;
+        nusense_msg.back_panel.buttons.middle = 0;
+
+        nusense_msg.has_back_panel = true;
+
         // Fill servo entries using the data in servo_states
         nusense_msg.servo_map_count = NUMBER_OF_DEVICES;
 

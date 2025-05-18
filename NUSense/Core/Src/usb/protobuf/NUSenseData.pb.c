@@ -18,6 +18,12 @@ PB_BIND(message_platform_IMU, message_platform_IMU, AUTO)
 PB_BIND(message_platform_IMU_fvec3, message_platform_IMU_fvec3, AUTO)
 
 
+PB_BIND(message_platform_BackPanel, message_platform_BackPanel, AUTO)
+
+
+PB_BIND(message_platform_BackPanel_Buttons, message_platform_BackPanel_Buttons, AUTO)
+
+
 PB_BIND(message_platform_NUSense, message_platform_NUSense, 2)
 
 
