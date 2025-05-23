@@ -180,17 +180,23 @@ namespace nusense {
                 }
             }
 
-            // If any servo is hot, then sound the buzzer.
-            if (any_servo_hot) {
-                buzzer.turn_on();
-            }
-            else {
-                buzzer.turn_off();
-            }
+            // Handle any of the pulser objects.
+            tx_led.handle();
+            rx_led.handle();
+            red_led.handle();
+            blue_led.handle();
+            green_led.handle();
+            left_rgb.handle();
+            right_rgb.handle();
+            buzzer.handle();
 
             if (mode_button.filter()) {
-                SET_SIGNAL_1();
-                RESET_SIGNAL_1();
+                buzzer.pulse(1, false, device::Buzzer::Priority::LOW);
+                tx_led.stop();
+            }
+
+            if (start_button.filter()) {
+                tx_led.pulse(3, true, device::Pulser::LOW);
             }
         }
     }
