@@ -222,10 +222,12 @@ namespace utility::message {
 
     static const std::string NUSENSE_TYPENAME                     = "message.platform.NUSense";
     static const std::string SUBCONTROLLER_SERVO_TARGETS_TYPENAME = "message.actuation.SubcontrollerServoTargets";
+    static const std::string HANDSHAKE_TYPENAME                   = "message.platform.NUSenseHandshake";
 
     inline const uint64_t NUSENSE_HASH = xxhash64(NUSENSE_TYPENAME.c_str(), NUSENSE_TYPENAME.size(), seed);
     inline const uint64_t SUBCONTROLLER_SERVO_TARGETS_HASH =
         xxhash64(SUBCONTROLLER_SERVO_TARGETS_TYPENAME.c_str(), SUBCONTROLLER_SERVO_TARGETS_TYPENAME.size(), seed);
+    inline const uint64_t HANDSHAKE_HASH = xxhash64(HANDSHAKE_TYPENAME.c_str(), HANDSHAKE_TYPENAME.size(), seed);
 
 }  // namespace utility::message
 
