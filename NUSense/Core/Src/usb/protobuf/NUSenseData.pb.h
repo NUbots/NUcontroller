@@ -3,7 +3,7 @@
 
 #ifndef PB_MESSAGE_PLATFORM_NUSENSEDATA_PB_H_INCLUDED
 #define PB_MESSAGE_PLATFORM_NUSENSEDATA_PB_H_INCLUDED
-#include <pb.h>
+#include "pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.
@@ -170,7 +170,7 @@ extern "C" {
 #define message_platform_IMU_temperature_tag     3
 #define message_platform_BackPanel_Buttons_left_tag 1
 #define message_platform_BackPanel_Buttons_middle_tag 2
-#define message_platform_BackPanel_buttons_tag   4
+#define message_platform_BackPanel_buttons_tag   1
 #define message_platform_NUSense_ServoMapEntry_key_tag 1
 #define message_platform_NUSense_ServoMapEntry_value_tag 2
 #define message_platform_NUSense_servo_map_tag   1
@@ -222,7 +222,7 @@ X(a, STATIC,   SINGULAR, FLOAT,    z,                 3)
 #define message_platform_IMU_fvec3_DEFAULT NULL
 
 #define message_platform_BackPanel_FIELDLIST(X, a) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  buttons,           4)
+X(a, STATIC,   OPTIONAL, MESSAGE,  buttons,           1)
 #define message_platform_BackPanel_CALLBACK NULL
 #define message_platform_BackPanel_DEFAULT NULL
 #define message_platform_BackPanel_buttons_MSGTYPE message_platform_BackPanel_Buttons

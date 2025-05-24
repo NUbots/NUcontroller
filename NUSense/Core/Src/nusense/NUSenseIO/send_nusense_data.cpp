@@ -29,8 +29,16 @@ namespace nusense {
 
         // Poll the buttons and include their states.
         nusense_msg.back_panel.has_buttons = true;
-        nusense_msg.back_panel.buttons.left = 0;
-        nusense_msg.back_panel.buttons.middle = 0;
+        nusense_msg.back_panel.buttons.left = mode_button.filter();
+        nusense_msg.back_panel.buttons.middle = start_button.filter();
+
+        if (nusense_msg.back_panel.buttons.left) {
+            tx_led.pulse(1, false, device::Pulser::LOW);
+        }
+
+        if (nusense_msg.back_panel.buttons.middle) {
+            rx_led.pulse(1, false, device::Pulser::LOW);
+        }
 
         nusense_msg.has_back_panel = true;
 
