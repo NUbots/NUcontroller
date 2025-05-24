@@ -189,7 +189,6 @@ namespace nusense {
             left_rgb.handle();
             right_rgb.handle();
             buzzer.handle();
-
         }
     }
 }  // namespace nusense

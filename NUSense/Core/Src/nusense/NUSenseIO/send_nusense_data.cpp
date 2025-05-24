@@ -28,8 +28,8 @@ namespace nusense {
         nusense_msg.has_imu         = true;
 
         // Poll the buttons and include their states.
-        nusense_msg.back_panel.has_buttons = true;
-        nusense_msg.back_panel.buttons.left = mode_button.filter();
+        nusense_msg.back_panel.has_buttons    = true;
+        nusense_msg.back_panel.buttons.left   = mode_button.filter();
         nusense_msg.back_panel.buttons.middle = start_button.filter();
 
         if (nusense_msg.back_panel.buttons.left) {
