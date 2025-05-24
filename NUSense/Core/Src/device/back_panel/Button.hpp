@@ -1,9 +1,9 @@
 #include "stm32h753xx.h"
 
-#ifndef DEVICE_BUTTON_HPP
-    #define DEVICE_BUTTON_HPP
+#ifndef DEVICE_BACK_PANEL_BUTTON_HPP
+    #define DEVICE_BACK_PANEL_BUTTON_HPP
 
-namespace device {
+namespace device::back_panel {
 
     /**
      * @brief   The button.
@@ -79,9 +79,9 @@ namespace device {
         /// @brief  The number of lows counted.
         uint16_t n_lows = 0;
         /// @brief  The threshold for debouncing.
-        uint16_t threshold = 0;
+        uint16_t threshold = 10;
     };
 
-}  // namespace device
+}  // namespace device::back_panel
 
-#endif  // DEVICE_BUTTON_HPP
+#endif  // DEVICE_BACK_PANEL_BUTTON_HPP
