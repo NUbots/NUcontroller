@@ -71,9 +71,7 @@ typedef struct _message_platform_IMU {
     uint32_t temperature;
 } message_platform_IMU;
 
-/* For now, I am only including the two buttons since I see no current need to poll the state of the LEDs, and I
- want to conserve as much bandwidth as possible. If such a need arises, then one can add it under the BackPanel
- message. */
+/* LEDs are not yet added in order to conserve bandwidth. However, they can be added later once the need arises. */
 typedef struct _message_platform_BackPanel_Buttons {
     bool left;
     bool middle;
