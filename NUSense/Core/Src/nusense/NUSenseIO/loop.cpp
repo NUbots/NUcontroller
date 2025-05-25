@@ -189,15 +189,6 @@ namespace nusense {
             left_rgb.handle();
             right_rgb.handle();
             buzzer.handle();
-
-            if (mode_button.filter()) {
-                buzzer.pulse(1, false, device::Buzzer::Priority::LOW);
-                tx_led.stop();
-            }
-
-            if (start_button.filter()) {
-                tx_led.pulse(3, true, device::Pulser::LOW);
-            }
         }
     }
 }  // namespace nusense

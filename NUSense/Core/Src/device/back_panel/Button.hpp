@@ -43,15 +43,12 @@ namespace device::back_panel {
          * @brief   Handles the debouncing filter.
          * @note    To be honest, I am not fully sure on how this works, some magic with which Trent
          *          came up. Better suggestions for debouncing are welcome.
-         * @return  Whether the button has just been pressed, i.e. a single shot of the rising
-         *          active edge.
+         * @return  Whether the button is pressed down.
          */
         bool filter() {
             // The pin's read state has been inverted given that the button pulls down.
             n_highs = std::max(0, std::min(threshold * 2, n_highs + (!read() ? 1 : -1)));
             n_lows  = std::max(0, std::min(threshold * 2, n_lows + (!read() ? -1 : 1)));
-
-            bool was_pressed = is_pressed;
 
             // I changed the threshold to have hysteresis since the two if-conditions were both
             // true at the same time, and the is_pressed was thus always false.
@@ -62,9 +59,7 @@ namespace device::back_panel {
                 is_pressed = false;
             }
 
-            // This is to make the press one-shot, i.e. returns true only once for each distinct
-            // press.
-            return is_pressed && !(was_pressed);
+            return is_pressed;
         }
 
     private:
