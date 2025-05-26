@@ -28,19 +28,18 @@ namespace nusense {
         nusense_msg.has_imu         = true;
 
         // Poll the buttons and include their states.
-        nusense_msg.back_panel.has_buttons    = true;
-        nusense_msg.back_panel.buttons.left   = mode_button.filter();
-        nusense_msg.back_panel.buttons.middle = start_button.filter();
+        nusense_msg.buttons.left   = mode_button.filter();
+        nusense_msg.buttons.middle = start_button.filter();
 
-        if (nusense_msg.back_panel.buttons.left) {
+        if (nusense_msg.buttons.left) {
             tx_led.pulse(1, false, device::Pulser::LOW);
         }
 
-        if (nusense_msg.back_panel.buttons.middle) {
+        if (nusense_msg.buttons.middle) {
             rx_led.pulse(1, false, device::Pulser::LOW);
         }
 
-        nusense_msg.has_back_panel = true;
+        nusense_msg.has_buttons = true;
 
         // Fill servo entries using the data in servo_states
         nusense_msg.servo_map_count = NUMBER_OF_DEVICES;
