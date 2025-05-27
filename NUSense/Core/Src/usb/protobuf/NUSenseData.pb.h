@@ -71,6 +71,11 @@ typedef struct _message_platform_IMU {
     uint32_t temperature;
 } message_platform_IMU;
 
+typedef struct _message_platform_Buttons {
+    bool left;
+    bool middle;
+} message_platform_Buttons;
+
 typedef struct _message_platform_NUSense_ServoMapEntry {
     uint32_t key;
     bool has_value;
@@ -103,6 +108,8 @@ typedef struct _message_platform_NUSense {
     message_platform_NUSense_ServoMapEntry servo_map[20];
     bool has_imu;
     message_platform_IMU imu;
+    bool has_buttons;
+    message_platform_Buttons buttons;
 } message_platform_NUSense;
 
 
@@ -119,6 +126,8 @@ extern "C" {
     { false, message_platform_IMU_fvec3_init_default, false, message_platform_IMU_fvec3_init_default, 0 }
 #define message_platform_IMU_fvec3_init_default \
     { 0, 0, 0 }
+#define message_platform_Buttons_init_default \
+    { 0, 0 }
 #define message_platform_NUSense_init_default                                                                          \
     {                                                                                                                  \
         0, {message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default,  \
@@ -131,7 +140,7 @@ extern "C" {
             message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default,  \
             message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default,  \
             message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default}, \
-            false, message_platform_IMU_init_default                                                                   \
+            false, message_platform_IMU_init_default, false, message_platform_Buttons_init_default                     \
     }
 #define message_platform_NUSense_ServoMapEntry_init_default \
     { 0, false, message_platform_Servo_init_default }
@@ -143,6 +152,8 @@ extern "C" {
     { false, message_platform_IMU_fvec3_init_zero, false, message_platform_IMU_fvec3_init_zero, 0 }
 #define message_platform_IMU_fvec3_init_zero \
     { 0, 0, 0 }
+#define message_platform_Buttons_init_zero \
+    { 0, 0 }
 #define message_platform_NUSense_init_zero                                                                       \
     {                                                                                                            \
         0, {message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero,  \
@@ -155,7 +166,7 @@ extern "C" {
             message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero,  \
             message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero,  \
             message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero}, \
-            false, message_platform_IMU_init_zero                                                                \
+            false, message_platform_IMU_init_zero, false, message_platform_Buttons_init_zero                     \
     }
 #define message_platform_NUSense_ServoMapEntry_init_zero \
     { 0, false, message_platform_Servo_init_zero }
@@ -185,10 +196,13 @@ extern "C" {
 #define message_platform_IMU_accel_tag                        1
 #define message_platform_IMU_gyro_tag                         2
 #define message_platform_IMU_temperature_tag                  3
+#define message_platform_Buttons_left_tag                     1
+#define message_platform_Buttons_middle_tag                   2
 #define message_platform_NUSense_ServoMapEntry_key_tag        1
 #define message_platform_NUSense_ServoMapEntry_value_tag      2
 #define message_platform_NUSense_servo_map_tag                1
 #define message_platform_NUSense_imu_tag                      2
+#define message_platform_NUSense_buttons_tag                  3
 
 /* Struct field encoding specification for nanopb */
 #define message_platform_Servo_FIELDLIST(X, a)         \
@@ -234,13 +248,21 @@ extern "C" {
 #define message_platform_IMU_fvec3_CALLBACK NULL
 #define message_platform_IMU_fvec3_DEFAULT  NULL
 
+#define message_platform_Buttons_FIELDLIST(X, a) \
+    X(a, STATIC, SINGULAR, BOOL, left, 1)        \
+    X(a, STATIC, SINGULAR, BOOL, middle, 2)
+#define message_platform_Buttons_CALLBACK NULL
+#define message_platform_Buttons_DEFAULT  NULL
+
 #define message_platform_NUSense_FIELDLIST(X, a)  \
     X(a, STATIC, REPEATED, MESSAGE, servo_map, 1) \
-    X(a, STATIC, OPTIONAL, MESSAGE, imu, 2)
+    X(a, STATIC, OPTIONAL, MESSAGE, imu, 2)       \
+    X(a, STATIC, OPTIONAL, MESSAGE, buttons, 3)
 #define message_platform_NUSense_CALLBACK          NULL
 #define message_platform_NUSense_DEFAULT           NULL
 #define message_platform_NUSense_servo_map_MSGTYPE message_platform_NUSense_ServoMapEntry
 #define message_platform_NUSense_imu_MSGTYPE       message_platform_IMU
+#define message_platform_NUSense_buttons_MSGTYPE   message_platform_Buttons
 
 #define message_platform_NUSense_ServoMapEntry_FIELDLIST(X, a) \
     X(a, STATIC, SINGULAR, UINT32, key, 1)                     \
@@ -253,6 +275,7 @@ extern const pb_msgdesc_t message_platform_Servo_msg;
 extern const pb_msgdesc_t message_platform_Servo_PacketCounts_msg;
 extern const pb_msgdesc_t message_platform_IMU_msg;
 extern const pb_msgdesc_t message_platform_IMU_fvec3_msg;
+extern const pb_msgdesc_t message_platform_Buttons_msg;
 extern const pb_msgdesc_t message_platform_NUSense_msg;
 extern const pb_msgdesc_t message_platform_NUSense_ServoMapEntry_msg;
 
@@ -261,15 +284,17 @@ extern const pb_msgdesc_t message_platform_NUSense_ServoMapEntry_msg;
 #define message_platform_Servo_PacketCounts_fields    &message_platform_Servo_PacketCounts_msg
 #define message_platform_IMU_fields                   &message_platform_IMU_msg
 #define message_platform_IMU_fvec3_fields             &message_platform_IMU_fvec3_msg
+#define message_platform_Buttons_fields               &message_platform_Buttons_msg
 #define message_platform_NUSense_fields               &message_platform_NUSense_msg
 #define message_platform_NUSense_ServoMapEntry_fields &message_platform_NUSense_ServoMapEntry_msg
 
 /* Maximum encoded size of messages (where known) */
 #define MESSAGE_PLATFORM_NUSENSEDATA_PB_H_MAX_SIZE  message_platform_NUSense_size
+#define message_platform_Buttons_size               4
 #define message_platform_IMU_fvec3_size             15
 #define message_platform_IMU_size                   40
 #define message_platform_NUSense_ServoMapEntry_size 98
-#define message_platform_NUSense_size               2042
+#define message_platform_NUSense_size               2048
 #define message_platform_Servo_PacketCounts_size    24
 #define message_platform_Servo_size                 90
 
