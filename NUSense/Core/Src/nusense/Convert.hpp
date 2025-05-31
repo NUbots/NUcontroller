@@ -2,8 +2,8 @@
 #define NUSENSE_CONVERT_HPP
 
 #include <array>
-#include <stdexcept>
 #include <cstdint>
+#include <stdexcept>
 
 namespace nusense {
 

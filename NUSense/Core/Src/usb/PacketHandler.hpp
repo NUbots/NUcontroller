@@ -3,8 +3,8 @@
 #include <iterator>
 #include <string>
 
-#include "protobuf/ServoTarget.pb.h"
 #include "protobuf/NUSenseData.pb.h"
+#include "protobuf/ServoTarget.pb.h"
 #include "protobuf/pb_decode.h"
 #include "protobuf/pb_encode.h"
 #include "usbd_cdc_if.h"
@@ -93,8 +93,10 @@ namespace usb {
                 // TODO (JohanneMontano) nanopb is complaining about something if we handle it using the code below. It
                 // seems like the nanopb error always happens but also always successfully decodes the
                 // SubcontrollerServoTargets message anyway. This must be investigated.
-                nanopb_decoding_err = expect_handshake ? pb_decode(&input_stream, message_platform_NUSenseHandshake_fields, &handshake_msg) :
-                    pb_decode(&input_stream, message_actuation_SubcontrollerServoTargets_fields, &targets);
+                nanopb_decoding_err =
+                    expect_handshake
+                        ? pb_decode(&input_stream, message_platform_NUSenseHandshake_fields, &handshake_msg)
+                        : pb_decode(&input_stream, message_actuation_SubcontrollerServoTargets_fields, &targets);
 
                 if (nanopb_decoding_err) {
                     error_message = std::string(input_stream.errmsg);

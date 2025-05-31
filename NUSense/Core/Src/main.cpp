@@ -81,7 +81,7 @@ int main(void) {
 
 #ifdef RUN_MAIN
     nusense::NUSenseIO nusenseIO;
-    
+
     // Wait for the initial handshake message from NUC
     while (!nusenseIO.handshake_received()) {
     }
@@ -94,7 +94,7 @@ int main(void) {
     // Pressing reset (red button) would mean that the NUC's binary would have to be rerun again in order to set
     // the power to the motors
     HAL_GPIO_WritePin(DXL_PWR_EN_GPIO_Port, DXL_PWR_EN_Pin, GPIO_PIN_SET);
-    
+
     // Delay for a bit to give the motor time to boot up. Without this delay, I found that the
     // motor does not respond at all. From some basic testing, I think that it is because the motor
     // only boots up until the DXL power is switched on from the DXL_POWER_EN pin. However, it may
