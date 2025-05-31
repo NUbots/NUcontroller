@@ -55,6 +55,9 @@ namespace nusense {
         ///         to serialise and sent to the NUC
         message_platform_NUSense nusense_msg = message_platform_NUSense_init_zero;
 
+        /// @brief The nanopb generated struct to contain the handshake message
+        message_platform_NUSenseHandshake handshake_msg = message_platform_NUSenseHandshake_init_zero;
+
         /// @brief   The IMU instance
         IMU imu{};
 
@@ -133,6 +136,10 @@ namespace nusense {
         /// @brief   Sends a serialised message_platform_nusense to the nuc via usb.
         /// @return  Whether the message was sent successfully.
         bool nusense_to_nuc();
+
+        /// @brief   Expects to receive a handshake message from the NUC
+        /// @return  Whether the handshake process succeeded
+        bool handshake_received();
     };
 
 }  // namespace nusense

@@ -20,6 +20,7 @@
 #ifndef NUSENSE_SERVOID_HPP
 #define NUSENSE_SERVOID_HPP
 
+#include <cstdint>
 #include <set>
 #include <string>
 
