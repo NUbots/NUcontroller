@@ -14,18 +14,32 @@ namespace nusense {
         // We have to do it this way because nanopb will not encode the submessage field if has_msg is set to false
         // Invert the axes since the PCB is upside down.
         nusense_msg.imu.has_accel = true;
-        nusense_msg.imu.accel.x   = converted_data.accelerometer.x;
+        nusense_msg.imu.accel.x   = -converted_data.accelerometer.z;
         nusense_msg.imu.accel.y   = -converted_data.accelerometer.y;
-        nusense_msg.imu.accel.z   = -converted_data.accelerometer.z;
+        nusense_msg.imu.accel.z   = -converted_data.accelerometer.x;
 
         // Invert the axes since the PCB is upside down.
         nusense_msg.imu.has_gyro = true;
-        nusense_msg.imu.gyro.x   = converted_data.gyroscope.x;
+        nusense_msg.imu.gyro.x   = -converted_data.gyroscope.z;
         nusense_msg.imu.gyro.y   = -converted_data.gyroscope.y;
-        nusense_msg.imu.gyro.z   = -converted_data.gyroscope.z;
+        nusense_msg.imu.gyro.z   = -converted_data.gyroscope.x;
 
         nusense_msg.imu.temperature = converted_data.temperature;
         nusense_msg.has_imu         = true;
+
+        // Poll the buttons and include their states.
+        nusense_msg.buttons.left   = mode_button.filter();
+        nusense_msg.buttons.middle = start_button.filter();
+
+        if (nusense_msg.buttons.left) {
+            tx_led.pulse(1, false, device::Pulser::LOW);
+        }
+
+        if (nusense_msg.buttons.middle) {
+            rx_led.pulse(1, false, device::Pulser::LOW);
+        }
+
+        nusense_msg.has_buttons = true;
 
         // Fill servo entries using the data in servo_states
         nusense_msg.servo_map_count = NUMBER_OF_DEVICES;

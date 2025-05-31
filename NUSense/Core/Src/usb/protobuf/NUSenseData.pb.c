@@ -18,22 +18,10 @@ PB_BIND(message_platform_IMU, message_platform_IMU, AUTO)
 PB_BIND(message_platform_IMU_fvec3, message_platform_IMU_fvec3, AUTO)
 
 
+PB_BIND(message_platform_Buttons, message_platform_Buttons, AUTO)
+
+
 PB_BIND(message_platform_NUSense, message_platform_NUSense, 2)
 
 
 PB_BIND(message_platform_NUSense_ServoMapEntry, message_platform_NUSense_ServoMapEntry, AUTO)
-
-
-PB_BIND(message_platform_ServoConfiguration, message_platform_ServoConfiguration, AUTO)
-
-
-PB_BIND(message_platform_NUSenseHandshake, message_platform_NUSenseHandshake, 2)
-
-
-#ifndef PB_CONVERT_DOUBLE_FLOAT
-/* On some platforms (such as AVR), double is really float.
- * To be able to encode/decode double on these platforms, you need.
- * to define PB_CONVERT_DOUBLE_FLOAT in pb.h or compiler command line.
- */
-PB_STATIC_ASSERT(sizeof(double) == 8, DOUBLE_MUST_BE_8_BYTES)
-#endif
