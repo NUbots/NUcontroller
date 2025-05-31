@@ -22,6 +22,7 @@
 
 #include <set>
 #include <string>
+#include <cstdint>
 
 namespace nusense {
 

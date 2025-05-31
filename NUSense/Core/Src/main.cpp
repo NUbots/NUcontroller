@@ -83,7 +83,12 @@ int main(void) {
     nusense::NUSenseIO nusenseIO;
     
     // Wait for the initial handshake message from NUC
-    while (!nusenseIO.handshake_received()) {}
+    while (!nusenseIO.handshake_received()) {
+    }
+    // Buzz after the handshake has been received
+    HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_SET);
+    HAL_Delay(500);
+    HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_RESET);
 
     // Once NUSense has acknowledged the handshake message, the GPIO for Dynamixel power can now be set
     // Pressing reset (red button) would mean that the NUC's binary would have to be rerun again in order to set

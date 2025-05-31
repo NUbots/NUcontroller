@@ -3,8 +3,8 @@
 
 namespace nusense {
     bool NUSenseIO::handshake_received() {
-        bool expect_handshake = true;
-        if (nuc.handle_incoming(expect_handshake)) {
+        bool hs_rx = false;
+        if (nuc.handle_incoming(true)) {
             if (nuc.get_curr_msg_hash() == utility::message::HANDSHAKE_HASH) {
                 // Send reply to NUSense
                 strcpy(handshake_msg.msg, "Hello NUC!");
@@ -53,11 +53,11 @@ namespace nusense {
                 if (CDC_Transmit_HS(nbs.data(), nbs.size()) != USBD_OK) {
                     // Going into this block means that the usb failed to transmit our data
                     usb_tx_err = true;
-                    return false;
                 }
-
-                return true;
+                hs_rx = true;
             }
         }
+
+        return hs_rx;
     }
 }  // namespace nusense

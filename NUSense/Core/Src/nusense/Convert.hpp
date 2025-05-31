@@ -3,6 +3,7 @@
 
 #include <array>
 #include <stdexcept>
+#include <cstdint>
 
 namespace nusense {
 
