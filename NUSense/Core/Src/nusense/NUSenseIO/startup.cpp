@@ -3,6 +3,16 @@
 namespace nusense {
 
     void NUSenseIO::startup() {
+
+        /*
+            ~~~ ~~~ ~~~ Discovery ~~~ ~~~ ~~~
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            Here, the servos are polled on each chain so that the firmware 
+            knows on which chain a particular ID is.
+        */
+
+        chain_manager.discover();
+
         /*
             ~~~ ~~~ ~~~ Basic Set-up ~~~ ~~~ ~~~
             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
