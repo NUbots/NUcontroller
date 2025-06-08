@@ -5,7 +5,11 @@ namespace nusense {
     bool NUSenseIO::handshake_received() {
         bool hs_rx = false;
         if (nuc.handle_incoming(true)) {
-            if (nuc.get_curr_msg_hash() == utility::message::HANDSHAKE_HASH) {
+            if (nuc.get_curr_msg_hash() == utility::message::SUBCONTROLLER_SERVO_TARGETS_HASH) {
+
+                message_actuation_SubcontrollerServoTargets* new_targets = nuc.get_targets();
+                message_actuation_SubcontrollerServoTarget* new_target = &(new_targets->targets[0]);
+
                 // Send reply to NUSense
                 strcpy(handshake_msg.msg, "Hello NUC!");
 
@@ -53,12 +57,14 @@ namespace nusense {
                            std::begin(encoding_payload),
                            std::begin(encoding_payload) + output_buffer.bytes_written);
 
-                // Attempt to transmit data then handle it accordingly if it fails
-                if (CDC_Transmit_HS(nbs.data(), nbs.size()) != USBD_OK) {
-                    // Going into this block means that the usb failed to transmit our data
-                    usb_tx_err = true;
+                // // Attempt to transmit data then handle it accordingly if it fails
+                // if (CDC_Transmit_HS(nbs.data(), nbs.size()) != USBD_OK) {
+                //     // Going into this block means that the usb failed to transmit our data
+                //     usb_tx_err = true;
+                // }
+                if (new_target->id == 500) {
+                    hs_rx = true;
                 }
-                hs_rx = true;
             }
         }
 
