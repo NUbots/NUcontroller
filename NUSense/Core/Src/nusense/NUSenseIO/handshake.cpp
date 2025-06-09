@@ -6,6 +6,13 @@ namespace nusense {
         bool hs_rx = false;
         if (nuc.handle_incoming(true)) {
             if (nuc.get_curr_msg_hash() == utility::message::HANDSHAKE_HASH) {
+                
+                // If the handshake type is not INIT (0) then the NUC is trying to reconnect when we are still waiting for an init handshake
+                // This means that the red button was pressed NUSense was reset.
+                if (handshake_msg.type != 0) {
+                    return false;
+                }
+
                 // Send reply to NUSense
                 strcpy(handshake_msg.msg, "Hello NUC!");
 

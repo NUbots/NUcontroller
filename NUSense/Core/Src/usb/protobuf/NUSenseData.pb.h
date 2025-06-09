@@ -118,7 +118,11 @@ typedef struct _message_platform_ServoConfiguration {
 } message_platform_ServoConfiguration;
 
 typedef struct _message_platform_NUSenseHandshake {
+    /* / The message to be sent to the NUSense */
     char msg[21];
+    /* / The type of the message. 0 for init and 1 for during_service */
+    uint32_t type;
+    /* / The servo configurations to be sent to the NUSense */
     pb_size_t servo_configs_count;
     message_platform_ServoConfiguration servo_configs[20];
 } message_platform_NUSenseHandshake;
@@ -137,7 +141,7 @@ extern "C" {
 #define message_platform_NUSense_init_default    {0, {message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default}, false, message_platform_IMU_init_default, false, message_platform_Buttons_init_default}
 #define message_platform_NUSense_ServoMapEntry_init_default {0, false, message_platform_Servo_init_default}
 #define message_platform_ServoConfiguration_init_default {0, 0}
-#define message_platform_NUSenseHandshake_init_default {"", 0, {message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default}}
+#define message_platform_NUSenseHandshake_init_default {"", 0, 0, {message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default}}
 #define message_platform_Servo_init_zero         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, message_platform_Servo_PacketCounts_init_zero}
 #define message_platform_Servo_PacketCounts_init_zero {0, 0, 0, 0}
 #define message_platform_IMU_init_zero           {false, message_platform_IMU_fvec3_init_zero, false, message_platform_IMU_fvec3_init_zero, 0}
@@ -146,7 +150,7 @@ extern "C" {
 #define message_platform_NUSense_init_zero       {0, {message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero}, false, message_platform_IMU_init_zero, false, message_platform_Buttons_init_zero}
 #define message_platform_NUSense_ServoMapEntry_init_zero {0, false, message_platform_Servo_init_zero}
 #define message_platform_ServoConfiguration_init_zero {0, 0}
-#define message_platform_NUSenseHandshake_init_zero {"", 0, {message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero}}
+#define message_platform_NUSenseHandshake_init_zero {"", 0, 0, {message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define message_platform_Servo_PacketCounts_total_tag 1
@@ -183,7 +187,8 @@ extern "C" {
 #define message_platform_ServoConfiguration_direction_tag 1
 #define message_platform_ServoConfiguration_offset_tag 2
 #define message_platform_NUSenseHandshake_msg_tag 1
-#define message_platform_NUSenseHandshake_servo_configs_tag 2
+#define message_platform_NUSenseHandshake_type_tag 2
+#define message_platform_NUSenseHandshake_servo_configs_tag 3
 
 /* Struct field encoding specification for nanopb */
 #define message_platform_Servo_FIELDLIST(X, a) \
@@ -260,7 +265,8 @@ X(a, STATIC,   SINGULAR, DOUBLE,   offset,            2)
 
 #define message_platform_NUSenseHandshake_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, STRING,   msg,               1) \
-X(a, STATIC,   REPEATED, MESSAGE,  servo_configs,     2)
+X(a, STATIC,   SINGULAR, UINT32,   type,              2) \
+X(a, STATIC,   REPEATED, MESSAGE,  servo_configs,     3)
 #define message_platform_NUSenseHandshake_CALLBACK NULL
 #define message_platform_NUSenseHandshake_DEFAULT NULL
 #define message_platform_NUSenseHandshake_servo_configs_MSGTYPE message_platform_ServoConfiguration
@@ -291,7 +297,7 @@ extern const pb_msgdesc_t message_platform_NUSenseHandshake_msg;
 #define message_platform_Buttons_size            4
 #define message_platform_IMU_fvec3_size          15
 #define message_platform_IMU_size                40
-#define message_platform_NUSenseHandshake_size   462
+#define message_platform_NUSenseHandshake_size   468
 #define message_platform_NUSense_ServoMapEntry_size 98
 #define message_platform_NUSense_size            2048
 #define message_platform_ServoConfiguration_size 20
