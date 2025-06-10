@@ -9,7 +9,7 @@ namespace nusense {
                 
                 // If the handshake type is not INIT (0) then the NUC is trying to reconnect when we are still waiting for an init handshake
                 // This means that the red button was pressed NUSense was reset.
-                if (handshake_msg.type != 0) {
+                if (nuc.get_handshake_msg()->type != false) {
                     return false;
                 }
 
