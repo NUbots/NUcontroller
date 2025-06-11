@@ -228,9 +228,34 @@ namespace nusense {
      * @brief   get new data, convert it, return it, donezo
      */
     IMU::ConvertedData IMU::get_new_converted_data(void) {
+        // Store old data locally.
+        ConvertedData old_converted_data = converted_data;
+        ConvertedData old_delta = delta;
+
         // get and convert new data
         get_new_raw_data();
         convert_raw_data(&raw_data, &converted_data);
+
+        // Work out the delta.
+        delta.accelerometer.x = converted_data.accelerometer.x - old_converted_data.accelerometer.x;
+        delta.accelerometer.y = converted_data.accelerometer.y - old_converted_data.accelerometer.y;
+        delta.accelerometer.z = converted_data.accelerometer.z - old_converted_data.accelerometer.z;
+        delta.gyroscope.x = converted_data.gyroscope.x - old_converted_data.gyroscope.x;
+        delta.gyroscope.y = converted_data.gyroscope.y - old_converted_data.gyroscope.y;
+        delta.gyroscope.z = converted_data.gyroscope.z - old_converted_data.gyroscope.z;
+
+        // If the delta is much larger than the previous delta, then get new data from the IMU.
+        if ((std::abs(delta.accelerometer.x - delta.accelerometer.x) >= 8) 
+            || (std::abs(delta.accelerometer.y - delta.accelerometer.y) >= 8) 
+            || (std::abs(delta.accelerometer.z - delta.accelerometer.z) >= 8) 
+            || (std::abs(delta.gyroscope.x - delta.gyroscope.x) >= 4) 
+            || (std::abs(delta.gyroscope.x - delta.gyroscope.y) >= 4)  
+            || (std::abs(delta.gyroscope.x - delta.gyroscope.z) >= 4) 
+        ) {
+            get_new_raw_data();
+            convert_raw_data(&raw_data, &converted_data);
+        }
+
         // donezo
         return converted_data;
     };
