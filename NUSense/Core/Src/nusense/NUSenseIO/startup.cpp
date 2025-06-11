@@ -7,7 +7,7 @@ namespace nusense {
         /*
             ~~~ ~~~ ~~~ Discovery ~~~ ~~~ ~~~
             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            Here, the servos are polled on each chain so that the firmware 
+            Here, the servos are polled on each chain so that the firmware
             knows on which chain a particular ID is.
         */
 
