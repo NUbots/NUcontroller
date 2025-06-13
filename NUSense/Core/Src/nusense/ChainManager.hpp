@@ -14,7 +14,7 @@ namespace nusense {
     public:
         /// @brief Constructs a chain manager for N chains.
         /// @param chains: An array of chains to manage.
-        ChainManager(std::array<dynamixel::Chain, N> chain_array) : chains(chain_array) {};
+        ChainManager(std::array<dynamixel::Chain, N> chain_array) : chains(chain_array){};
 
         /// @brief Destructor for the chain manager.
         virtual ~ChainManager(){};

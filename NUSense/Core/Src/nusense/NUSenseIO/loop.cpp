@@ -153,7 +153,7 @@ namespace nusense {
             }
             // If we get a handshake message from the NUC while NUSense is looping, then we have to send the NUC an ACK
             else if (nuc.get_curr_msg_hash() == utility::message::HANDSHAKE_HASH) {
-                
+
                 // Send reply to NUSense
                 strcpy(handshake_msg.msg, "NUSense ack rec req");
 
