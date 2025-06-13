@@ -12,9 +12,20 @@ namespace nusense {
     template <uint8_t N>
     class ChainManager {
     public:
-        /// @brief Constructs a chain manager for N chains, and starts device discovery on each chain.
+        /// @brief Constructs a chain manager for N chains.
         /// @param chains: An array of chains to manage.
-        ChainManager(std::array<dynamixel::Chain, N> chain_array) : chains(chain_array) {
+        ChainManager(std::array<dynamixel::Chain, N> chain_array) : chains(chain_array){};
+
+        /// @brief Destructor for the chain manager.
+        virtual ~ChainManager(){};
+
+        /// @brief Gets all the chains managed by the ChainManager
+        std::array<dynamixel::Chain, N>& get_chains() {
+            return chains;
+        };
+
+        /// @brief  Discovers which servos are online.
+        void discover() {
             // Initialise each chain
             for (auto& chain : chains) {
                 // Begin the receiving. This should be done only once if we are using the DMA as a buffer.
@@ -29,15 +40,7 @@ namespace nusense {
             for (auto& chain : chains) {
                 chain.discover_broadcast();
             };
-        };
-
-        /// @brief Destructor for the chain manager.
-        virtual ~ChainManager(){};
-
-        /// @brief Gets all the chains managed by the ChainManager
-        std::array<dynamixel::Chain, N>& get_chains() {
-            return chains;
-        };
+        }
 
         /// @todo implement duplicate ID check
 

@@ -73,6 +73,12 @@ int main(void) {
     HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_RESET);
 #endif
 
+    /// @note Setting the DXL_PWR pin should not be done here, but at the moment it is because
+    /// otherwise, the NUC will brown out when a binary is running on it and NUSense tries to set this pin.
+    /// This means that our "Emergency Stop" works by turning the DXL power on anyway at boot BUT it will not process
+    /// any servo packets until it receives a valid handshake message from the NUC. This has to be rectified as an ideal
+    /// E-Stop requires the power to be cut off and not turned on until we know we can turn it on.
+    HAL_GPIO_WritePin(DXL_PWR_EN_GPIO_Port, DXL_PWR_EN_Pin, GPIO_PIN_SET);
 
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
 
@@ -89,11 +95,6 @@ int main(void) {
     HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_SET);
     HAL_Delay(500);
     HAL_GPIO_WritePin(BUZZER_SIG_GPIO_Port, BUZZER_SIG_Pin, GPIO_PIN_RESET);
-
-    // Once NUSense has acknowledged the handshake message, the GPIO for Dynamixel power can now be set
-    // Pressing reset (red button) would mean that the NUC's binary would have to be rerun again in order to set
-    // the power to the motors
-    HAL_GPIO_WritePin(DXL_PWR_EN_GPIO_Port, DXL_PWR_EN_Pin, GPIO_PIN_SET);
 
     // Delay for a bit to give the motor time to boot up. Without this delay, I found that the
     // motor does not respond at all. From some basic testing, I think that it is because the motor

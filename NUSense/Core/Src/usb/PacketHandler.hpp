@@ -137,6 +137,12 @@ namespace usb {
             return &targets;
         }
 
+        /// @brief   Gets the handshake message of the last decoded packet.
+        /// @return  The pointer to the handshake message.
+        message_platform_NUSenseHandshake* get_handshake_msg() {
+            return &handshake_msg;
+        }
+
     private:
         /**
          * @brief Read a 64 byte message from a buffer of uint8_t[8]. Mainly used for timestamps and message hashes.
