@@ -721,6 +721,7 @@ namespace nusense {
         // structs to hold internal state of imu to read easily
         RawData raw_data;
         ConvertedData converted_data;
+        ConvertedData delta;
     };
 
     //-----------------------------------------------------------------------------
