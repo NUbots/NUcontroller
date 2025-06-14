@@ -77,7 +77,7 @@ int main(void) {
     /// otherwise, the NUC will brown out when a binary is running on it and NUSense tries to set this pin.
     /// This means that our "Emergency Stop" works by turning the DXL power on anyway at boot BUT it will not process
     /// any servo packets until it receives a valid handshake message from the NUC. This has to be rectified as an ideal
-    /// E-Stop requires the power to be cut off and not turned on until we know we can turn it on. 
+    /// E-Stop requires the power to be cut off and not turned on until we know we can turn it on.
     HAL_GPIO_WritePin(DXL_PWR_EN_GPIO_Port, DXL_PWR_EN_Pin, GPIO_PIN_SET);
 
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
