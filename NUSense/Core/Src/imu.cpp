@@ -230,30 +230,39 @@ namespace nusense {
     IMU::ConvertedData IMU::get_new_converted_data(void) {
         // Store old data locally.
         ConvertedData old_converted_data = converted_data;
-        ConvertedData old_delta = delta;
+        // Keep the previous difference.
+        ConvertedData old_difference = difference;
 
         // get and convert new data
         get_new_raw_data();
         convert_raw_data(&raw_data, &converted_data);
 
-        // Work out the delta.
-        delta.accelerometer.x = converted_data.accelerometer.x - old_converted_data.accelerometer.x;
-        delta.accelerometer.y = converted_data.accelerometer.y - old_converted_data.accelerometer.y;
-        delta.accelerometer.z = converted_data.accelerometer.z - old_converted_data.accelerometer.z;
-        delta.gyroscope.x = converted_data.gyroscope.x - old_converted_data.gyroscope.x;
-        delta.gyroscope.y = converted_data.gyroscope.y - old_converted_data.gyroscope.y;
-        delta.gyroscope.z = converted_data.gyroscope.z - old_converted_data.gyroscope.z;
+        // Work out the difference in IMU readings. This is the change in data between sampling.
+        difference.accelerometer.x = converted_data.accelerometer.x - old_converted_data.accelerometer.x;
+        difference.accelerometer.y = converted_data.accelerometer.y - old_converted_data.accelerometer.y;
+        difference.accelerometer.z = converted_data.accelerometer.z - old_converted_data.accelerometer.z;
+        difference.gyroscope.x = converted_data.gyroscope.x - old_converted_data.gyroscope.x;
+        difference.gyroscope.y = converted_data.gyroscope.y - old_converted_data.gyroscope.y;
+        difference.gyroscope.z = converted_data.gyroscope.z - old_converted_data.gyroscope.z;
 
-        // If the delta is much larger than the previous delta, then get new data from the IMU.
-        if ((std::abs(delta.accelerometer.x - delta.accelerometer.x) >= 8) 
-            || (std::abs(delta.accelerometer.y - delta.accelerometer.y) >= 8) 
-            || (std::abs(delta.accelerometer.z - delta.accelerometer.z) >= 8) 
-            || (std::abs(delta.gyroscope.x - delta.gyroscope.x) >= 4) 
-            || (std::abs(delta.gyroscope.x - delta.gyroscope.y) >= 4)  
-            || (std::abs(delta.gyroscope.x - delta.gyroscope.z) >= 4) 
+        // If the difference is much larger than the previous difference, then get new data from the IMU.
+        if ((std::abs(difference.accelerometer.x - old_difference.accelerometer.x) >= 8) 
+            || (std::abs(difference.accelerometer.y - old_difference.accelerometer.y) >= 8) 
+            || (std::abs(difference.accelerometer.z - old_difference.accelerometer.z) >= 8) 
+            || (std::abs(difference.gyroscope.x - old_difference.gyroscope.x) >= 4) 
+            || (std::abs(difference.gyroscope.x - old_difference.gyroscope.y) >= 4)  
+            || (std::abs(difference.gyroscope.x - old_difference.gyroscope.z) >= 4) 
         ) {
             get_new_raw_data();
             convert_raw_data(&raw_data, &converted_data);
+
+            // Work out the difference again.
+            difference.accelerometer.x = converted_data.accelerometer.x - old_converted_data.accelerometer.x;
+            difference.accelerometer.y = converted_data.accelerometer.y - old_converted_data.accelerometer.y;
+            difference.accelerometer.z = converted_data.accelerometer.z - old_converted_data.accelerometer.z;
+            difference.gyroscope.x = converted_data.gyroscope.x - old_converted_data.gyroscope.x;
+            difference.gyroscope.y = converted_data.gyroscope.y - old_converted_data.gyroscope.y;
+            difference.gyroscope.z = converted_data.gyroscope.z - old_converted_data.gyroscope.z;
         }
 
         // donezo
