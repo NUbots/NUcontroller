@@ -74,14 +74,14 @@ namespace nusense {
     const uint8_t BIT_7 = 0x80; /* 1 0 0 0 0 0 0 0 -> 0x80 */
     const uint8_t BLANK = 0x00;
 
-    // These thresholds determine when the IMU must be repolled because of erroneous data. Each 
-    // threshold is by how much difference is between the current step-difference and the previous 
-    // step-difference. These values were determined as roughly half the observed spikes. Tuning 
+    // These thresholds determine when the IMU must be repolled because of erroneous data. Each
+    // threshold is by how much difference is between the current step-difference and the previous
+    // step-difference. These values were determined as roughly half the observed spikes. Tuning
     // these values down may make the spikes less frequent but may mean that the IMU is polled
-    // needlessly; tuning these values up will poll the IMU less often but may make the spikes more 
+    // needlessly; tuning these values up will poll the IMU less often but may make the spikes more
     // frequent.
     constexpr float ACCELEROMETER_SPIKE_THRESHOLD = 8;
-    constexpr float GYROSCOPE_SPIKE_THRESHOLD = 4;
+    constexpr float GYROSCOPE_SPIKE_THRESHOLD     = 4;
 
     class IMU {
     public:
