@@ -228,9 +228,42 @@ namespace nusense {
      * @brief   get new data, convert it, return it, donezo
      */
     IMU::ConvertedData IMU::get_new_converted_data(void) {
+        // Store old data locally.
+        ConvertedData old_converted_data = converted_data;
+        // Keep the previous difference.
+        ConvertedData old_difference = difference;
+
         // get and convert new data
         get_new_raw_data();
         convert_raw_data(&raw_data, &converted_data);
+
+        // Work out the difference in IMU readings. This is the change in data between sampling.
+        difference.accelerometer.x = converted_data.accelerometer.x - old_converted_data.accelerometer.x;
+        difference.accelerometer.y = converted_data.accelerometer.y - old_converted_data.accelerometer.y;
+        difference.accelerometer.z = converted_data.accelerometer.z - old_converted_data.accelerometer.z;
+        difference.gyroscope.x     = converted_data.gyroscope.x - old_converted_data.gyroscope.x;
+        difference.gyroscope.y     = converted_data.gyroscope.y - old_converted_data.gyroscope.y;
+        difference.gyroscope.z     = converted_data.gyroscope.z - old_converted_data.gyroscope.z;
+
+        // If the difference is much larger than the previous difference, then get new data from the IMU.
+        if ((std::abs(difference.accelerometer.x - old_difference.accelerometer.x) >= ACCELEROMETER_SPIKE_THRESHOLD)
+            || (std::abs(difference.accelerometer.y - old_difference.accelerometer.y) >= ACCELEROMETER_SPIKE_THRESHOLD)
+            || (std::abs(difference.accelerometer.z - old_difference.accelerometer.z) >= ACCELEROMETER_SPIKE_THRESHOLD)
+            || (std::abs(difference.gyroscope.x - old_difference.gyroscope.x) >= GYROSCOPE_SPIKE_THRESHOLD)
+            || (std::abs(difference.gyroscope.x - old_difference.gyroscope.y) >= GYROSCOPE_SPIKE_THRESHOLD)
+            || (std::abs(difference.gyroscope.x - old_difference.gyroscope.z) >= GYROSCOPE_SPIKE_THRESHOLD)) {
+            get_new_raw_data();
+            convert_raw_data(&raw_data, &converted_data);
+
+            // Work out the difference again.
+            difference.accelerometer.x = converted_data.accelerometer.x - old_converted_data.accelerometer.x;
+            difference.accelerometer.y = converted_data.accelerometer.y - old_converted_data.accelerometer.y;
+            difference.accelerometer.z = converted_data.accelerometer.z - old_converted_data.accelerometer.z;
+            difference.gyroscope.x     = converted_data.gyroscope.x - old_converted_data.gyroscope.x;
+            difference.gyroscope.y     = converted_data.gyroscope.y - old_converted_data.gyroscope.y;
+            difference.gyroscope.z     = converted_data.gyroscope.z - old_converted_data.gyroscope.z;
+        }
+
         // donezo
         return converted_data;
     };
