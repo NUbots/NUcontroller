@@ -37,6 +37,7 @@ namespace nusense {
 
         if (nusense_msg.buttons.middle) {
             rx_led.pulse(1, false, device::Pulser::LOW);
+            buzzer.pulse(1, false, device::Pulser::LOW);
         }
 
         nusense_msg.has_buttons = true;
