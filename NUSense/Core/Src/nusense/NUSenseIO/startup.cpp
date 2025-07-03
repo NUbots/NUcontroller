@@ -1,5 +1,4 @@
 #include "../NUSenseIO.hpp"
-
 namespace nusense {
 
     void NUSenseIO::startup() {
@@ -20,6 +19,43 @@ namespace nusense {
             to a write-instruction (unlike the OpenCR set-up), and to have time-
             based profile-velocity control.
         */
+
+        // Gather the IDs that NUSense can find
+        std::vector<nusense::NUgus::ID> ID_state_checker;
+        for (const auto& chain : chain_manager.get_chains()) {
+            for (const auto& id : chain.get_servos()) {
+                // Determine if the current ID is a duplicate
+                if (std::find(ID_state_checker.begin(), ID_state_checker.end(), id) != ID_state_checker.end()) {
+                    servo_id_states_msg.servo_id_states[static_cast<uint8_t>(id)].id = static_cast<uint32_t>(id);
+                    servo_id_states_msg.servo_id_states[static_cast<uint8_t>(id)].state =
+                        message_platform_ServoIDStates_IDState::message_platform_ServoIDStates_IDState_DUPLICATE;
+                }
+                ID_state_checker.push_back(id);
+            }
+        }
+
+        // Check which IDs are missing
+        // Add 1 to the count since NO_ID has ID 0
+        servo_id_states_msg.servo_id_states_count++;
+        for (const auto& id : nugus.servo_ids()) {
+            if (std::find(ID_state_checker.begin(), ID_state_checker.end(), static_cast<nusense::NUgus::ID>(id))
+                == ID_state_checker.end()) {
+                servo_id_states_msg.servo_id_states[static_cast<uint8_t>(id)].id = static_cast<uint32_t>(id);
+                servo_id_states_msg.servo_id_states[static_cast<uint8_t>(id)].state =
+                    message_platform_ServoIDStates_IDState::message_platform_ServoIDStates_IDState_MISSING;
+            }
+            else {
+                servo_id_states_msg.servo_id_states[static_cast<uint8_t>(id)].id = static_cast<uint32_t>(id);
+                servo_id_states_msg.servo_id_states[static_cast<uint8_t>(id)].state =
+                    message_platform_ServoIDStates_IDState::message_platform_ServoIDStates_IDState_PRESENT;
+            }
+            servo_id_states_msg.servo_id_states_count++;
+        }
+
+        // Send the servo ID states to the NUC
+        encode_and_transmit_nbs(servo_id_states_msg,
+                                utility::message::SERVO_ID_STATES_HASH,
+                                message_platform_ServoIDStates_fields);
 
         // For each port, write for all servos the return-delay-time to be 0 μs.
         for (auto& chain : chain_manager.get_chains()) {
