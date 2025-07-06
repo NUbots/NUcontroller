@@ -163,13 +163,6 @@ namespace nusense {
         uint8_t present_temperature;
     } __attribute__((packed));
 
-    /// @brief  The data to write to the OpenCR device
-    struct OpenCRWriteData {
-        uint8_t led;
-        uint16_t rgb_led;
-        uint16_t buzzer;
-    } __attribute__((packed));
-
     /// @brief  Document addresses used for read/writing to dynamixel devices, especially where
     ///         indirect addressing is used.
     enum class AddressBook : uint16_t {

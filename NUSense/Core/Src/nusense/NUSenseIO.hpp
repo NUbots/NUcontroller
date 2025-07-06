@@ -58,7 +58,13 @@ namespace nusense {
         /// @brief The nanopb generated struct to contain the handshake message
         message_platform_NUSenseHandshake handshake_msg = message_platform_NUSenseHandshake_init_zero;
 
-        /// @brief   The IMU instance
+        /// @brief The nanopb generated struct which contains the IDs found by discovery
+        message_platform_ServoIDStates servo_id_states_msg = message_platform_ServoIDStates_init_zero;
+
+        /// @brief NUgus object to get access to a list of the servos
+        NUgus nugus;
+
+        /// @brief  The IMU instance
         IMU imu{};
 
         /// @brief  Nanopb will put the serialised bytes in this container. For some reason, the encode
@@ -125,6 +131,17 @@ namespace nusense {
         /// @param   chain the chain of servos to send the read-instruction to.
         void send_servo_read_request(dynamixel::Chain& chain);
 
+        /// @brief   Serialise the given data into the nbs format and send it to the NUC.
+        /// @tparam  MessageType the type of the message to serialise.
+        /// @param   message_object The message object to serialise.
+        /// @param   message_hash The hash of the message to serialise.
+        /// @param   message_fields The fields of the message to serialise.
+        /// @return  Whether the message was serialised and sent successfully.
+        template <typename MessageType>
+        bool encode_and_transmit_nbs(const MessageType& message_object,
+                                     const uint64_t& message_hash,
+                                     const pb_msgdesc_t* message_fields);
+
         /// @brief   Sends a write-instruction for the first write-bank of registers.
         /// @param   chain the chain of servos to send the write-instruction to.
         void send_servo_write_1_request(dynamixel::Chain& chain);
@@ -141,6 +158,59 @@ namespace nusense {
         /// @return  Whether the handshake process succeeded
         bool handshake_received();
     };
+
+    template <typename MessageType>
+    bool NUSenseIO::encode_and_transmit_nbs(const MessageType& message_object,
+                                            const uint64_t& message_hash,
+                                            const pb_msgdesc_t* message_fields) {
+        // Once everything else is filled we send it to the NUC. Just overwrite the bytes within encoding_payload
+        // Allow max size for the output buffer so it doesn't throw an error if there's not enough space
+        // If one wishes to add messages to the protobuf message, one must first calculate the maximum bytes
+        // within that message and then add enough bytes to make sure that nanopb doesn't cry about the output stream
+        // being too small If the MAX_ENCODE_SIZE is inadequately defined, one can get a corrupted message and nanopb
+        // errors.
+        pb_ostream_t output_buffer = pb_ostream_from_buffer(&encoding_payload[0], MAX_ENCODE_SIZE);
+
+        // TODO (NUSense people) Handle encoding errors properly using this member somehow
+        if (!pb_encode(&output_buffer, message_fields, &message_object)) {
+            return false;
+        }
+
+        // Happiness, the encoding succeeded
+        std::vector<uint8_t> nbs({0xE2, 0x98, 0xA2});
+
+        // TODO (JohanneMontano) Implement timestamp field correctly, std::chrono is behaving weird and it needs to be
+        // investigated
+        uint64_t ts_u = 0;
+        uint32_t size = uint32_t(output_buffer.bytes_written + sizeof(message_hash) + sizeof(ts_u));
+
+        // Encode size to uint8_t's
+        for (size_t i = 0; i < sizeof(size); ++i) {
+            nbs.push_back(uint8_t((size >> (i * 8)) & 0xFF));
+        }
+
+        // Encode timestamp
+        for (size_t i = 0; i < sizeof(ts_u); ++i) {
+            nbs.push_back(uint8_t((ts_u >> (i * 8)) & 0xFF));
+        }
+
+        // Encode nusense hash
+        for (size_t i = 0; i < sizeof(message_hash); ++i) {
+            nbs.push_back(uint8_t((message_hash >> (i * 8)) & 0xFF));
+        }
+
+        // Add the protobuf bytes into the nbs vector
+        nbs.insert(nbs.end(), std::begin(encoding_payload), std::begin(encoding_payload) + output_buffer.bytes_written);
+
+        // Attempt to transmit data then handle it accordingly if it fails
+        if (CDC_Transmit_HS(nbs.data(), nbs.size()) != USBD_OK) {
+            // Going into this block means that the usb failed to transmit our data
+            usb_tx_err = true;
+            return false;
+        }
+
+        return true;
+    }
 
 }  // namespace nusense
 
