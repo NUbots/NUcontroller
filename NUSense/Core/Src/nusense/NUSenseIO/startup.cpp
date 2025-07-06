@@ -30,6 +30,12 @@ namespace nusense {
                     servo_id_states_msg.servo_id_states[static_cast<uint8_t>(id)].state =
                         message_platform_ServoIDStates_IDState::message_platform_ServoIDStates_IDState_DUPLICATE;
                 }
+                // If the ID is not a duplicate, add it to the checker
+                else {
+                    servo_id_states_msg.servo_id_states[static_cast<uint8_t>(id)].id = static_cast<uint32_t>(id);
+                    servo_id_states_msg.servo_id_states[static_cast<uint8_t>(id)].state =
+                        message_platform_ServoIDStates_IDState::message_platform_ServoIDStates_IDState_PRESENT;
+                }
                 ID_state_checker.push_back(id);
             }
         }
@@ -43,11 +49,6 @@ namespace nusense {
                 servo_id_states_msg.servo_id_states[static_cast<uint8_t>(id)].id = static_cast<uint32_t>(id);
                 servo_id_states_msg.servo_id_states[static_cast<uint8_t>(id)].state =
                     message_platform_ServoIDStates_IDState::message_platform_ServoIDStates_IDState_MISSING;
-            }
-            else {
-                servo_id_states_msg.servo_id_states[static_cast<uint8_t>(id)].id = static_cast<uint32_t>(id);
-                servo_id_states_msg.servo_id_states[static_cast<uint8_t>(id)].state =
-                    message_platform_ServoIDStates_IDState::message_platform_ServoIDStates_IDState_PRESENT;
             }
             servo_id_states_msg.servo_id_states_count++;
         }
