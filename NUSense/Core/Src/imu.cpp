@@ -258,9 +258,23 @@ namespace nusense {
         variance.gyroscope.y       = pow(filtered_data.gyroscope.y - converted_data.gyroscope.y, 2);
         variance.gyroscope.z       = pow(filtered_data.gyroscope.z - converted_data.gyroscope.z, 2);
 
-        if ((variance.accelerometer.x > ACCELEROMETER_THRESHOLD) || (variance.accelerometer.y > ACCELEROMETER_THRESHOLD)
-            || (variance.accelerometer.z > ACCELEROMETER_THRESHOLD) || (variance.gyroscope.x > GYROSCOPE_THRESHOLD)
-            || (variance.gyroscope.y > GYROSCOPE_THRESHOLD) || (variance.gyroscope.z > GYROSCOPE_THRESHOLD)) {
+        ConvertedData filtered_data;
+        filtered_variance.accelerometer.x =
+            error_filter.alpha * variance.accelerometer.x + error_filter.beta * old_variance.accelerometer.x;
+        filtered_variance.accelerometer.y =
+            error_filter.alpha * variance.accelerometer.y + error_filter.beta * old_variance.accelerometer.y;
+        filtered_variance.accelerometer.z =
+            error_filter.alpha * variance.accelerometer.z + error_filter.beta * old_variance.accelerometer.z;
+        filtered_variance.gyroscope.x =
+            error_filter.alpha * variance.gyroscope.x + error_filter.beta * old_variance.gyroscope.x;
+        filtered_variance.gyroscope.y =
+            error_filter.alpha * variance.gyroscope.y + error_filter.beta * old_variance.gyroscope.y;
+        filtered_variance.gyroscope.z =
+            error_filter.alpha * variance.gyroscope.z + error_filter.beta * old_converted_data.gyroscope.z;
+
+        if ((filtered_variance.accelerometer.x > ACCELEROMETER_THRESHOLD) || (filtered_variance.accelerometer.y > ACCELEROMETER_THRESHOLD)
+            || (filtered_variance.accelerometer.z > ACCELEROMETER_THRESHOLD) || (filtered_variance.gyroscope.x > GYROSCOPE_THRESHOLD)
+            || (filtered_variance.gyroscope.y > GYROSCOPE_THRESHOLD) || (filtered_variance.gyroscope.z > GYROSCOPE_THRESHOLD)) {
             get_new_raw_data();
             convert_raw_data(&raw_data, &converted_data);
         }
