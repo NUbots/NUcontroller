@@ -153,3 +153,9 @@ int _execve(char *name, char **argv, char **env)
     errno = ENOMEM;
     return -1;
 }
+
+int _getentropy(void* buffer, size_t length)
+{
+    errno = ENOSYS;
+    return -1;
+}
