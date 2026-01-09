@@ -88,6 +88,11 @@ int main(void) {
 #ifdef RUN_MAIN
     nusense::NUSenseIO nusenseIO;
 
+    bool posted_successfully = nusenseIO.post();
+    if (!posted_successfully) {
+        return -1;
+    }
+
     // Wait for the initial handshake message from NUC
     while (!nusenseIO.handshake_received()) {
     }

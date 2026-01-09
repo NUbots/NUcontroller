@@ -99,6 +99,23 @@ namespace nusense {
     }
 
     /*
+     * @brief   performs post-startup tests (POSTs)
+     * @note    reads WHOAMI 1-byte register, asserts equal to 0x98
+     * @param   none
+     * @return  true if everything ok, false if not
+     */
+    bool IMU::post() {
+        uint8_t who_am_i = 0;
+        read_reg(Address::WHO_AM_I, &who_am_i);
+
+        if (who_am_i != IMU_DEVICE_ID) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /*
      * @brief   writes a byte to a register.
      * @note    uses polling, should only be used for beginning.
      * @param   the register's address,
