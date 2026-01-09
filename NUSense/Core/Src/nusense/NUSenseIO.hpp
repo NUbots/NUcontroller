@@ -114,6 +114,9 @@ namespace nusense {
                              dynamixel::Chain(ports[5], 5)})
             , imu() {}
 
+        /// @brief   Does basic sanity checks to ensure subsystems exist and communication is working
+        bool post();
+
         /// @brief   Begins the ports and sets the servos up with indirect addresses, etc.
         /// @note    Is loosely inspired by startup() in NUbots/NUbots OpenCR HardwareIO.
         void startup();
