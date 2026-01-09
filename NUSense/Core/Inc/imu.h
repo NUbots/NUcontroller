@@ -109,6 +109,7 @@ namespace nusense {
         /* Common Defines */
         const uint8_t IMU_READ  = 0x80;
         const uint8_t IMU_WRITE = 0x00;
+        const uint8_t IMU_DEVICE_ID = 0x98;
         enum class Address : uint8_t {
             /* Command Defines */ /* ADR Register Function */
             // Self Test
@@ -661,6 +662,14 @@ namespace nusense {
          * @return  none
          */
         void init();
+
+        /*
+         * @brief   performs post-startup tests (POSTs)
+         * @note    reads WHOAMI 1-byte register, asserts equal to 0x98
+         * @param   none
+         * @return  true if everything ok, false if not
+         */
+        bool post();
 
         /*
          * @brief   writes a byte to a register.
