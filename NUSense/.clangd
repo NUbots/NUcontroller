@@ -2,4 +2,11 @@ CompileFlags:
   Compiler: arm-none-eabi-g++
 Diagnostics:
   Includes:
-    IgnoreHeader: Core/Inc/main.h
+    IgnoreHeader: [
+      Core/Inc/main.h,
+      Drivers/.*]
+---
+If:
+  PathMatch: Drivers/.*
+Diagnostics:
+  Suppress: '*'
