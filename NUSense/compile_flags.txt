@@ -1,3 +1,6 @@
+-DDEBUG
+-DSTM32H753xx
+
 -ICore/Inc
 -IUSB_DEVICE/App
 -IUSB_DEVICE/Target
