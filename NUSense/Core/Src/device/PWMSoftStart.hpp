@@ -17,7 +17,7 @@ namespace device {
     	 * @brief constructs PWMSoft.
     	 */
     	PWMSoftStart(){
-    		Initialise();
+    		initialise();
     	}
     	/**
     	 * @brief   Destructs the PWMSoft.
