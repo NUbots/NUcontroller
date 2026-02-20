@@ -1,11 +1,2 @@
 Diagnostics:
   UnusedIncludes: None
-  Includes:
-    IgnoreHeader:
-      - Core/Inc/main.h,
-      - Drivers/.*
----
-If:
-  PathMatch: Drivers/.*
-Diagnostics:
-  Suppress: '*'
