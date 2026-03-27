@@ -24,6 +24,8 @@
 #include "tim.h"
 #include "usart.h"
 #include "usb_device.h"
+#include "fan_controller.h"
+#include "i2c.h"
 
 /* Private includes ----------------------------------------------------------*/
 #include "nusense/NUSenseIO.hpp"
@@ -65,6 +67,10 @@ int main(void) {
     MX_USART6_UART_Init();
     MX_TIM1_Init();
     MX_TIM4_Init();
+    MX_I2C3_Init();
+
+    /* Initialize fan controller after I2C3 is ready */
+    fan_controller_init();
 
 #ifdef FIRST_BUZZ
     // Confirm that the programme is running.
