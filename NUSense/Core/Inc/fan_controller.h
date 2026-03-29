@@ -1,6 +1,10 @@
 #ifndef FAN_CONTROLLER_H
 #define FAN_CONTROLLER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "main.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -24,5 +28,9 @@ void set_fan_mode(bool mode);
 void set_fan_spin_up(bool enabled);
 void set_fan_manual_pwm(uint8_t pwm_value);
 void set_fan_tachometer_enabled(uint8_t tachometer, bool enabled);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // FAN_CONTROLLER_H
