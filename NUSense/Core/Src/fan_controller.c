@@ -85,7 +85,18 @@ void set_fan_manual_pwm(uint8_t pwm_value)
     write_fan_register(REG_PWMR, pwm_value);
 }
 
-/// @brief Sets up the Fan Controller with default settings: 1500Hz PWM frequency, manual mode enabled, tachometers disabled, and ~78% duty cycle.
+/// @brief reads the fan speed from the controller
+/// @param tachometer 0 for Fan 1, 1 for Fan 2
+/// @return The speed in RPM.
+uint16_t read_fan_speed(uint8_t tachometer) {
+	uint8_t fan_register = (tachometer == 0 ? REG_FAN1COUNT : REG_FAN2COUNT);
+	uint8_t msb = read_fan_register(fan_register);
+	uint8_t lsb = read_fan_register(fan_register + 1);
+	uint8_t fan_count = (msb << 8) | lsb;
+	return (60 * 100000) / (fan_count * PULSES_PER_REVOLUTION);
+}
+
+/// @brief Sets up the Fan Controller with default settings: 1500Hz PWM frequency, manual mode enabled, tachometers enabled, and full speed
 void fan_controller_init()
 {
     // set the PWM frequency to 1500Hz (0b10)
@@ -94,10 +105,10 @@ void fan_controller_init()
     // put the fan into manual mode
     set_fan_mode(true);
 
-    // disable tachometers
-    set_fan_tachometer_enabled(0, false);
-    set_fan_tachometer_enabled(1, false);
+    // enable both tachometers
+    set_fan_tachometer_enabled(0, true);
+    set_fan_tachometer_enabled(1, true);
 
     // set Direct Duty-Cycle Control Register to full blast.
-    set_fan_manual_pwm(255);
+    set_fan_manual_pwm(DEFAULT_FAN_SPEED);
 }
