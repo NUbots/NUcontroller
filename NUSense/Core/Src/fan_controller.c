@@ -92,8 +92,8 @@ uint16_t read_fan_speed(uint8_t tachometer) {
 	uint8_t fan_register = (tachometer == 0 ? REG_FAN1COUNT : REG_FAN2COUNT);
 	uint8_t msb = read_fan_register(fan_register);
 	uint8_t lsb = read_fan_register(fan_register + 1);
-	uint8_t fan_count = (msb << 8) | lsb;
-	return (60 * 100000) / (fan_count * PULSES_PER_REVOLUTION);
+	uint16_t fan_count = (msb << 8) | lsb;
+	return 60 * 100000 / fan_count / PULSES_PER_REVOLUTION;
 }
 
 /// @brief Sets up the Fan Controller with default settings: 1500Hz PWM frequency, manual mode enabled, tachometers enabled, and full speed
