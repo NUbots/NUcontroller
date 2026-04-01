@@ -10,7 +10,8 @@ extern "C" {
 #include <stdbool.h>
 
 // Fan configuration
-#define PULSES_PER_REVOLUTION 4
+#define PULSES_PER_REVOLUTION 4 // Fan tachometer pulse count that corresponds to one revolution
+#define FAN_RPM_WARNING 100 // RPM
 
 // Fan Controller I2C Address
 #define FAN_CONTROLLER_ADDRESS 0xA0
