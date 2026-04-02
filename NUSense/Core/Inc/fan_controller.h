@@ -35,6 +35,7 @@ void set_fan_mode(bool mode);
 void set_fan_spin_up(bool enabled);
 void set_fan_manual_pwm(uint8_t pwm_value);
 uint16_t read_fan_speed(uint8_t tachometer);
+bool fan_warning_state(uint8_t fan_id);
 void set_fan_tachometer_enabled(uint8_t tachometer, bool enabled);
 
 #ifdef __cplusplus

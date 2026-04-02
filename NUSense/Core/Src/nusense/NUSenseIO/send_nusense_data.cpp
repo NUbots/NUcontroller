@@ -31,7 +31,8 @@ namespace nusense {
         nusense_msg.buttons.left   = mode_button.filter();
         nusense_msg.buttons.middle = start_button.filter();
 
-        nusense_msg.
+        nusense_msg.fan_warning_states[0].id    = fan_warning_state(0) ? 1 : 0;
+        nusense_msg.fan_warning_states[1].id    = fan_warning_state(1) ? 1 : 0;
 
         if (nusense_msg.buttons.left) {
             tx_led.pulse(1, false, device::Pulser::LOW);
