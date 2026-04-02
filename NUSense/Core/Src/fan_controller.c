@@ -1,4 +1,5 @@
 #include "fan_controller.h"
+#include <stdbool.h>
 extern I2C_HandleTypeDef hi2c3;
 
 /// @brief Reads a value from a fan controller register.
@@ -18,6 +19,16 @@ uint8_t read_fan_register(uint8_t reg)
 uint8_t write_fan_register(uint8_t reg, uint8_t value)
 {
     return HAL_I2C_Mem_Write(&hi2c3, FAN_CONTROLLER_ADDRESS, reg, I2C_MEMADD_SIZE_8BIT, &value, 1, HAL_MAX_DELAY);
+}
+
+/// @brief Checks the fan warning states for the specified fan.
+/// @param fan_id The ID of the fan to check (0 for Fan 1 (J401 on NUSense), 1 for Fan 2 (J402 on NUSense)) 
+/// @return The warning state of the specified fan. Returns true if there is a warning, false if there is no warning.
+bool fan_warning_state(uint8_t fan_id) {
+    if (read_fan_speed(fan_id) <= FAN_RPM_WARNING) {
+        return true; // Warning state if fan speed is less than or equal to the defined warning threshold
+    }
+    return false;
 }
 
 /// @brief Sets the PWM frequency of the fan. The frequency is determined by bits 3 and 4 of Control Register 1.
