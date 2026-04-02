@@ -31,6 +31,8 @@ namespace nusense {
         nusense_msg.buttons.left   = mode_button.filter();
         nusense_msg.buttons.middle = start_button.filter();
 
+        nusense_msg.
+
         if (nusense_msg.buttons.left) {
             tx_led.pulse(1, false, device::Pulser::LOW);
         }

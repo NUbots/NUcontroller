@@ -16,10 +16,10 @@ typedef enum _message_platform_ServoIDStates_IDState {
     message_platform_ServoIDStates_IDState_DUPLICATE = 2
 } message_platform_ServoIDStates_IDState;
 
-enum _message_platform_FanWarningStates_IDState {
+typedef enum _message_platform_FanWarningStates_IDState {
     message_platform_FanWarningStates_IDState_NOWARNING = 0,
     message_platform_FanWarningStates_IDState_WARNING = 1
-};
+} message_platform_FanWarningStates_IDState;
 
 /* Struct definitions */
 typedef struct _message_platform_Servo_PacketCounts {
@@ -94,6 +94,11 @@ typedef struct _message_platform_NUSense_ServoMapEntry {
     message_platform_Servo value;
 } message_platform_NUSense_ServoMapEntry;
 
+typedef struct _message_platform_FanWarning {
+    uint32_t id;
+    message_platform_FanWarningStates_IDState state;
+} message_platform_FanWarning;
+
 typedef struct _message_platform_NUSense {
     /* INDEX MAPPING
   0  : r_shoulder_pitch
@@ -122,6 +127,7 @@ typedef struct _message_platform_NUSense {
     message_platform_IMU imu;
     bool has_buttons;
     message_platform_Buttons buttons;
+    message_platform_FanWarning fan_warning_states[2];
 } message_platform_NUSense;
 
 typedef struct _message_platform_ServoConfiguration {
