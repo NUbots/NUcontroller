@@ -30,9 +30,14 @@ namespace nusense {
         // Poll the buttons and include their states.
         nusense_msg.buttons.left   = mode_button.filter();
         nusense_msg.buttons.middle = start_button.filter();
+        /*
+        nusense_msg.fan_warnings.fan1 = fan_warning_state(0) ? message_platform_FanWarningStates_IDState_WARNING : message_platform_FanWarningStates_IDState_NOWARNING;
+        nusense_msg.fan_warnings.fan2 = fan_warning_state(1) ? message_platform_FanWarningStates_IDState_WARNING : message_platform_FanWarningStates_IDState_NOWARNING;
+        */
 
-        nusense_msg.fan_warning_states[0].id    = fan_warning_state(0) ? 1 : 0;
-        nusense_msg.fan_warning_states[1].id    = fan_warning_state(1) ? 1 : 0;
+        nusense_msg.fan_warnings.fan1_warning = true;
+        nusense_msg.fan_warnings.fan2_warning = true;
+        nusense_msg.has_fan_warnings          = true;
 
         if (nusense_msg.buttons.left) {
             tx_led.pulse(1, false, device::Pulser::LOW);
