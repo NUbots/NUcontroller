@@ -8,34 +8,23 @@ uint8_t read_fan_register(uint8_t reg) {
     return value;
 }
 
-uint8_t write_fan_register(uint8_t reg, uint8_t value)
-{
+uint8_t write_fan_register(uint8_t reg, uint8_t value) {
     return HAL_I2C_Mem_Write(&hi2c3, FAN_CONTROLLER_ADDRESS, reg, I2C_MEMADD_SIZE_8BIT, &value, 1, HAL_MAX_DELAY);
 }
 
 bool fan_warning_state(uint8_t fan_id) {
-
     // Warning state is true if fan speed is less than or equal to the defined warning threshold
     return read_fan_speed(fan_id) <= FAN_RPM_WARNING;
 }
 
-void set_fan_pwm_freq(uint8_t freq)
-{
+void set_fan_pwm_freq(uint8_t freq) {
     uint8_t control1 = read_fan_register(REG_CONTROL1);
     control1 &= ~(0b11 << 3);       // clear bits 3 and 4
-    // Warning state is true if fan speed is less than or equal to the defined warning threshold
-    return read_fan_speed(fan_id) <= FAN_RPM_WARNING;
-    uint8_t control2 = read_fan_register(REG_CONTROL2);
-    if (mode) {
-        control2 |= (1 << 0); // set bit 0 to enable Direct Fan Control
-    } else {
-        control2 &= ~(1 << 0); // clear bit 0 to disable Direct Fan Control
-    }
-    write_fan_register(REG_CONTROL2, control2);
+    control1 |= (freq & 0b11) << 3; // set bits 3 and 4 to the desired frequency
+    write_fan_register(REG_CONTROL1, control1);
 }
 
-void set_fan_spin_up(bool enabled)
-{
+void set_fan_spin_up(bool enabled) {
     uint8_t control2 = read_fan_register(REG_CONTROL2);
     if (enabled) {
         control2 |= (1 << 1); // set bit 1 to enable Spin-Up mode
@@ -46,8 +35,7 @@ void set_fan_spin_up(bool enabled)
     write_fan_register(REG_CONTROL2, control2);
 }
 
-void set_fan_tachometer_enabled(uint8_t tachometer, bool enabled)
-{
+void set_fan_tachometer_enabled(uint8_t tachometer, bool enabled) {
     uint8_t control3 = read_fan_register(REG_CONTROL3);
     if (enabled) {  
         control3 |= (1 << tachometer);  
