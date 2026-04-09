@@ -2,8 +2,7 @@
 #include <stdbool.h>
 extern I2C_HandleTypeDef hi2c3;
 
-uint8_t read_fan_register(uint8_t reg)
-{
+uint8_t read_fan_register(uint8_t reg) {
     uint8_t value = 0;
     HAL_I2C_Mem_Read(&hi2c3, FAN_CONTROLLER_ADDRESS, reg, I2C_MEMADD_SIZE_8BIT, &value, 1, HAL_MAX_DELAY);
     return value;
