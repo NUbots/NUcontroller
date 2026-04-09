@@ -15,22 +15,17 @@ uint8_t write_fan_register(uint8_t reg, uint8_t value)
 }
 
 bool fan_warning_state(uint8_t fan_id) {
-    if (read_fan_speed(fan_id) <= FAN_RPM_WARNING) {
-        return true; // Warning state if fan speed is less than or equal to the defined warning threshold
-    }
-    return false;
+
+    // Warning state is true if fan speed is less than or equal to the defined warning threshold
+    return read_fan_speed(fan_id) <= FAN_RPM_WARNING;
 }
 
 void set_fan_pwm_freq(uint8_t freq)
 {
     uint8_t control1 = read_fan_register(REG_CONTROL1);
     control1 &= ~(0b11 << 3);       // clear bits 3 and 4
-    control1 |= (freq & 0b11) << 3; // set bits 3 and 4 to the desired frequency
-    write_fan_register(REG_CONTROL1, control1);
-}
-
-void set_fan_mode(bool mode)
-{
+    // Warning state is true if fan speed is less than or equal to the defined warning threshold
+    return read_fan_speed(fan_id) <= FAN_RPM_WARNING;
     uint8_t control2 = read_fan_register(REG_CONTROL2);
     if (mode) {
         control2 |= (1 << 0); // set bit 0 to enable Direct Fan Control
@@ -45,7 +40,8 @@ void set_fan_spin_up(bool enabled)
     uint8_t control2 = read_fan_register(REG_CONTROL2);
     if (enabled) {
         control2 |= (1 << 1); // set bit 1 to enable Spin-Up mode
-    } else {
+    }
+    else {
         control2 &= ~(1 << 1); // clear bit 1 to disable Spin-Up mode
     }
     write_fan_register(REG_CONTROL2, control2);
@@ -54,42 +50,28 @@ void set_fan_spin_up(bool enabled)
 void set_fan_tachometer_enabled(uint8_t tachometer, bool enabled)
 {
     uint8_t control3 = read_fan_register(REG_CONTROL3);
-    if (tachometer == 0) {
-        if (enabled) {
-            control3 |= (1 << 0); // set bit 0 to enable Tachometer 1
-        } else {
-            control3 &= ~(1 << 0); // clear bit 0 to disable Tachometer 1
-        }
-    } else if (tachometer == 1) {
-        if (enabled) {
-            control3 |= (1 << 1); // set bit 1 to enable Tachometer 2
-        } else {
-            control3 &= ~(1 << 1); // clear bit 1 to disable Tachometer 2
-        }
+    if (enabled) {  
+        control3 |= (1 << tachometer);  
+    } 
+    else {  
+        control3 &= ~(1 << tachometer);  
     }
     write_fan_register(REG_CONTROL3, control3);
 }
 
-void set_fan_manual_pwm(uint8_t pwm_value)
-{
+void set_fan_manual_pwm(uint8_t pwm_value) {
     write_fan_register(REG_PWMR, pwm_value);
 }
 
 uint16_t read_fan_speed(uint8_t tachometer) {
 	uint8_t fan_register = (tachometer == 0 ? REG_FAN1COUNT : REG_FAN2COUNT);
-	uint8_t msb = read_fan_register(fan_register);
+    uint8_t msb = read_fan_register(fan_register);
 	uint8_t lsb = read_fan_register(fan_register + 1);
 	uint16_t fan_count = (msb << 8) | lsb;
 	return 60 * 100000 / fan_count / PULSES_PER_REVOLUTION;
 }
 
-/// @brief Sets up the Fan Controller with default settings: 1500Hz PWM frequency, manual mode enabled, tachometers enabled, and full speed
-void fan_controller_init()
-{
-    // set the PWM frequency to 1500Hz (0b10)
-    set_fan_pwm_freq(0b10);
-
-    // put the fan into manual mode
+void fan_controller_init() {
     set_fan_mode(true);
 
     // enable both tachometers
