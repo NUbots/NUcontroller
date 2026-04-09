@@ -54,7 +54,7 @@ int main(void) {
     // order here given that it also has another strange habit of ignoring main.cpp and creating and
     // overwriting main.c instead despite CubeIDE knowing that this is a C++ project! Oh CubeMX ...
 
-    /* Initialize all configured peripherals */
+    /* Initialise all configured peripherals */
     MX_DMA_Init();
     MX_GPIO_Init();
     MX_USB_DEVICE_Init();
