@@ -69,7 +69,7 @@ int main(void) {
     MX_TIM4_Init();
     MX_I2C3_Init();
 
-    /* Initialize fan controller after I2C3 is ready */
+    /* Initialise fan controller after I2C3 is ready */
     fan_controller_init();
 
 #ifdef FIRST_BUZZ
