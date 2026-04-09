@@ -3,12 +3,11 @@
 I2C_HandleTypeDef hi2c3;
 
 /**
- * @brief I2C3 Initialization Function
+ * @brief I2C3 Initialisation Function
  * @param None
  * @retval None
  */
-void MX_I2C3_Init(void)
-{
+void MX_I2C3_Init(void) {
     hi2c3.Instance = I2C3;
     hi2c3.Init.Timing = 0x00702681; // 400kHz I2C Fast Mode
     hi2c3.Init.OwnAddress1 = 0;
@@ -30,7 +29,7 @@ void MX_I2C3_Init(void)
 }
 
 /**
- * @brief I2C MSP Initialization
+ * @brief I2C MSP Initialisation
  * This function configures the hardware resources used by I2C3
  * @param hi2c: I2C handle pointer
  * @retval None
@@ -65,12 +64,11 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 }
 
 /**
- * @brief GPIO Initialization Function
+ * @brief GPIO Initialisation Function
  * @param None
  * @retval None
  */
-static void MX_GPIO_Init(void)
-{
+static void MX_GPIO_Init(void) {
     /* USER CODE BEGIN MX_GPIO_Init_1 */
 
     /* USER CODE END MX_GPIO_Init_1 */
@@ -85,3 +83,4 @@ static void MX_GPIO_Init(void)
 
     /* USER CODE END MX_GPIO_Init_2 */
 }
+
