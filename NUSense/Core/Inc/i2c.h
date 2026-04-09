@@ -23,3 +23,4 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c);
 #endif
 
 #endif // I2C_H
+
