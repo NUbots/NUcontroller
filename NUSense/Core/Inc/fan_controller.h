@@ -18,13 +18,13 @@ extern "C" {
 #define DEFAULT_FAN_SPEED 0xFF // full steam ahead
 
 // Registers
-#define REG_CONTROL1 0x00
-#define REG_CONTROL2 0x01
-#define REG_CONTROL3 0x02
+#define REG_CONTROL1  0x00
+#define REG_CONTROL2  0x01
+#define REG_CONTROL3  0x02
 #define REG_FAN1COUNT 0x52 // MSB of 2 byte fan controller tachometer count for fan 1
 #define REG_FAN2COUNT 0x54 // MSB of 2 byte fan controller tachometer count for fan 2
-#define REG_PWMR     0x50
-#define REG_STATUS   0x5A
+#define REG_PWMR      0x50 // Direct Duty-Cycle Control Register
+#define REG_STATUS    0x5A // Status Register
 
 // Functions
 
