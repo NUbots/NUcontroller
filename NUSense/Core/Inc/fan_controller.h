@@ -27,6 +27,11 @@ extern "C" {
 #define REG_STATUS   0x5A
 
 // Functions
+
+/// @brief Initializes the fan controller with the following settings:
+///         - Manual mode enabled (Direct Fan Control enabled)
+///         - Both tachometers enabled
+///         - Manual PWM set to full speed (0xFF)
 void fan_controller_init();
 
 /// @brief Reads a value from a fan controller register.
