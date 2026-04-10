@@ -15,8 +15,27 @@ extern "C" {
 
 extern I2C_HandleTypeDef hi2c3;
 
+/**
+ * @brief I2C3 Initialisation Function
+ * @param None
+ * @retval None
+ */
 void MX_I2C3_Init(void);
+
+/**
+ * @brief I2C MSP Initialisation
+ * This function configures the hardware resources used by I2C3
+ * @param hi2c: I2C handle pointer
+ * @retval None
+ */
 void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c);
+
+/**
+ * @brief GPIO Initialisation Function
+ * @param None
+ * @retval None
+ */
+void MX_GPIO_Init(void);
 
 #ifdef __cplusplus
 }
