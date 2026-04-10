@@ -61,10 +61,10 @@ uint16_t read_fan_speed(uint8_t tachometer) {
 void fan_controller_init() {
     set_fan_mode(true);
 
-    // enable both tachometers
+    // Enable both tachometers
     set_fan_tachometer_enabled(0, true);
     set_fan_tachometer_enabled(1, true);
 
-    // set Direct Duty-Cycle Control Register to full blast.
+    // Set Direct Duty-Cycle Control Register to full blast.
     set_fan_manual_pwm(DEFAULT_FAN_SPEED);
 }
