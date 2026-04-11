@@ -19,13 +19,13 @@
 #include "main.h"
 
 #include "dma.h"
+#include "fan_controller.h"
 #include "gpio.h"
+#include "i2c.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
 #include "usb_device.h"
-#include "fan_controller.h"
-#include "i2c.h"
 
 /* Private includes ----------------------------------------------------------*/
 #include "nusense/NUSenseIO.hpp"

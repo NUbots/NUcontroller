@@ -21,8 +21,8 @@
 #include "ChainManager.hpp"
 #include "NUgus.hpp"
 #include "ServoState.hpp"
-#include "imu.h"
 #include "fan_controller.h"
+#include "imu.h"
 
 namespace nusense {
     constexpr uint32_t MAX_ENCODE_SIZE = 1600;
