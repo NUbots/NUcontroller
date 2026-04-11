@@ -22,4 +22,4 @@ jobs:
         run: pip install platformio
 
       - name: Build firmware
-        run: pio run -e nucleo_h753zi
+        run: cd NUSense && pio run -e nucleo_h753zi
