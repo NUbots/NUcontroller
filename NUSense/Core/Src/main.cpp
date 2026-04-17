@@ -19,7 +19,9 @@
 #include "main.h"
 
 #include "dma.h"
+#include "fan_controller.h"
 #include "gpio.h"
+#include "i2c.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -52,7 +54,7 @@ int main(void) {
     // order here given that it also has another strange habit of ignoring main.cpp and creating and
     // overwriting main.c instead despite CubeIDE knowing that this is a C++ project! Oh CubeMX ...
 
-    /* Initialize all configured peripherals */
+    /* Initialise all configured peripherals */
     MX_DMA_Init();
     MX_GPIO_Init();
     MX_USB_DEVICE_Init();
@@ -65,6 +67,10 @@ int main(void) {
     MX_USART6_UART_Init();
     MX_TIM1_Init();
     MX_TIM4_Init();
+    MX_I2C3_Init();
+
+    /* Initialise fan controller after I2C3 is ready */
+    fan_controller_init();
 
 #ifdef FIRST_BUZZ
     // Confirm that the programme is running.
