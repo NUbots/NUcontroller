@@ -51,20 +51,3 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
         HAL_GPIO_Init(I2C_SCL_GPIO_Port, &GPIO_InitStruct);
     }
 }
-
-static void MX_GPIO_Init(void) {
-    /* USER CODE BEGIN MX_GPIO_Init_1 */
-
-    /* USER CODE END MX_GPIO_Init_1 */
-
-    /* GPIO Ports Clock Enable */
-    __HAL_RCC_GPIOC_CLK_ENABLE();
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-
-    /* I2C GPIO configuration is handled in HAL_I2C_MspInit */
-
-    /* USER CODE BEGIN MX_GPIO_Init_2 */
-
-    /* USER CODE END MX_GPIO_Init_2 */
-}
-
