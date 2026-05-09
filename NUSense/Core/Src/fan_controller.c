@@ -58,6 +58,17 @@ uint16_t read_fan_speed(uint8_t tachometer) {
 	return 60 * 100000 / fan_count / PULSES_PER_REVOLUTION;
 }
 
+void set_fan_mode(bool mode)
+{
+    uint8_t control2 = read_fan_register(REG_CONTROL2);
+    if (mode) {
+        control2 |= (1 << 0); // set bit 0 to enable Direct Fan Control
+    } else {
+        control2 &= ~(1 << 0); // clear bit 0 to disable Direct Fan Control
+    }
+    write_fan_register(REG_CONTROL2, control2);
+}
+
 void fan_controller_init() {
     set_fan_mode(true);
 

@@ -71,6 +71,10 @@ void set_fan_manual_pwm(uint8_t pwm_value);
 /// @return The speed in RPM.
 uint16_t read_fan_speed(uint8_t tachometer);
 
+/// @brief Sets the fan mode between manual and automatic which controls whether the fan speed is driven by the onboard temp or some arbitrary PWM value.
+/// @param mode true for manual mode (Direct Fan Control enabled), false for automatic mode (Direct Fan Control disabled)
+void set_fan_mode(bool mode);
+
 /// @brief Enables or disables the tachometer for the specified fan.
 /// @param tachometer  0 for Tachometer 1, 1 for Tachometer 2
 /// @param enabled true to enable, false to disable
