@@ -30,13 +30,6 @@ void MX_I2C3_Init(void);
  */
 void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c);
 
-/**
- * @brief GPIO Initialisation Function
- * @param None
- * @retval None
- */
-void MX_GPIO_Init(void);
-
 #ifdef __cplusplus
 }
 #endif
