@@ -21,6 +21,7 @@
 #include "ChainManager.hpp"
 #include "NUgus.hpp"
 #include "ServoState.hpp"
+#include "fan_controller.h"
 #include "imu.h"
 
 namespace nusense {

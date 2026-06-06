@@ -9,6 +9,7 @@
 #error Regenerate this file with the current version of nanopb generator.
 #endif
 
+
 /* Enum definitions */
 typedef enum _message_platform_ServoIDStates_IDState {
     message_platform_ServoIDStates_IDState_MISSING = 0,
@@ -89,6 +90,11 @@ typedef struct _message_platform_NUSense_ServoMapEntry {
     message_platform_Servo value;
 } message_platform_NUSense_ServoMapEntry;
 
+typedef struct _message_platform_FanWarning {
+    bool fan1_warning;
+    bool fan2_warning;
+} message_platform_FanWarning;
+
 typedef struct _message_platform_NUSense {
     /* INDEX MAPPING
   0  : r_shoulder_pitch
@@ -117,6 +123,8 @@ typedef struct _message_platform_NUSense {
     message_platform_IMU imu;
     bool has_buttons;
     message_platform_Buttons buttons;
+    bool has_fan_warnings;
+    message_platform_FanWarning fan_warnings;
 } message_platform_NUSense;
 
 typedef struct _message_platform_ServoConfiguration {
@@ -173,8 +181,9 @@ extern "C" {
 #define message_platform_IMU_init_default        {false, message_platform_IMU_fvec3_init_default, false, message_platform_IMU_fvec3_init_default, 0}
 #define message_platform_IMU_fvec3_init_default  {0, 0, 0}
 #define message_platform_Buttons_init_default    {0, 0}
-#define message_platform_NUSense_init_default    {0, {message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default, message_platform_NUSense_ServoMapEntry_init_default}, false, message_platform_IMU_init_default, false, message_platform_Buttons_init_default}
+#define message_platform_NUSense_init_default    {0, {message_platform_NUSense_ServoMapEntry_init_default}, false, message_platform_IMU_init_default, false, message_platform_Buttons_init_default, false, message_platform_FanWarning_init_default}
 #define message_platform_NUSense_ServoMapEntry_init_default {0, false, message_platform_Servo_init_default}
+#define message_platform_FanWarning_init_default {0, 0}
 #define message_platform_ServoConfiguration_init_default {0, 0}
 #define message_platform_NUSenseHandshake_init_default {0, "", 0, {message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default, message_platform_ServoConfiguration_init_default}}
 #define message_platform_ServoIDStates_init_default {0, {message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default, message_platform_ServoIDStates_ServoIDState_init_default}}
@@ -184,8 +193,9 @@ extern "C" {
 #define message_platform_IMU_init_zero           {false, message_platform_IMU_fvec3_init_zero, false, message_platform_IMU_fvec3_init_zero, 0}
 #define message_platform_IMU_fvec3_init_zero     {0, 0, 0}
 #define message_platform_Buttons_init_zero       {0, 0}
-#define message_platform_NUSense_init_zero       {0, {message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero, message_platform_NUSense_ServoMapEntry_init_zero}, false, message_platform_IMU_init_zero, false, message_platform_Buttons_init_zero}
+#define message_platform_NUSense_init_zero       {0, {message_platform_NUSense_ServoMapEntry_init_zero}, false, message_platform_IMU_init_zero, false, message_platform_Buttons_init_zero, false, message_platform_FanWarning_init_zero}
 #define message_platform_NUSense_ServoMapEntry_init_zero {0, false, message_platform_Servo_init_zero}
+#define message_platform_FanWarning_init_zero    {0, 0}
 #define message_platform_ServoConfiguration_init_zero {0, 0}
 #define message_platform_NUSenseHandshake_init_zero {0, "", 0, {message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero, message_platform_ServoConfiguration_init_zero}}
 #define message_platform_ServoIDStates_init_zero {0, {message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero, message_platform_ServoIDStates_ServoIDState_init_zero}}
@@ -223,6 +233,9 @@ extern "C" {
 #define message_platform_NUSense_servo_map_tag   1
 #define message_platform_NUSense_imu_tag         2
 #define message_platform_NUSense_buttons_tag     3
+#define message_platform_NUSense_fan_warnings_tag 4
+#define message_platform_FanWarning_fan1_warning_tag 1
+#define message_platform_FanWarning_fan2_warning_tag 2
 #define message_platform_ServoConfiguration_direction_tag 1
 #define message_platform_ServoConfiguration_offset_tag 2
 #define message_platform_NUSenseHandshake_type_tag 1
@@ -282,15 +295,23 @@ X(a, STATIC,   SINGULAR, BOOL,     middle,            2)
 #define message_platform_Buttons_CALLBACK NULL
 #define message_platform_Buttons_DEFAULT NULL
 
+#define message_platform_FanWarning_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, BOOL,     fan1_warning,      1) \
+X(a, STATIC,   SINGULAR, BOOL,     fan2_warning,      2)
+#define message_platform_FanWarning_CALLBACK NULL
+#define message_platform_FanWarning_DEFAULT NULL
+
 #define message_platform_NUSense_FIELDLIST(X, a) \
 X(a, STATIC,   REPEATED, MESSAGE,  servo_map,         1) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  imu,               2) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  buttons,           3)
+X(a, STATIC,   OPTIONAL, MESSAGE,  buttons,           3) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  fan_warnings,      4)
 #define message_platform_NUSense_CALLBACK NULL
 #define message_platform_NUSense_DEFAULT NULL
 #define message_platform_NUSense_servo_map_MSGTYPE message_platform_NUSense_ServoMapEntry
 #define message_platform_NUSense_imu_MSGTYPE message_platform_IMU
 #define message_platform_NUSense_buttons_MSGTYPE message_platform_Buttons
+#define message_platform_NUSense_fan_warnings_MSGTYPE message_platform_FanWarning
 
 #define message_platform_NUSense_ServoMapEntry_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   key,               1) \
@@ -330,6 +351,7 @@ extern const pb_msgdesc_t message_platform_Servo_PacketCounts_msg;
 extern const pb_msgdesc_t message_platform_IMU_msg;
 extern const pb_msgdesc_t message_platform_IMU_fvec3_msg;
 extern const pb_msgdesc_t message_platform_Buttons_msg;
+extern const pb_msgdesc_t message_platform_FanWarning_msg;
 extern const pb_msgdesc_t message_platform_NUSense_msg;
 extern const pb_msgdesc_t message_platform_NUSense_ServoMapEntry_msg;
 extern const pb_msgdesc_t message_platform_ServoConfiguration_msg;
@@ -343,6 +365,7 @@ extern const pb_msgdesc_t message_platform_ServoIDStates_ServoIDState_msg;
 #define message_platform_IMU_fields &message_platform_IMU_msg
 #define message_platform_IMU_fvec3_fields &message_platform_IMU_fvec3_msg
 #define message_platform_Buttons_fields &message_platform_Buttons_msg
+#define message_platform_FanWarning_fields &message_platform_FanWarning_msg
 #define message_platform_NUSense_fields &message_platform_NUSense_msg
 #define message_platform_NUSense_ServoMapEntry_fields &message_platform_NUSense_ServoMapEntry_msg
 #define message_platform_ServoConfiguration_fields &message_platform_ServoConfiguration_msg
@@ -353,6 +376,7 @@ extern const pb_msgdesc_t message_platform_ServoIDStates_ServoIDState_msg;
 /* Maximum encoded size of messages (where known) */
 #define MESSAGE_PLATFORM_NUSENSEDATA_PB_H_MAX_SIZE message_platform_NUSense_size
 #define message_platform_Buttons_size            4
+#define message_platform_FanWarning_size         4
 #define message_platform_IMU_fvec3_size          15
 #define message_platform_IMU_size                40
 #define message_platform_NUSenseHandshake_size   464

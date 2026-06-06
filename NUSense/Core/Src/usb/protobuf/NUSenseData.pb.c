@@ -21,6 +21,9 @@ PB_BIND(message_platform_IMU_fvec3, message_platform_IMU_fvec3, AUTO)
 PB_BIND(message_platform_Buttons, message_platform_Buttons, AUTO)
 
 
+PB_BIND(message_platform_FanWarning, message_platform_FanWarning, AUTO)
+
+
 PB_BIND(message_platform_NUSense, message_platform_NUSense, 2)
 
 
@@ -49,4 +52,3 @@ PB_BIND(message_platform_ServoIDStates_ServoIDState, message_platform_ServoIDSta
  */
 PB_STATIC_ASSERT(sizeof(double) == 8, DOUBLE_MUST_BE_8_BYTES)
 #endif
-
