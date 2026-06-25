@@ -44,4 +44,8 @@ uint16_t read_ADC_gain();
 /// @return the voltage of the specified cell (mV)
 uint16_t read_cell_voltage(uint8_t cell_number);
 
+/// @brief gets the whole 4S battery voltage
+/// @return the battery voltage in Volts.
+float read_battery_voltage();
+
 #endif

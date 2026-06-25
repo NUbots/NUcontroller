@@ -72,6 +72,7 @@ int main(void) {
 
     /* Initialise fan controller after I2C3 is ready */
     fan_controller_init();
+    battery_monitor_init();
 
 #ifdef FIRST_BUZZ
     // Confirm that the programme is running.

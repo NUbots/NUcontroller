@@ -38,11 +38,22 @@ uint16_t read_cell_voltage(uint8_t cell_number) {
 
     uint16_t raw_cell = (((raw_msb & 0x3F) << 8) | raw_lsb);
 
-    uint8_t gain = read_ADC_gain();
+    uint16_t gain = read_ADC_gain();
 
-    uint8_t offset = read_battery_register(REG_ADC_OFFSET);
+    int8_t offset = (int8_t)read_battery_register(REG_ADC_OFFSET);
 
     uint16_t cell_voltage_mV = (gain * raw_cell) / 1000 + offset;
 
     return cell_voltage_mV;
+}
+
+float read_battery_voltage() {
+    uint16_t cell_1 = read_cell_voltage(1);
+    uint16_t cell_2 = read_cell_voltage(2);
+    uint16_t cell_3 = read_cell_voltage(3);
+    uint16_t cell_4 = read_cell_voltage(4);
+    
+    float battery_voltage = (cell_1 + cell_2 + cell_3 + cell_4) / 1000.0f;
+
+    return battery_voltage;
 }
