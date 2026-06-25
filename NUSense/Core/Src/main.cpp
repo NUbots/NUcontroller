@@ -20,6 +20,7 @@
 
 #include "dma.h"
 #include "fan_controller.h"
+#include "battery_monitor.h"
 #include "gpio.h"
 #include "i2c.h"
 #include "spi.h"
