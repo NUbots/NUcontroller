@@ -16,3 +16,33 @@ void battery_monitor_init() {
     sys_ctrl1 |= 0x04; // Set bit 4 for ADC_EN (enable ADC)
     write_battery_register(REG_SYS_CTRL1, sys_ctrl1); // Write back to SYS_CTRL1 register
 }
+
+uint16_t read_ADC_gain() {
+    uint16_t gain = 0;
+
+    uint8_t ADC_GAIN_1 = read_battery_register(REG_ADC_GAIN_1); // Read ADC_GAIN_1 register
+    uint8_t ADC_GAIN_2 = read_battery_register(REG_ADC_GAIN_2); // Read ADC_GAIN_2 register
+
+    gain = ((ADC_GAIN_1 & 0b1100) << 1) | ((ADC_GAIN_2 & 0b11100000) >> 5); // this mapping made sense in my head
+
+    return 365 + (gain & 0b11111); // 365 + gain[4:0]
+}
+
+uint16_t read_cell_voltage(uint8_t cell_number) {
+    if (cell_number < 1 || cell_number > 4) {
+        return 0; // Invalid cell number
+    }
+
+    uint8_t raw_msb = read_battery_register(REG_CELL_1_H + (cell_number - 1) * 2); // Read MSB of the specified cell voltage register
+    uint8_t raw_lsb = read_battery_register(REG_CELL_1_L + (cell_number - 1) * 2); // Read LSB of the specified cell voltage register
+
+    uint16_t raw_cell = (((raw_msb & 0x3F) << 8) | raw_lsb);
+
+    uint8_t gain = read_ADC_gain();
+
+    uint8_t offset = read_battery_register(REG_ADC_OFFSET);
+
+    uint16_t cell_voltage_mV = (gain * raw_cell) / 1000 + offset;
+
+    return cell_voltage_mV;
+}
