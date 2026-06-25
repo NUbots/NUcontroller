@@ -3,6 +3,10 @@
 
 #include "main.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Battery Monitor I2C Address
 #define BATTERY_MONITOR_ADDRESS 0x08
 
@@ -47,5 +51,9 @@ uint16_t read_cell_voltage(uint8_t cell_number);
 /// @brief gets the whole 4S battery voltage
 /// @return the battery voltage in Volts.
 float read_battery_voltage();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
