@@ -144,7 +144,7 @@ namespace nusense {
             // Range: -210 - +210 = -48.09 rpm - +48.09 rpm
             // Default servo limits for velocity - minimum of all for X-Series, MX-106 and MX-64
             // X-Series has the minimum at 167
-            return utility::math::clamp(int32_t(-167), velocity, int32_t(167)) * 0.229f / 60.0f;
+            return utility::math::clamp(int32_t(-167), velocity, int32_t(167)) * 0.229f * 2 * static_cast<float>(M_PI) / 60.0f;
         }
 
         int32_t velocity(float velocity) {
@@ -152,7 +152,7 @@ namespace nusense {
             // Range: -210 - +210 = -48.09 rpm - +48.09 rpm
             // Default servo limits for velocity - minimum of all for X-Series, MX-106 and MX-64
             // X-Series has the minimum at 167
-            return int32_t(utility::math::clamp(-167.0f, (velocity * 60.0f / 0.229f), 167.0f));
+            return int32_t(utility::math::clamp(-167.0f, (velocity * 60.0f / (0.229f * 2 * static_cast<float>(M_PI))), 167.0f));
         }
 
         uint32_t profile_velocity(float profile_velocity) {
