@@ -42,8 +42,6 @@ void SystemClock_Config(void);
 int main(void) {
     /* MCU Configuration--------------------------------------------------------*/
 
-    int unused_variable = 10;
-
     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
 
