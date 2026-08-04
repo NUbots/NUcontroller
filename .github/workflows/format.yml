@@ -1,0 +1,33 @@
+name: Check code formatting
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install clang-format
+        run: sudo apt-get update && sudo apt-get install -y clang-format-18
+
+      - name: Check formatting
+        working-directory: NUSense
+        run: |
+          FILES=$(find \
+            Core/Src/device \
+            Core/Src/dynamixel \
+            Core/Src/nusense \
+            Core/Src/uart \
+            Core/Src/usb \
+            Core/Src/utility \
+            USB_DEVICE/App \
+            -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) \
+            ! -path "*/protobuf/*")
+          FILES="$FILES Core/Src/main.cpp Core/Src/fan_controller.c Core/Src/imu.cpp Core/Src/test_hw.hpp"
+          clang-format-18 --dry-run --Werror -style=file $FILES
