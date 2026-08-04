@@ -132,7 +132,7 @@ namespace device {
                 if (num_pulses_left != 0) {
                     halfpulse_timer.begin(HALFPULSE_PERIOD);
                 }
-                // Else, if it is repeating, then time both the dead period and the first 
+                // Else, if it is repeating, then time both the dead period and the first
                 // half-pulse and repeat the task.
                 else if (num_pulses_in_burst != 0) {
                     num_pulses_left = num_pulses_in_burst;
@@ -151,7 +151,7 @@ namespace device {
          */
         void stop() {
             halfpulse_timer.stop();
-            num_pulses_left = 0;
+            num_pulses_left     = 0;
             num_pulses_in_burst = 0;
             turn_off();
             current_priority = NONE;

@@ -1,4 +1,5 @@
 #include "fan_controller.h"
+
 #include <stdbool.h>
 extern I2C_HandleTypeDef hi2c3;
 
@@ -19,29 +20,29 @@ bool fan_warning_state(uint8_t fan_id) {
 
 void set_fan_pwm_freq(uint8_t freq) {
     uint8_t control1 = read_fan_register(REG_CONTROL1);
-    control1 &= ~(0b11 << 3);       // clear bits 3 and 4
-    control1 |= (freq & 0b11) << 3; // set bits 3 and 4 to the desired frequency
+    control1 &= ~(0b11 << 3);        // clear bits 3 and 4
+    control1 |= (freq & 0b11) << 3;  // set bits 3 and 4 to the desired frequency
     write_fan_register(REG_CONTROL1, control1);
 }
 
 void set_fan_spin_up(bool enabled) {
     uint8_t control2 = read_fan_register(REG_CONTROL2);
     if (enabled) {
-        control2 |= (1 << 1); // set bit 1 to enable Spin-Up mode
+        control2 |= (1 << 1);  // set bit 1 to enable Spin-Up mode
     }
     else {
-        control2 &= ~(1 << 1); // clear bit 1 to disable Spin-Up mode
+        control2 &= ~(1 << 1);  // clear bit 1 to disable Spin-Up mode
     }
     write_fan_register(REG_CONTROL2, control2);
 }
 
 void set_fan_tachometer_enabled(uint8_t tachometer, bool enabled) {
     uint8_t control3 = read_fan_register(REG_CONTROL3);
-    if (enabled) {  
-        control3 |= (1 << tachometer);  
-    } 
-    else {  
-        control3 &= ~(1 << tachometer);  
+    if (enabled) {
+        control3 |= (1 << tachometer);
+    }
+    else {
+        control3 &= ~(1 << tachometer);
     }
     write_fan_register(REG_CONTROL3, control3);
 }
@@ -51,20 +52,20 @@ void set_fan_manual_pwm(uint8_t pwm_value) {
 }
 
 uint16_t read_fan_speed(uint8_t tachometer) {
-	uint8_t fan_register = (tachometer == 0 ? REG_FAN1COUNT : REG_FAN2COUNT);
-    uint8_t msb = read_fan_register(fan_register);
-	uint8_t lsb = read_fan_register(fan_register + 1);
-	uint16_t fan_count = (msb << 8) | lsb;
-	return 60 * 100000 / fan_count / PULSES_PER_REVOLUTION;
+    uint8_t fan_register = (tachometer == 0 ? REG_FAN1COUNT : REG_FAN2COUNT);
+    uint8_t msb          = read_fan_register(fan_register);
+    uint8_t lsb          = read_fan_register(fan_register + 1);
+    uint16_t fan_count   = (msb << 8) | lsb;
+    return 60 * 100000 / fan_count / PULSES_PER_REVOLUTION;
 }
 
-void set_fan_mode(bool mode)
-{
+void set_fan_mode(bool mode) {
     uint8_t control2 = read_fan_register(REG_CONTROL2);
     if (mode) {
-        control2 |= (1 << 0); // set bit 0 to enable Direct Fan Control
-    } else {
-        control2 &= ~(1 << 0); // clear bit 0 to disable Direct Fan Control
+        control2 |= (1 << 0);  // set bit 0 to enable Direct Fan Control
+    }
+    else {
+        control2 &= ~(1 << 0);  // clear bit 0 to disable Direct Fan Control
     }
     write_fan_register(REG_CONTROL2, control2);
 }

@@ -26,7 +26,6 @@ jobs:
             Core/Src/uart \
             Core/Src/usb \
             Core/Src/utility \
-            USB_DEVICE/App \
             -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) \
             ! -path "*/protobuf/*")
           FILES="$FILES Core/Src/main.cpp Core/Src/fan_controller.c Core/Src/imu.cpp Core/Src/test_hw.hpp"

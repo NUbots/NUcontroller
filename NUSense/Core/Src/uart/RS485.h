@@ -1,14 +1,14 @@
-#include "main.h"       // needed for the GPIO labels and explicit types,
-#include "usart.h"      // needed for UART handles,
-#include "settings.h"   // needed for buzz during test,
 #include "gpio.h"
+#include "main.h"      // needed for the GPIO labels and explicit types,
+#include "settings.h"  // needed for buzz during test,
+#include "usart.h"     // needed for UART handles,
 
 #ifndef UART_RS485_H
-#define UART_RS485_H
+    #define UART_RS485_H
 
 namespace uart {
 
-    //#define DETECT_IDLE_LINE
+    // #define DETECT_IDLE_LINE
 
     #define RS485_RX GPIO_PIN_RESET
     #define RS485_TX GPIO_PIN_SET
@@ -18,10 +18,10 @@ namespace uart {
         /// @brief  the kind of status
         enum status {
             // Keep these values as they are to be compatible with HAL.
-            RS485_OK       = 0x00,
-            RS485_ERROR    = 0x01,
-            RS485_BUSY     = 0x02,
-            RS485_TIMEOUT  = 0x03
+            RS485_OK      = 0x00,
+            RS485_ERROR   = 0x01,
+            RS485_BUSY    = 0x02,
+            RS485_TIMEOUT = 0x03
             // May add some more when the time comes.
         };
         /**
@@ -81,7 +81,7 @@ namespace uart {
 
         /**
          * @brief   Gets the counter for the receiving DMA instance.
-         * @return  the number of bytes yet to be received through the DMA before it is fully 
+         * @return  the number of bytes yet to be received through the DMA before it is fully
          *          complete,
          */
         uint16_t get_receive_counter();
@@ -118,7 +118,7 @@ namespace uart {
 
         /**
          * @brief   Checks for the interrupt-flags for the transmitting to be done.
-         * @note    The DXL direction pin is reset during this function if the flag has been set by 
+         * @note    The DXL direction pin is reset during this function if the flag has been set by
          *          the interrupt.
          * @return  whether the data has been fully transmitted,
          * @retval  #true if the transmitting was done,
@@ -128,15 +128,16 @@ namespace uart {
 
         /**
          * @brief   Gets the counter for the transmitting DMA instance.
-         * @return  the number of bytes yet to be transmitted through the DMA before it is fully 
+         * @return  the number of bytes yet to be transmitted through the DMA before it is fully
          *          complete,
          */
         uint16_t get_transmit_counter();
+
     private:
         /// @brief  the handle of the corresponding UART interface,
         UART_HandleTypeDef* huart;
         /// @brief  the handles of the corresponding DMA interfaces,
-        DMA_HandleTypeDef* hdma_rx, * hdma_tx;
+        DMA_HandleTypeDef *hdma_rx, *hdma_tx;
         /// @brief  the GPIO port of the direction-pin,
         GPIO_TypeDef* gpio_port;
         /// @brief  the GPIO pin of the direction-pin,
@@ -147,6 +148,6 @@ namespace uart {
         uint16_t it_tx_mask;
     };
 
-} // namespace uart
+}  // namespace uart
 
-#endif // UART_RS485_H
+#endif  // UART_RS485_H
