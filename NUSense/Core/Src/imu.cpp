@@ -106,7 +106,7 @@ namespace nusense {
      * @return  none
      */
     void IMU::write_reg(Address addr, uint8_t data) {
-        uint8_t packet[2] = {static_cast<uint8_t>(addr) | IMU_WRITE, data};
+        uint8_t packet[2] = {static_cast<uint8_t>(static_cast<uint8_t>(addr) | IMU_WRITE), data};
 
         HAL_GPIO_WritePin(MPU_NSS_GPIO_Port, MPU_NSS_Pin, GPIO_PIN_RESET);
         HAL_SPI_Transmit(&hspi4, packet, 2, HAL_MAX_DELAY);
@@ -122,7 +122,7 @@ namespace nusense {
      */
     void IMU::read_reg(Address addr, uint8_t* data) {
         uint8_t rx_data[2] = {0xFF, 0xFF};
-        uint8_t packet[2]  = {static_cast<uint8_t>(addr) | IMU_READ, 0x00};
+        uint8_t packet[2]  = {static_cast<uint8_t>(static_cast<uint8_t>(addr) | IMU_READ), 0x00};
 
         HAL_GPIO_WritePin(MPU_NSS_GPIO_Port, MPU_NSS_Pin, GPIO_PIN_RESET);
         HAL_SPI_TransmitReceive(&hspi4, packet, rx_data, 2, HAL_MAX_DELAY);
@@ -147,7 +147,7 @@ namespace nusense {
         for (int i = 0; i < length + 1; i++) {
             rx_data[i] = 0xAA;
             if (i == 0)
-                packet[i] = static_cast<uint8_t>(addr) | IMU_READ;
+                packet[i] = static_cast<uint8_t>(static_cast<uint8_t>(addr) | IMU_READ);
             else
                 packet[i] = 0x00;
         }
