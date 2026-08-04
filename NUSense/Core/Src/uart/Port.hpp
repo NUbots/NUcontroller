@@ -51,7 +51,7 @@ namespace uart {
                 if (size < PORT_BUFFER_SIZE) {
                     data[back] = byte;
                     back       = (back + 1) % PORT_BUFFER_SIZE;
-                    size++;
+                    size       = size + 1;
                 }
             }
 
@@ -66,7 +66,7 @@ namespace uart {
                 if (size != 0) {
                     byte  = data[front];
                     front = (front + 1) % PORT_BUFFER_SIZE;
-                    size--;
+                    size  = size - 1;
                 }
                 return byte;
             }

@@ -85,8 +85,10 @@ namespace uart {
         // Update the back of the buffer.
         uint16_t old_back = rx_buffer.back;
         rx_buffer.back    = (PORT_BUFFER_SIZE - count) % PORT_BUFFER_SIZE;
-        rx_buffer.size +=
-            rx_buffer.back >= old_back ? rx_buffer.back - old_back : rx_buffer.back + (PORT_BUFFER_SIZE - old_back);
+        rx_buffer.size =
+            rx_buffer.size
+            + (rx_buffer.back >= old_back ? rx_buffer.back - old_back
+                                           : rx_buffer.back + (PORT_BUFFER_SIZE - old_back));
         // Handle if the buffer has overflowed. This should be very unlikely, and if it has happened,
         // then something seriously bad has happened at the protocol-handling level! If this happens,
         // then buffer may be unusable since the DMA may still be updating further down this function

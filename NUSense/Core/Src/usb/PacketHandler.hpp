@@ -66,7 +66,7 @@ namespace usb {
                     // Update index accessor after receiving a packet, making sure to wrap around
                     // in case it exceeds the buffer's length
                     rx_buffer.front = (rx_buffer.front + 1) % RX_BUF_SIZE;
-                    rx_buffer.size--;
+                    rx_buffer.size  = rx_buffer.size - 1;
                 }
                 HAL_NVIC_EnableIRQ(OTG_HS_IRQn);
             }
@@ -189,7 +189,7 @@ namespace usb {
                 }
                 // Move the front forward and decrease the size.
                 rx_buffer.front = (rx_buffer.front + length + offset) % RX_BUF_SIZE;
-                rx_buffer.size -= length + offset;
+                rx_buffer.size  = rx_buffer.size - (length + offset);
             }
             return length;
         }
