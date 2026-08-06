@@ -1,9 +1,9 @@
 name: Check code formatting
 
 on:
-  push:
+  pull_request:
     branches:
-      - "**"
+      - main
 jobs:
   clang-format:
     runs-on: ubuntu-latest
