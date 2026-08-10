@@ -1,6 +1,14 @@
 #include "../NUSenseIO.hpp"
 namespace nusense {
 
+    bool NUSenseIO::post() {
+        if (!this->imu.post()) {
+            return false;
+        }
+
+        return true;
+    }
+
     void NUSenseIO::startup() {
 
         /*
