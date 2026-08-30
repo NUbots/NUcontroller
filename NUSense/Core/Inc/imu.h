@@ -80,8 +80,13 @@ namespace nusense {
     // these values down may make the spikes less frequent but may mean that the IMU is polled
     // needlessly; tuning these values up will poll the IMU less often but may make the spikes more
     // frequent.
-    constexpr float ACCELEROMETER_SPIKE_THRESHOLD = 8;
-    constexpr float GYROSCOPE_SPIKE_THRESHOLD     = 4;
+    constexpr float ACCELEROMETER_THRESHOLD = 8;
+    constexpr float GYROSCOPE_THRESHOLD     = 4;
+
+    struct ExponentialFilter {
+        float32_t alpha = 0.0f;
+        float32_t beta  = 0.0f;
+    }
 
     class IMU {
     public:
@@ -730,7 +735,7 @@ namespace nusense {
         // structs to hold internal state of imu to read easily
         RawData raw_data;
         ConvertedData converted_data;
-        ConvertedData difference;
+        ConvertedData variance;
     };
 
     //-----------------------------------------------------------------------------

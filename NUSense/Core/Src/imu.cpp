@@ -228,40 +228,55 @@ namespace nusense {
      * @brief   get new data, convert it, return it, donezo
      */
     IMU::ConvertedData IMU::get_new_converted_data(void) {
-        // Store old data locally.
-        ConvertedData old_converted_data = converted_data;
-        // Keep the previous difference.
-        ConvertedData old_difference = difference;
+        ExponentialFilter raw_filter{0.5, 0.5};
+        ExponentialFilter error_filter{0.5, 0.5};
 
-        // get and convert new data
+        ConvertedData old_converted_data = converted_data;
+
         get_new_raw_data();
         convert_raw_data(&raw_data, &converted_data);
 
-        // Work out the difference in IMU readings. This is the change in data between sampling.
-        difference.accelerometer.x = converted_data.accelerometer.x - old_converted_data.accelerometer.x;
-        difference.accelerometer.y = converted_data.accelerometer.y - old_converted_data.accelerometer.y;
-        difference.accelerometer.z = converted_data.accelerometer.z - old_converted_data.accelerometer.z;
-        difference.gyroscope.x     = converted_data.gyroscope.x - old_converted_data.gyroscope.x;
-        difference.gyroscope.y     = converted_data.gyroscope.y - old_converted_data.gyroscope.y;
-        difference.gyroscope.z     = converted_data.gyroscope.z - old_converted_data.gyroscope.z;
+        ConvertedData filtered_data;
+        filtered_data.accelerometer.x =
+            raw_filter.alpha * converted_data.accelerometer.x + raw_filter.beta * old_converted_data.accelerometer.x;
+        filtered_data.accelerometer.y =
+            raw_filter.alpha * converted_data.accelerometer.y + raw_filter.beta * old_converted_data.accelerometer.y;
+        filtered_data.accelerometer.z =
+            raw_filter.alpha * converted_data.accelerometer.z + raw_filter.beta * old_converted_data.accelerometer.z;
+        filtered_data.gyroscope.x =
+            raw_filter.alpha * converted_data.gyroscope.x + raw_filter.beta * old_converted_data.gyroscope.x;
+        filtered_data.gyroscope.y =
+            raw_filter.alpha * converted_data.gyroscope.y + raw_filter.beta * old_converted_data.gyroscope.y;
+        filtered_data.gyroscope.z =
+            raw_filter.alpha * converted_data.gyroscope.z + raw_filter.beta * old_converted_data.gyroscope.z;
 
-        // If the difference is much larger than the previous difference, then get new data from the IMU.
-        if ((std::abs(difference.accelerometer.x - old_difference.accelerometer.x) >= ACCELEROMETER_SPIKE_THRESHOLD)
-            || (std::abs(difference.accelerometer.y - old_difference.accelerometer.y) >= ACCELEROMETER_SPIKE_THRESHOLD)
-            || (std::abs(difference.accelerometer.z - old_difference.accelerometer.z) >= ACCELEROMETER_SPIKE_THRESHOLD)
-            || (std::abs(difference.gyroscope.x - old_difference.gyroscope.x) >= GYROSCOPE_SPIKE_THRESHOLD)
-            || (std::abs(difference.gyroscope.x - old_difference.gyroscope.y) >= GYROSCOPE_SPIKE_THRESHOLD)
-            || (std::abs(difference.gyroscope.x - old_difference.gyroscope.z) >= GYROSCOPE_SPIKE_THRESHOLD)) {
+        ConvertedData old_variance = variance;
+        variance.accelerometer.x   = pow(filtered_data.accelerometer.x - converted_data.accelerometer.x, 2);
+        variance.accelerometer.y   = pow(filtered_data.accelerometer.y - converted_data.accelerometer.y, 2);
+        variance.accelerometer.z   = pow(filtered_data.accelerometer.z - converted_data.accelerometer.z, 2);
+        variance.gyroscope.x       = pow(filtered_data.gyroscope.x - converted_data.gyroscope.x, 2);
+        variance.gyroscope.y       = pow(filtered_data.gyroscope.y - converted_data.gyroscope.y, 2);
+        variance.gyroscope.z       = pow(filtered_data.gyroscope.z - converted_data.gyroscope.z, 2);
+
+        ConvertedData filtered_data;
+        filtered_variance.accelerometer.x =
+            error_filter.alpha * variance.accelerometer.x + error_filter.beta * old_variance.accelerometer.x;
+        filtered_variance.accelerometer.y =
+            error_filter.alpha * variance.accelerometer.y + error_filter.beta * old_variance.accelerometer.y;
+        filtered_variance.accelerometer.z =
+            error_filter.alpha * variance.accelerometer.z + error_filter.beta * old_variance.accelerometer.z;
+        filtered_variance.gyroscope.x =
+            error_filter.alpha * variance.gyroscope.x + error_filter.beta * old_variance.gyroscope.x;
+        filtered_variance.gyroscope.y =
+            error_filter.alpha * variance.gyroscope.y + error_filter.beta * old_variance.gyroscope.y;
+        filtered_variance.gyroscope.z =
+            error_filter.alpha * variance.gyroscope.z + error_filter.beta * old_converted_data.gyroscope.z;
+
+        if ((filtered_variance.accelerometer.x > ACCELEROMETER_THRESHOLD) || (filtered_variance.accelerometer.y > ACCELEROMETER_THRESHOLD)
+            || (filtered_variance.accelerometer.z > ACCELEROMETER_THRESHOLD) || (filtered_variance.gyroscope.x > GYROSCOPE_THRESHOLD)
+            || (filtered_variance.gyroscope.y > GYROSCOPE_THRESHOLD) || (filtered_variance.gyroscope.z > GYROSCOPE_THRESHOLD)) {
             get_new_raw_data();
             convert_raw_data(&raw_data, &converted_data);
-
-            // Work out the difference again.
-            difference.accelerometer.x = converted_data.accelerometer.x - old_converted_data.accelerometer.x;
-            difference.accelerometer.y = converted_data.accelerometer.y - old_converted_data.accelerometer.y;
-            difference.accelerometer.z = converted_data.accelerometer.z - old_converted_data.accelerometer.z;
-            difference.gyroscope.x     = converted_data.gyroscope.x - old_converted_data.gyroscope.x;
-            difference.gyroscope.y     = converted_data.gyroscope.y - old_converted_data.gyroscope.y;
-            difference.gyroscope.z     = converted_data.gyroscope.z - old_converted_data.gyroscope.z;
         }
 
         // donezo
